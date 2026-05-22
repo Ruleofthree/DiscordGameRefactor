@@ -1,0 +1,369 @@
+[
+  {
+    "common": {
+      "hp5": [
+        150,
+        "increasing hp by 5 for duration of fight",
+        5,
+        "+5 hit points"
+      ],
+      "hp10": [
+        300,
+        "increasing hp by 10 for duration of fight",
+        10,
+        "+10 hit points"
+      ],
+      "tstr1": [
+        250,
+        "increasing strength by 1 for duration of fight",
+        1,
+        "+1 strength"
+      ],
+      "tdex1": [
+        250,
+        "increasing dexterity by 1 for duration of fight",
+        1,
+        "+1 dexterity"
+      ],
+      "tcon1": [
+        250,
+        "increasing constitution by 1 for duration of fight",
+        1,
+        "+1 constitution"
+      ],
+      "tstr2": [
+        500,
+        "increasing strength by 2 for duration of fight",
+        2,
+        "+2 strength"
+      ],
+      "tdex2": [
+        500,
+        "increasing dexterity by 2 for duration of fight",
+        2,
+        "+2 dexterity"
+      ],
+      "tcon2": [
+        500,
+        "increasing constitution by 2 for duration of fight",
+        2,
+        "+2 constitution"
+      ],
+      "damage1": [
+        500,
+        "increasing damage by 1 for duration of fight",
+        1,
+        "+1 to damage"
+      ],
+      "damage2": [
+        750,
+        "increasing damage by 2 for duration of fight",
+        2,
+        "+2 to damage"
+      ],
+      "hit1": [
+        500,
+        "increasing hit chance by 1 for duration of fight",
+        1,
+        "+1 to hit"
+      ],
+      "hit2": [
+        750,
+        "increasing hit chance by 2 for duration of fight",
+        2,
+        "+2 to hit"
+      ],
+      "respec": [
+        250,
+        "allows to respec character",
+        1,
+        "allows to respec character"
+      ],
+      "ac1": [
+        500,
+        "increasing armor class by 1 for duration of fight",
+        1,
+        "+1 to armor class"
+      ]
+    },
+    "uncommon": {
+      "hp15": [
+        450,
+        "increasing hp by 15 for duration of fight",
+        15,
+        "+15 hit points"
+      ],
+      "hp20": [
+        600,
+        "increasing hp by 20 for duration of fight",
+        20,
+        "+20 hit points"
+      ],
+      "tstr3": [
+        1000,
+        "increasing strength by 3 for duration of fight",
+        3,
+        "+3 strength"
+      ],
+      "tdex3": [
+        1000,
+        "increasing dexterity by 3 for duration of fight",
+        3,
+        "+3 dexterity"
+      ],
+      "tcon3": [
+        1000,
+        "increasing constitution by 3 for duration of fight",
+        3,
+        "+3 constitution"
+      ],
+      "tstr4": [
+        1500,
+        "increasing strength by 4 for duration of fight",
+        4,
+        "+4 strength"
+      ],
+      "tdex4": [
+        1500,
+        "increasing dexterity by 4 for duration of fight",
+        4,
+        "+4 dexterity"
+      ],
+      "tcon4": [
+        1500,
+        "increasing constitution by 4 for duration of fight",
+        4,
+        "+4 constitution"
+      ],
+      "damage3": [
+        1000,
+        "increasing damage by 3 for duration of fight",
+        3,
+        "+3 to damage"
+      ],
+      "hit3": [
+        1000,
+        "increasing hit chance by 3 for duration of fight",
+        3,
+        "+3 to hit"
+      ],
+      "ac2": [
+        1500,
+        "increasing armor class by 2 for duration of fight",
+        2,
+        "+2 to armor class"
+      ]
+    },
+    "rare": {
+      "hp25": [
+        750,
+        "increasing hp by 25 for duration of fight",
+        25,
+        "+25 hit points"
+      ],
+      "tstr5": [
+        2000,
+        "increasing strength by 5 for duration of fight",
+        5,
+        "+5 strength"
+      ],
+      "tdex5": [
+        2000,
+        "increasing dexterity by 5 for duration of fight",
+        5,
+        "+5 dexterity"
+      ],
+      "tcon5": [
+        2000,
+        "increasing constitution by 5 for duration of fight",
+        5,
+        "+5 constitution"
+      ],
+      "damage4": [
+        1500,
+        "increasing damage by 4 for duration of fight",
+        4,
+        "+4 to damage"
+      ],
+      "hit4": [
+        1500,
+        "increasing hit chance by 4 for duration of fight",
+        4,
+        "+4 to hit"
+      ],
+      "ac3": [
+        2000,
+        "increasing armor class by 3 for duration of fight",
+        3,
+        "+3 to armor class"
+      ],
+      "str1": [
+        10000,
+        "permanently increases strength by 1",
+        1
+      ],
+      "dex1": [
+        10000,
+        "permanently increases dexterity by 1",
+        1
+      ],
+      "con1": [
+        10000,
+        "permanently increases constitution by 1",
+        1
+      ],
+      "str2": [
+        15000,
+        "permanently increases strength by 1 (cannot be used unless player has used a strength 1 potion)",
+        2
+      ],
+      "dex2": [
+        15000,
+        "permanently increases dexterity by 1 (cannot be used unless player has used a dexterity 1 potion)",
+        2
+      ],
+      "con2": [
+        15000,
+        "permanently increases constitution by 1 (cannot be used unless player has used a constitution 1 potion)",
+        2
+      ],
+      "regen1": [
+        500,
+        "grants +1 regeneration for duration of fight",
+        1,
+        "+1 to regeneration"
+      ],
+      "blur1": [
+        80,
+        "gives 1% chance to negate opponent's damage",
+        1,
+        "1% chance to avoid damage"
+      ]
+    },
+    "vrare": {
+      "damage5": [
+        2000,
+        "increasing damage by 5 for duration of fight",
+        5,
+        "+5 to damage"
+      ],
+      "hit5": [
+        2000,
+        "increasing hit chance by 5 for duration of fight",
+        5,
+        "+5 to hit"
+      ],
+      "str3": [
+        20000,
+        "permanently increases strength by 1 (cannot be used unless player has used a strength 2 potion)",
+        3
+      ],
+      "dex3": [
+        20000,
+        "permanently increases dexterity by 1 (cannot be used unless player has used a dexterity 2 potion)",
+        3
+      ],
+      "con3": [
+        20000,
+        "permanently increases constitution by 1 (cannot be used unless player has used a constitution 2 potion)",
+        3
+      ],
+      "str4": [
+        25000,
+        "permanently increases strength by 1 (cannot be used unless player has used a strength 3 potion)",
+        4
+      ],
+      "dex4": [
+        25000,
+        "permanently increases dexterity by 1 (cannot be used unless player has used a dexterity 3 potion)",
+        4
+      ],
+      "con4": [
+        25000,
+        "permanently increases constitution by 1 (cannot be used unless player has used a constitution 3 potion)",
+        4
+      ],
+      "blur3": [
+        300,
+        "gives 3% chance to negate opponent's damage",
+        3,
+        "3% chance to ignore damage"
+      ],
+      "regen2": [
+        1000,
+        "grants +2 regeneration for duration of fight",
+        2,
+        "+2 to regeneration"
+      ],
+      "ac4": [
+        2500,
+        "increasing armor class by 4 for duration of fight",
+        4,
+        "+4 to armor class"
+      ]
+    },
+    "relic": {
+      "str5": [
+        30000,
+        "permanently increases strength by 1 (cannot be used unless player has used a strength 4 potion)",
+        5
+      ],
+      "dex5": [
+        30000,
+        "permanently increases dexterity by 1 (cannot be used unless player has used a dexterity 4 potion)",
+        5
+      ],
+      "blur5": [
+        2500,
+        "gives 5% chance to negate opponent's damage",
+        5,
+        "5% chance to ignore damage"
+      ],
+      "con5": [
+        30000,
+        "permanently increases constitution by 1 (cannot be used unless player has used a constitution 4 potion)",
+        5
+      ],
+      "ac5": [
+        3000,
+        "increasing armor class by 5 for duration of fight",
+        5,
+        "+5 to armor class"
+      ],
+      "regen3": [
+        1600,
+        "grants +3 regeneration for duration of fight",
+        3,
+        "+3 to regeneration"
+      ],
+      "stimulant": [
+        50000,
+        "Allows one to learn a new feat they meet requirements for",
+        1,
+        "Allows one to learn a new feat they meet requirements for"
+      ]
+    },
+    "shoplist": [
+      "tdex4",
+      "tcon3",
+      "tdex2",
+      "ac3",
+      "blur1",
+      "tdex3",
+      "hp10",
+      "hp10",
+      "tstr4",
+      "tcon4",
+      "hp10",
+      "ac3",
+      "con5",
+      "tcon1",
+      "tstr3",
+      "hp10",
+      "hit3",
+      "tcon1",
+      "hp10",
+      "ac1"
+    ]
+  }
+]

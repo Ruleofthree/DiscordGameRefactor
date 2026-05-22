@@ -1,0 +1,621 @@
+[
+  {
+    "power attack": {
+      "stat": "strength",
+      "desc": "Subtract -1 from your bonus to hit, and add it to your bonus to damage. Increases by -1/+1 for every four levels obtained. NOTE: This feat can be 'toggled', meaning you can select the amount you wish to use. Example: If you are 12th level, you can use !pattack 1, for a -1/+1 effect, !pattack 2 for -2/+2 effect, or !pattack 3 for a -3/+3 effect.",
+      "requirements": [1, 0, 0, 0, "none", 0],
+      "status": "passive",
+      "action": [1, 2, 3, 4, 5]
+    },
+    "crushing blow": {
+      "stat": "strength",
+      "desc": "adds +1 to your damage modifier. If your build is strength, this bonus improves to +2",
+      "requirements": [ 1, 0, 0, 0, "none", 0],
+      "status": "passive",
+      "action": [1, 2]
+    },
+    "improved crushing blow": {
+      "stat": "strength",
+      "desc": "improves the bonus of crushing blow to +3 to damage. If your build is strength, this bonus improves to +4",
+      "requirements": [6, 0, 0, 0, "crushing blow"],
+      "status": "passive",
+      "action": [3, 5]
+    },
+    "greater crushing blow": {
+      "stat": "strength",
+      "desc": "improves the bonus of crushing blow to +5 to damage. If your build is strength, this bonus improves to +6",
+      "requirements": [12, 0, 0, 0,"improved crushing blow"],
+      "status": "passive",
+      "action": [5, 7]
+    },
+    "titan blow": {
+      "stat": "strength",
+      "desc": "Your next attack deals +10 more damage, can be affected by a critical. If your build is strength, this bonus improves to +14",
+      "requirements": [18, 0, 0, 0, "greater crushing blow"],
+      "status": "active",
+      "action": [10, 14]
+    },
+    "precision strike": {
+      "stat": "strength",
+      "desc": "adds +1 to your hit modifier. If your build is strength, this bonus improves to +2",
+      "requirements": [1, 0, 0, 0, "none", 0],
+      "status": "passive",
+      "action": 1
+    },
+    "improved precision strike": {
+      "stat": "strength",
+      "desc": "improves the bonus of precision strike to +3 to hit. If your build is strength, this bonus improves to +4",
+      "requirements": [6, 0, 0, 0, "precision strike"],
+      "status": "passive",
+      "action": 3
+    },
+    "greater precision strike": {
+      "stat": "strength",
+      "desc": "improves the bonus of precision strike to +5 to hit. If your build is strength, this bonus improves to +6",
+      "requirements": [12, 0, 0, 0, "improved precision strike"],
+      "status": "passive",
+      "action": 5
+    },
+    "true strike": {
+      "stat": "strength",
+      "desc": "Allows you to attack with absolute precision, forgoing any attack roll. This feat IGNORES blur percentage, CANNOT be evaded, and does 3d8 base damage, but attack CANNOT critical.",
+      "requirements": [18, 0, 0, 0, "greater precision strike"],
+      "status": "active",
+      "action": 1
+    },
+    "crippling blow": {
+      "stat": "strength",
+      "desc": "You strike your opponent with such a force that it hinders their own attempts to strike back, reducing the damage on their next successful attack by 40%. If your build is strength, this penalty improves to 50%",
+      "requirements": [3, 0, 0, 0, "none", 0],
+      "status": "active",
+      "action": [0.4, 0.5, "40%", "50%"]
+    },
+    "improved crippling blow": {
+      "stat": "strength",
+      "desc": "improves crippling blow to 50% to their next successful attack. If your build is strength, this penalty improves to 65%",
+      "requirements": [9, 0, 0, 0, "crippling blow"],
+      "status": "active",
+      "action": [0.5, 0.65, "50%", "65%"]
+    },
+    "greater crippling blow": {
+      "stat": "strength",
+      "desc": "improves crippling blow to 60% to their next successful attack. If your build is strength, this bonus improves to 80%",
+      "requirements": [15, 0, 0, 0, "improved crippling blow"],
+      "status": "active",
+      "action": [0.6, 0.8, "60%", "80%"]
+    },
+    "staggering blow": {
+      "stat": "strength",
+      "desc": "opponent's next successful attack deals 70% less damage. If your build is strength, this penalty improves to 95%",
+      "requirements": [18, 0, 0, 0, "greater crippling blow"],
+      "status": "active",
+      "action": [0.7, 0.95, "70%", "95%"]
+    },
+    "heavy hand": {
+       "stat": "strength",
+       "desc": "Increases base max damage potential by +2 (1d10 = 1d10 + 2, 1d12 = 1d12 + 2, 2d6 = 2d6 + 2) 2 turns. If your build is set to strength, max damage potential by +4 (1d10 = 1d10 + 4, 1d12 = 1d12 + 4, 2d6 = 2d6 + 4)",
+       "requirements": [3, 0, 0, 0, "none"],
+       "status": "active",
+       "action": [2, 4]
+    },
+    "improved heavy hand": {
+       "stat": "strength",
+       "desc": "Increases duration of Heavy Hand by 1 turn",
+       "requirements": [9, 0, 0, 0, "none"],
+       "status": "active",
+       "action": [3, 2, 4]
+    },
+    "greater heavy hand": {
+       "stat": "strength",
+       "desc": "Increases base max damage potential by +4 (1d10 = 1d10 + 4, 1d12 = 1d12 + 4, 2d6 = 2d6 + 4) 2 turns. If your build is set to strength, max damage potential by +6 (1d10 = 1d10 + 6, 1d12 = 1d12 + 6, 2d6 = 2d6 + 6)",
+       "requirements": [15, 0, 0, 0, "none"],
+       "status": "active",
+       "action": [3, 4, 6]
+    },
+    "defensive fighting": {
+      "stat": "dexterity",
+      "desc": "Subtract -1 from your bonus to damage, and add it to your Armor Class. Increases by -1/+1 for every four levels obtained. NOTE: This feat can be 'toggled', meaning you can select the amount you wish to use. Example: If you are 12th level, you can use !dfight 1, for a -1/+1 effect, !dfight 2 for -2/+2 effect, or !dfight 3 for a -3/+3 effect.'",
+      "requirements": [1, 0, 0, 0, "none", 0],
+      "status": "passive",
+      "action": [1, 2, 3, 4, 5]
+    },
+    "evasion": {
+      "stat": "dexterity",
+      "desc": "automatically reduce damage from the next attack by 50%. You CANNOT take this feat, unless your build is set to dexterity.",
+      "requirements": [6, 0, 0, 0, "none", 0],
+      "status": "active",
+      "action": "0.5"
+    },
+    "improved evasion": {
+      "stat": "dexterity",
+      "desc": "improves damage reduction to 75%. You CANNOT take this feat, unless your build is set to dexterity.",
+      "requirements": [12, 0, 0, 0, "evasion"],
+      "status": "active",
+      "action": "0.75"
+    },
+    "greater evasion": {
+      "stat": "dexterity",
+      "desc": "improves damage reduced by 100%. You CANNOT take this feat, unless your build is set to dexterity.",
+      "requirements": [18, 0, 0, 0, "improved evasion"],
+      "status": "active",
+      "action": null
+    },
+    "vile touch": {
+      "stat": "dexterity",
+      "desc": "Upon a successful hit, does 1d4 points of damage to opponent for 4 rounds. If your build is set to dexterity, damage increases to 1d6. [b]NOTE[/b] Any active Quick Strike procs WILL NOT activate while VT is active.",
+      "requirements": [3, 0, 0, 0, "none", 0],
+      "status": "active",
+      "action": [4, 1, 4, 6]
+    },
+    "improved vile touch": {
+      "stat": "dexterity",
+      "desc": " improves the total duration of vile touch to 5 rounds. If your build is set to dexterity, damage increases to 1d6.",
+      "requirements": [9, 0, 0, 0, "vile touch", 0],
+      "status": "active",
+      "action": [5, 1, 4, 6]
+    },
+    "greater vile touch": {
+      "stat": "dexterity",
+      "desc": " improves the total duration of vile touch to 6 rounds. If your build is set to dexterity, damage increases to 1d6.",
+      "requirements": [15, 0, 0, 0, "improved vile touch", 0],
+      "status": "active",
+      "action": [6, 1, 4, 6]
+    },
+    "death touch": {
+      "stat": "dexterity",
+      "desc": " improves the total duration of vile touch to 7 rounds.  If your build is set to dexterity, damage increases to 1d6.",
+      "requirements": [18, 0, 0, 0, "greater vile touch", 0],
+      "status": "active",
+      "action": [7, 1, 4, 6]
+    },
+    "quick strike": {
+      "stat": "dexterity",
+      "desc": "roll 1d8 damage immediately opponent misses. This effect can trigger up to two times. [b]NOTE:[/b] WILL NOT trigger if Vile Touch is active. If your build is set to dexterity, damage increases to 1d4 plus half dexterity modifier.",
+      "requirements": [3, 0, 0, 0, "none", 0],
+      "status": "active",
+      "action": [1, 8, 4, 2]
+    },
+    "improved quick strike": {
+      "stat": "dexterity",
+      "desc": "increases trigger of quick strike up to three times",
+      "requirements": [9, 0, 0, 0, "quick strike"],
+      "status": "active",
+      "action": [1, 8, 4, 3]
+    },
+    "greater quick strike": {
+      "stat": "dexterity",
+      "desc": "increases trigger of quick strike up to four times",
+      "requirements": [15, 0, 0, 0, "improved quick strike"],
+      "status": "active",
+      "action": [1, 8, 4, 4]
+    },
+    "riposte": {
+      "stat": "dexterity",
+      "desc": "also gain gain a +5 bonus to damage while Quick Strike active.",
+      "requirements": [18, 0, 0, 0, "greater quick strike"],
+      "status": "active",
+      "action": [1, 8, 4, 4]
+    },
+    "stoneskin": {
+      "stat": "constitution",
+      "desc": "gain 5d3 as a pool of damage resistance that persists through rounds, absorbing damage until the pool is depleted. [b]Stoneskin DOES NOT stack with Damage Reduction.[/b] Damage is taken FIRST from stoneskin, and then once broken, DR. If your build is set to constitution, constitution modifier is added to total, and obtain a +1 bonus to damage while stoneskin is active.",
+      "requirements": [1, 0, 0, 0, "none"],
+      "status": "active",
+      "action": [5, 15, 1]
+    },
+    "improved stoneskin": {
+      "stat": "constitution",
+      "desc": "improves pool to 7d3. If your build is set to constitution, add constitution modifier and bonus increases to +3 to damage.",
+      "requirements": [6, 0, 0, 0, "stoneskin"],
+      "status": "active",
+      "action": [7, 21, 3]
+    },
+    "greater stoneskin": {
+      "stat": "constitution",
+      "desc": "improves pool to 9d3 + constitution modifier. If your build is set to constitution, add constitution modifier and bonus increases to +5 to damage.",
+      "requirements": [12, 0, 0, 0, "improved stoneskin"],
+      "status": "active",
+      "action": [9, 27, 5]
+    },
+    "stoneform": {
+      "stat": "constitution",
+      "desc": "gives user 11d3 + constitution modifier. If your build is set to constitution, add constitution modifier and bonus increases increases to +7.",
+      "requirements": [18, 0, 0, 0, "greater stoneskin"],
+      "status": "active",
+      "action": [11, 33, 7]
+    },
+    "deaths door": {
+      "stat": "constitution",
+      "desc": "50% chance to return you from death, healing 5d3 plus your constitution modifier. You CANNOT take this feat, unless your build is set to constitution. ",
+      "status": "passive",
+      "requirements": [3, 0, 0, 0, "none"],
+      "action": [5, 15]
+    },
+    "improved deaths door": {
+      "stat": "constitution",
+      "desc": "75% chance to return you from death, healing 5d4 plus your constitution modifier. You CANNOT take this feat, unless your build is set to constitution.",
+      "status": "passive",
+      "requirements": [9, 0, 0, 0, "deaths door"],
+      "action": [5, 20]
+    },
+    "greater deaths door": {
+      "stat": "constitution",
+      "desc": "100% chance to return you from death, healing 5d5 plus your constitution modifier. You CANNOT take this feat, unless your build is set to constitution.",
+      "status": "passive",
+      "requirements": [15, 0, 0, 0, "improved deaths door"],
+      "action": [5, 20]
+    },
+    "lifeleech": {
+      "stat": "constitution",
+      "desc": "Upon successfully dealing damage to opponent, gain 2d6 healing. If build is set to constitution, bonus is set to 2d8 plus constitution modifier.",
+      "status": "active",
+      "requirements": [3, 0, 0, 0, "none"],
+      "action": [2, 12, 16]
+    },
+    "improved lifeleech": {
+      "stat": "constitution",
+      "desc": "Upon successfully dealing damage to opponent, gain 5d4 healing. If build is set to constitution, bonus is set to 5d5 plus constitution modifier.",
+      "status": "active",
+      "requirements": [9, 0, 0, 0, "lifeleech"],
+      "action": [5, 20, 25]
+    },
+    "greater lifeleech": {
+      "stat": "constitution",
+      "desc": "Upon successfully dealing damage to opponent, gain 3d8 healing. If build is set to constitution, bonus is set to 3d10 plus constitution modifier.",
+      "status": "active",
+      "requirements": [15, 0, 0, 0, "improved lifeleech"],
+      "action": [3, 24, 30]
+    },
+    "lifedrain": {
+      "stat": "constitution",
+      "desc": "Upon successfully dealing damage to opponent, gain 24 healing.  If build is set to constitution, bonus is set to 30 plus constitution modifier.",
+      "status": "active",
+      "requirements": [18, 0, 0, 0, "none"],
+      "action": [24, 30]
+    },
+    "lightning reflexes": {
+      "stat": "dexterity",
+      "desc": "gives +1 to Armor Class. If build is set to dexterity, bonus is +2 instead",
+      "requirements": [1, 0, 0, 0, "none", 0],
+      "status": "passive",
+      "action": 1
+    },
+    "improved lightning reflexes": {
+      "stat": "dexterity",
+      "desc": "increases lightning reflexes bonus to +3. If build is set to dexterity, bonus is +4 instead",
+      "requirements": [6, 0, 0, 0, "lightning reflexes"],
+      "status": "passive",
+      "action": 3
+    },
+    "greater lightning reflexes": {
+      "stat": "dexterity",
+      "desc": "increases lightning reflexes bonus to +5. If build is set to dexterity, bonus is +6 instead",
+      "requirements": [9, 0, 0, 0, "improved lightning reflexes"],
+      "status": "passive",
+      "action": 5
+    },
+    "hurt me": {
+      "stat": "strength",
+      "desc": "adds a +3 bonus to damage when current hp is below 66% of total, and +5 when below 33% of total. You CANNOT take this feat, unless your build is set to strength.",
+      "requirements": [3, 0, 0, 0, "none", 0],
+      "status": "passive",
+      "action": [3, 5, "3", "5"]
+    },
+    "improved hurt me": {
+      "stat": "strength",
+      "desc": " adds a +5 bonus to damage when current hp is below 66% of total, and +7 when below 33% of total. You CANNOT take this feat, unless your build is set to strength.",
+      "requirements": [9, 0, 0, 0, "hurt me"],
+      "status": "passive",
+      "action": [5, 7, "5", "7"]
+    },
+    "greater hurt me": {
+      "stat": "strength",
+      "desc": "adds a +7 bonus to damage when current hp is below 66% of total, and +9 when below 33% of total. You CANNOT take this feat, unless your build is set to strength.",
+      "requirements": [15, 0, 0, 0, "improved hurt me"],
+      "status": "passive",
+      "action": [7, 9, "7", "9"]
+    },
+    "hurt me more": {
+      "stat": "strength",
+      "desc": "adds a +9 to damage when current hp is below 75% of total, +11 when below 50% of total, and +13 when below 25% of total. You CANNOT take this feat, unless your build is set to strength.",
+      "requirements": [18, 0, 0, 0, "greater hurt me"],
+      "status": "passive",
+      "action": [9, 11, 13, "9", "11", "13"]
+    },
+    "focus": {
+      "stat": "strength",
+      "desc": "makes natural damage dice 2d6 instead of 1d10 at 66% of total, and 3d4 when below 33% of total. You CANNOT take this feat, it is given to strength builds automatically at level 3.",
+      "requirements": [3, 0, 0, 0, "This feat can not be selected", 0],
+      "status": "passive",
+      "action": [2, 12, 3, 12, "2-12", "3-12"]
+    },
+    "improved focus": {
+      "stat": "strength",
+      "desc": " adds a +5 bonus to armor class when current hp is below 66% of total, and +7 when below 33% of total. You CANNOT take this feat, it is given to strength builds automatically at level 9.",
+      "requirements": [9, 0, 0, 0, "this feat can not be selected"],
+      "status": "passive",
+      "action": [5, 7, "5", "7"]
+    },
+    "greater focus": {
+      "stat": "strength",
+      "desc": "adds a +7 bonus to armor class when current hp is below 66% of total, and +9 when below 33% of total. You CANNOT take this feat, it is given to strength builds automatically at level 15",
+      "requirements": [15, 0, 0, 0, "this feat can not be selected"],
+      "status": "passive",
+      "action": [7, 9, "7", "9"]
+    },
+    "perfect focus": {
+      "stat": "strength",
+      "desc": "adds a +9 to armor class when current hp is below 75% of total, +11 when below 50% of total, and +13 when below 25% of total. You CANNOT take this feat, it is given to strength builds automatically at level 18.",
+      "requirements": [18, 0, 0, 0, "this feat can not be selected"],
+      "status": "passive",
+      "action": [9, 11, 13, "9", "11", "13"]
+    },
+    "relentless": {
+      "stat": "strength",
+      "desc": "If opponent is successfully hit, starts a counter and adds 1 to it. For the next three attacks, if opponent is successfully hit, adds 1 more to that counter. At the end of four rounds, all counters are added up, and that much additional damage is done.  If build is set to strentgth, a hit add 3 to counter. Additionally, if opponent is missed, adds 1.",
+      "requirements": [3, 0, 0, 0, "none", 0],
+      "status": "active",
+      "action": [5, 3, 1, "3", "1"]
+    },
+    "improved relentless": {
+      "stat": "strength",
+      "desc": "Add an additional round to duration",
+      "requirements": [9, 0, 0, 0, "relentless"],
+      "status": "active",
+      "action": [6, 3, 1, "3", "1"]
+    },
+    "greater relentless": {
+      "stat": "strength",
+      "desc": "Increases damage to 2 if successfully hit. If build is set to strength, increases damage to 5 if successfully hit, 3 if missed",
+      "requirements": [15, 0, 0, 0, "improved relentless"],
+      "status": "active",
+      "action": [6, 5, 3, "5", "3"]
+    },
+    "unforgiving": {
+      "stat": "strength",
+      "desc": "Increases damage to 3 if successfully hit and to 1 if miss. If build is set to strength, gives 10 if a critical hit is made, or 7 if a critical miss",
+      "requirements": [18, 0, 0, 0, "greater relentless"],
+      "status": "active",
+      "action": [6, 5, 3, 10, 7, 1, "5", "3", "10", "7", "1"]
+    },
+    "bullrush": {
+      "stat": "strength",
+      "desc": "If a successful hit is made, immediately make a second attack at 50% strength. You CANNOT take this feat, unless your build is set to strength.",
+      "requirements": [3, 0, 0, 0, "none", 0],
+      "status": "active",
+      "action": [0.5, "50"]
+    },
+    "improved bullrush": {
+      "stat": "strength",
+      "desc": "second attack is made at 60% strength. You CANNOT take this feat, unless your build is set to strength.",
+      "requirements": [12, 0, 0, 0, "bullrush"],
+      "status": "active",
+      "action": [0.6, "60"]
+    },
+    "greater bullrush": {
+      "stat": "strength",
+      "desc": "second attack is made at 70% strength. You CANNOT take this feat, unless your build is set to strength.",
+      "requirements": [18, 0, 0, 0, "improved relentless"],
+      "status": "active",
+      "action": [0.7, "70"]
+    },
+    "sunder": {
+      "stat": "strength",
+      "desc": "If a successful hit is made, reduce opponents AC by 3 for one turn. If build is set to strength, reduce it by 5.",
+      "requirements": [1, 0, 0, 0, "none", 0],
+      "status": "active",
+      "action": [1, 5, 3, "1", "5", "3"]
+    },
+    "improved sunder": {
+      "stat": "strength",
+      "desc": "Improves duration of sunder for an extra round",
+      "requirements": [6, 0, 0, 0, "sunder"],
+      "status": "active",
+      "action": [2, 5, 3, "1", "5", "3"]
+    },
+    "greater sunder": {
+      "stat": "strength",
+      "desc": "If a successful hit is made, reduce opponents AC by 5 for two turns. If build is set to strength, reduce it by 7.",
+      "requirements": [12, 0, 0, 0, "improved relentless"],
+      "status": "active",
+      "action": [2, 7, 5, "1", "7", "5"]
+    },
+    "reckless abandon": {
+      "stat": "constitution",
+      "desc": "do 1d2 damage to yourself, to do an additional 1d4 damage to your opponent. If build is set to constitution, damage to opponent increases to 1d6.",
+      "requirements": [3, 0, 0, 0, "none", 0],
+      "status": "active",
+      "action": [1, 2, 4, 6]
+    },
+    "improved reckless abandon": {
+      "stat": "constitution",
+      "desc": "do 1d4 damage to yourself, to do an additional 1d8 damage to your opponent. If build is set to strength, damage to opponent increases to 1d10.",
+      "requirements": [9, 0, 0, 0, "reckless abandon"],
+      "status": "active",
+      "action": [1, 4, 8, 10]
+    },
+
+    "greater reckless abandon": {
+      "stat": "constitution",
+      "desc": "do 1d6 damage to yourself, to do an additional 1d12 damage to your opponent. If build is set to strength, damage to opponent increases to 2d8.",
+      "requirements": [15, 0, 0, 0, "improved reckless abandon"],
+      "status": "active",
+      "action": [1, 6, 12, 2, 16]
+    },
+    "abandon hope": {
+      "stat": "constitution",
+      "desc": "do 1 damage to yourself, to do an additional 12 damage to your opponent. If build is set to strength, damage to opponent increases to 16.",
+      "requirements": [15, 0, 0, 0, "greater reckless abandon"],
+      "status": "active",
+      "action": [1, 12, 16]
+    },
+    "masochist": {
+      "stat": "constitution",
+      "desc": "Subtract -1 from your Armor Class, and add it to your to hit bonus. Increases by -1/+1 for every four levels obtained. NOTE: This feat can be 'toggled', meaning you can select the amount you wish to use. Example: If you are 12th level, you can use !masochist 1, for a -1/+1 effect, !masochist 2 for -2/+2 effect, or !masochist 3 for a -3/+3 effect.",
+      "requirements": [1, 0, 0, 0, "none", 0],
+      "status": "passive",
+      "action": [1, 2, 3, 4, 5]
+    },
+    "bull strength": {
+      "stat": "strength",
+      "desc": "Gives a permanent +2 bonus to strength.",
+      "requirements": [1, 0, 0, 0, "none"],
+      "status": "passive",
+      "action": 2
+    },
+    "improved bull strength": {
+      "stat": "strength",
+      "desc": "grants an additional +2 to Strength, improving bonus to +4.",
+      "requirements": [6, 0, 0, 0, "bull strength"],
+      "status": "passive",
+      "action": 4
+    },
+    "greater bull strength": {
+      "stat": "strength",
+      "desc": "grants an additional +2 to Strength, improving bonus to +6.",
+      "requirements": [12, 0, 0, 0, "improved bull strength"],
+      "status": "passive",
+      "action": 6
+    },
+    "cat grace": {
+      "stat": "dexterity",
+      "desc": "Gives a permanent +2 bonus to dexterity.",
+      "requirements": [1, 0, 0, 0, "none"],
+      "status": "passive",
+      "action": 2
+    },
+    "improved cat grace": {
+      "stat": "dexterity",
+      "desc": "grants an additional +2 to Dexterity, improving bonus to +4.",
+      "requirements": [6, 0, 0, 0, "cat grace"],
+      "status": "passive",
+      "action": 4
+    },
+    "greater cat grace": {
+      "stat": "strength",
+      "desc": "grants an additional +2 to Dexterity, improving bonus to +6.",
+      "requirements": [12, 0, 0, 0, "improved cat grace"],
+      "status": "passive",
+      "action": 6
+    },
+    "bear endurance": {
+      "stat": "constitution",
+      "desc": "Gives a permanent +2 bonus to constitution.",
+      "requirements": [1, 0, 0, 0, "none"],
+      "status": "passive",
+      "action": 2
+    },
+    "improved bear endurance": {
+      "stat": "constitution",
+      "desc": "grants an additional +2 to Constitution, improving bonus to +4.",
+      "requirements": [6, 0, 0, 0, "bear endurance"],
+      "status": "passive",
+      "action": 4
+    },
+    "greater bear endurance": {
+      "stat": "constitution",
+      "desc": "grants an additional +2 to Constitution, improving bonus to +6.",
+      "requirements": [12, 0, 0, 0, "improved bear endurance"],
+      "status": "passive",
+      "action": 6
+    },
+    "inner strength": {
+      "stat": "constitution",
+      "desc": "Sacrifice any DR you have to gain that double that as a hit bonus for 2 turns. You CANNOT take this feat, unless your build is set to constitution.",
+      "requirements": [1, 0, 0, 0, "none"],
+      "status": "active",
+      "action": [4]
+    },
+    "improved inner strength": {
+      "stat": "constitution",
+      "desc": "extend inner strength duration by 1 turn. You CANNOT take this feat, unless your build is set to constitution.",
+      "requirements": [6, 0, 0, 0, "inner strength"],
+      "status": "active",
+      "action": [4]
+    },
+    "greater inner strength": {
+      "stat": "constitution",
+      "desc": "inner strength is now added to damage modifier as well.",
+      "requirements": [12, 0, 0, 0, "improved inner strength"],
+      "status": "active",
+      "action": [6]
+    },
+    "expose": {
+      "stat": "dexterity",
+      "desc": "A successful hit removes 1 point of Damage Reduction or regeneration from opponent for 2 rounds. If your build is set to dexterity, remove 2 points of damage reduction or regeneration",
+      "requirements": [1, 0, 0, 0, "none"],
+      "status": "active",
+      "action": [6, 1, 2]
+    },
+    "improved expose": {
+      "stat": "dexterity",
+      "desc": "Extends duration from 2 to 3 rounds.",
+      "requirements": [6, 0, 0, 0, "expose"],
+      "status": "active",
+      "action": [4, 1, 2]
+    },
+    "greater expose": {
+      "stat": "dexterity",
+      "desc": "A successful hit removes 2 points of Damage Reduction or regeneration from opponent for 3 rounds. If your build is set to dexterity, remove 3 points of damage reduction or regeneration",
+      "requirements": [12, 0, 0, 0, "improved expose"],
+      "status": "active",
+      "action": [4, 2, 3]
+    },
+    "exploit": {
+      "stats": "dexterity",
+      "desc": "A successful hit removes 3 points of Damage Reduction or regeneration from opponent for 3 rounds. If your build is set to dexterity, remove all points of damage reduction or regeneration",
+      "requirements": [18, 0, 0, 0, "greater expose"],
+      "status": "active",
+      "action": [4, 3, 6]
+    },
+    "cheap shot": {
+      "stat": "dexterity",
+      "desc": "Upon a successful hit, opponent has a 50% chance to be unable to use a feat for 2 turns. NOTE: This DOES NOT mean opponent fails a feat, only that they cannot use it. They can try again next round. This feat DOES NOT prevent passive feats from triggering. You CANNOT take this feat, unless your build is set to dexterity",
+      "requirements": [1, 0, 0, 0, "none"],
+      "status": "active",
+      "action": [3, 100, "100%", "2"]
+    },
+    "improved cheap shot": {
+      "stat": "dexterity",
+      "desc": "Increases chance 75%. NOTE: This DOES NOT mean opponent fails a feat, only that they cannot use it. They can try again next round. This feat DOES NOT prevent passive feats from triggering. You CANNOT take this feat, unless your build is set to dexterity",
+      "requirements": [6, 0, 0, 0, "cheap shot"],
+      "status": "active",
+      "action": [3, 75, "75%", "2"]
+    },
+    "greater cheap shot": {
+      "stat": "dexterity",
+      "desc": "Increases chance 100%. NOTE: This DOES NOT mean opponent fails a feat, only that they cannot use it. They can try again next round. This feat DOES NOT prevent passive feats from triggering. You CANNOT take this feat, unless your build is set to dexterity",
+      "requirements": [12, 0, 0, 0, "improved cheap shot"],
+      "status": "active",
+      "action": [3, 100, "100%", "2"]
+    },
+    "nerve strike": {
+      "stat": "dexterity",
+      "desc": "If attack roll is 5 higher than opponents AC, Do additional 1d2 damage. (A natural roll of 20 always triggers nerve strike, but damage from it does NOT critical.) If build is set to dexterity, damage to opponent increases to 1d4.",
+      "requirements": [3, 0, 0, 0, "none"],
+      "status": "passive",
+      "action": [3, 2, 4]
+    },
+    "improved nerve strike": {
+      "stat": "dexterity",
+      "desc": "improves damage dealt to 1d4. (A natural roll of 20 always triggers nerve strike, but damage from it does NOT critical.) If build is set to dexterity, damage to opponent increases to 2d3.",
+      "requirements": [9, 0, 0, 0, "nerve strike"],
+      "status": "passive",
+      "action": [1, 4, 2, 6]
+    },
+    "greater nerve strike": {
+      "stat": "dexterity",
+      "desc": "improves damage dealt to 2d3. (A natural roll of 20 always triggers nerve strike, but damage from it does NOT critical.) If build is set to dexterity, damage to opponent increases to 3d3.",
+      "requirements": [15, 0, 0, 0, "improved nerve strike"],
+      "status": "passive",
+      "action": [2, 6, 3, 9]
+    },
+    "nerve damage": {
+      "stat": "dexterity",
+      "desc": "improves damage dealt to 3d3. (A natural roll of 20 always triggers nerve strike, but damage from it does NOT critical.) If build is set to dexterity, damage to opponent increases to 3d4.",
+      "requirements": [18, 0, 0, 0, "greater nerve strike"],
+      "status": "passive",
+      "action": [3, 9, 12]
+    }
+  }
+]
