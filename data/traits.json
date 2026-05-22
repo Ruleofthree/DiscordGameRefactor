@@ -1,0 +1,40 @@
+[
+  {
+      "regeneration": {
+        "desc": "Gain +2 Regeneration at level 1 and an additional +1 at 5, 10, 15, and 20",
+        "bonus": [2, 3, 4, 5, 6]
+      },
+      "brawler": {
+        "desc": "Gain +1 to hit at level 1, 5, 10, 15, and 20",
+        "bonus": [1, 2, 3, 4, 5]
+      },
+      "thug": {
+        "desc": "Gain +1 to damage at level 1, 5, 10, 15, and 20",
+        "bonus": [1, 2, 3, 4, 5]
+      },
+      "hearty": {
+        "desc": "Gain +6 Hit Points at level 1, 5, 10, 15, and 20",
+        "bonus": [6, 12, 18, 24, 30]
+      },
+      "nimble": {
+        "desc": "Gain +1 Armor Class at level 1, 5, 10, 15, and 20",
+        "bonus": [1, 2, 3, 4, 5]
+      },
+      "thickskinned": {
+        "desc": "Gain +2 DR at level 1, and +1 additional at 5, 10, 15, and 20",
+        "bonus": [2, 3, 4, 5, 6]
+      },
+      "opportunist": {
+        "desc": "Gain +2 to initiative at level 1, and +1 additional at 5, 10, 15, and 20",
+        "bonus": [2, 3, 4, 5, 6]
+      },
+      "nebulous": {
+        "desc": "Gain +6% to blur at level 1, and +1% additional at 5, 10, 15, and 20",
+        "bonus": [6, 7, 8, 9, 10]
+      },
+      "cursed": {
+        "desc": "Take a -5 penalty on hit, damage, and armor class at level 1, and an additional -3 at 5, 10, 15, and 20 Be warned, being cursed also means you take a [color=red][b]90%[/b][/color] penalty in all xp/renown earned.",
+        "bonus": [5, 8, 11, 15, 18]
+      }
+  }
+]
