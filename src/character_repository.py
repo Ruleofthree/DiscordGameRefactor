@@ -696,6 +696,95 @@ def select_character_feat(character, feat_name, feat_list, feat_dictionary, char
             remaining_feats -= 1
             hidden_taken.append(answer)
             has_taken.append(answer)
+            if answer == "bull strength":
+                char_data["strength"] = char_data["strength"] + 2
+                char_data["abhit"] = int(char_data["strength"] / 2)
+                char_data["abdamage"] = int(char_data["strength"] / 2)
+
+            if answer == "improved bull strength":
+                char_data["strength"] = char_data["strength"] + 2
+                char_data["abhit"] = int(char_data["strength"] / 2)
+                char_data["abdamage"] = int(char_data["strength"] / 2)
+                index = has_taken.index("bull strength")
+                has_taken.pop(index)
+
+            if answer == "greater bull strength":
+                char_data["strength"] = char_data["strength"] + 2
+                char_data["abhit"] = int(char_data["strength"] / 2)
+                char_data["abdamage"] = int(char_data["strength"] / 2)
+                index = has_taken.index("improved bull strength")
+                has_taken.pop(index)
+
+            if answer == "cat grace":
+                char_data["dexterity"] = char_data["dexterity"] + 2
+                char_data["abac"] = int(char_data["dexterity"] / 2)
+
+            if answer == "improved cat grace":
+                char_data["dexterity"] = char_data["dexterity"] + 2
+                char_data["abac"] = int(char_data["dexterity"] / 2)
+                index = has_taken.index("cat grace")
+                has_taken.pop(index)
+
+            if answer == "greater cat grace":
+                char_data["dexterity"] = char_data["dexterity"] + 2
+                char_data["abac"] = int(char_data["dexterity"] / 2)
+                index = has_taken.index("improved cat grace")
+                has_taken.pop(index)
+
+            if answer == "bear endurance":
+                char_data["constitution"] = char_data["constitution"] + 2
+                char_data["abhp"] = char_data["abhp"] + 5
+
+            if answer == "improved bear endurance":
+                char_data["constitution"] = char_data["constitution"] + 2
+                char_data["abhp"] = char_data["abhp"] + 5
+                index = has_taken.index("bear endurance")
+                has_taken.pop(index)
+
+            if answer == "greater bear endurance":
+                char_data["constitution"] = char_data["constitution"] + 2
+                char_data["abhp"] = char_data["abhp"] + 5
+                index = has_taken.index("improved bear endurance")
+                has_taken.pop(index)
+
+            if answer == "crushing blow":
+                char_data["featdamage"] += 2
+
+            if answer == "improved crushing blow":
+                char_data["featdamage"] += 2
+                index = has_taken.index("crushing blow")
+                has_taken.pop(index)
+
+            if answer == "greater crushing blow":
+                char_data["featdamage"] += 2
+                index = has_taken.index("improved crushing blow")
+                has_taken.pop(index)
+
+            if answer == "precision strike":
+                char_data["feathit"] += 2
+
+            if answer == "improved precision strike":
+                char_data["feathit"] += 2
+                index = has_taken.index("precision strike")
+                has_taken.pop(index)
+
+            if answer == "greater precision strike":
+                char_data["feathit"] += 2
+                index = has_taken.index("improved precision strike")
+                has_taken.pop(index)
+
+            if answer == "lightning reflexes":
+                char_data["featac"] += 2
+
+            if answer == "improved lightning reflexes":
+                char_data["featac"] += 2
+                index = has_taken.index("lightning reflexes")
+                has_taken.pop(index)
+
+            if answer == "greater lightning reflexes":
+                char_data["featac"] += 2
+                index = has_taken.index("improved lightning reflexes")
+                has_taken.pop(index)
 
             char_data["remaining feats"] = remaining_feats
             char_data["feats taken"] = has_taken
