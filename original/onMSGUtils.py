@@ -278,18 +278,14 @@ def message_10_challenge(channel, charFolder, message, unspoiledArena, character
             playerOne = character.lower()
             charFile = Path(charFolder + character.lower() + ".json")
             # make sure the only people that can issue a challenge, is a person that has a character made.
-            if not charFile.is_file():
+            if not character_exists(character, charFolder):
                 msg = "You don't even have a character made to fight."
                 return msg, update
             else:
                 # load in character sheet.
                 opponent = message[11:].lower()
-                charSheet = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
-                pOneInfo = json.load(charSheet)
-                charSheet.close()
-                charSheet = open(charFolder + opponent + ".json", "r", encoding="utf-8")
-                pTwoInfo = json.load(charSheet)
-                charSheet.close()
+                pOneInfo = load_character(character, charFolder)
+                pTwoInfo = load_character(opponent, charFolder)
                 if opponent == playerOne:
                     msg = "You can't fight yourself. No one is that special."
                 elif len(pOneInfo['hfeats taken']) < pOneInfo['total feats']:
