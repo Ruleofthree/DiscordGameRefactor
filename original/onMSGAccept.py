@@ -33,9 +33,7 @@ def message_accept(channel, charFolder, unspoiledArena, character, game, opponen
                 bTimer = True
                 new_game = 1
                 new_opponent = ""
-                charSheet = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
-                pTwoInfo = json.load(charSheet)
-                charSheet.close()
+                pTwoInfo = load_character(character, charFolder)
                 # since if a person !accepts a challenge, that mights a fight is about to take place. Just go
                 # straight into combat by starting initiative. Depending on who wins, token is set to 1 or 2. Tokens
                 # will be used to determine whose turn it is during the fight, and lock out anyone using fight commands
