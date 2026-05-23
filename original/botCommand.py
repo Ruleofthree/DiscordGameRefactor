@@ -346,16 +346,8 @@ def featDict():
 
 
 def traitDict():
-    # Open up an json object containing the list of traits.
-    traitFile = open("traits.json", "r", encoding="utf-8")
-    traitDictionary = json.load(traitFile)
-    traitFile.close()
-
-    # place all keys within a list for comparison later
-    traitList = []
-    for keys in traitDictionary[0]:
-        traitList.append(keys)
-    return traitDictionary, traitList
+    from src.trait_repository import get_trait_dictionary_and_names
+    return get_trait_dictionary_and_names()
 
 
 def potionShop():
