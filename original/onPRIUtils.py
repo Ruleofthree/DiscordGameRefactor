@@ -1,6 +1,6 @@
 from src.armor_repository import get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
-from src.character_repository import load_character, save_character
+from src.character_repository import character_exists, load_character, save_character
 import os
 import json
 import random
@@ -299,17 +299,12 @@ def pri_viewchar(character):
     msg = []
     path = os.getcwd()
     charFolder = os.path.join(path + "/characters/")
-    charFile = Path(charFolder + character.lower() + ".json")
-    if not charFile.is_file():
+    if not character_exists(character, charFolder):
         msg.append("You don't even have a character created yet. Type !name <name> in the room. "
                    "Where <name> is your character's actual name. (Example: !name Joe")
-    # If it turns out the are not an idiot, and are using the command correctly. Display the character shit
-    # as nicely as you can in F-list...which isn't nice at all.
     else:
         # try:
-        charSheet = open(charFolder + character.lower() + ".json", "r+", encoding="utf-8")
-        charData = json.load(charSheet)
-        charSheet.close()
+        charData = load_character(character, charFolder)
         #print(charData['armor']["[url=https://static.f-list.net/images/charimage/21526036.jpg]x-45 agile combat armor[/url]"])
         keyDict = []
         for key in charData['armor']:
@@ -486,19 +481,14 @@ def pri_viewchar(character):
                    "𝙰𝚛𝚖𝚘𝚛 𝙸𝚗𝚟𝚎𝚗𝚝𝚘𝚛𝚢:\t\t\t\t\t[color=red] " + armorOne + ": (" + armorInvOne + "), " +
                    armorTwo + ": (" + armorInvTwo + "), " + armorThree + ": (" + armorInvThree + "), [/color]\n"
                    "𝙰𝚛𝚖𝚘𝚛 𝙴𝚚𝚞𝚒𝚙𝚙𝚎𝚍:\t\t\t\t[color=red] " + equip)
-        with open(charFolder + character.lower() + ".json", "r+", encoding="utf-8") as file:
-            charData = json.load(file)
-            charData["thp"] = thp
-            charData["tac"] = tac
-            charData["tdr"] = tdr
-            charData["thit"] = thit
-            charData["tdamage"] = tdamage
-            charData["initiative"] = initiative
-            charData["regeneration"] = regen
-            file.seek(0)
-            file.write(json.dumps(charData, ensure_ascii=False, indent=2))
-            file.truncate()
-            file.close()
+        charData['thp'] = thp
+        charData['tac'] = tac
+        charData['tdr'] = tdr
+        charData['thit'] = thit
+        charData['tdamage'] = tdamage
+        charData['initiative'] = initiative
+        charData['regeneration'] = regen
+        save_character(character, charData, charFolder)
     return msg
 
 # shows every single character in the game that is the level selected
