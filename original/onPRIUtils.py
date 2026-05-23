@@ -1,4 +1,5 @@
 from src.armor_repository import get_armor_dictionary
+from src.potion_repository import get_potion_sell_value
 import os
 import json
 import random
@@ -1197,9 +1198,6 @@ def pri_10_buypotion(character, potion, charFolder):
 # Use to sell a potion
 # !sellpotion <potion name>
 def pri_11_sellpotion(character, potion, charFolder):
-    potionFile = open("potions.json", "r", encoding="utf-8")
-    potionDictionary = json.load(potionFile)
-    potionFile.close()
 
     try:
         sellerFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
@@ -1210,43 +1208,18 @@ def pri_11_sellpotion(character, potion, charFolder):
         msg = "You do not have a character to use this command."
 
     if potion in sellerData['potions']:
-        if potion in potionDictionary[0]['common']:
-            price = potionDictionary[0]['common'][potion][0]
-            halfPrice = int(price / 2)
-            sellerData['renown'] += halfPrice
-            sellerData['potions'].remove(potion)
-            msg = sellerData['name'] + " has sold a [color=red]" + potion + "[/color] for [color=yellow]" +\
-                str(halfPrice) + " renown[/color]."
-        elif potion in potionDictionary[0]['uncommon']:
-            price = potionDictionary[0]['uncommon'][potion][0]
-            halfPrice = int(price / 2)
+        halfPrice = get_potion_sell_value(potion)
+
+        if halfPrice is not None:
             sellerData['renown'] += halfPrice
             sellerData['potions'].remove(potion)
             msg = sellerData['name'] + " has sold a [color=red]" + potion + "[/color] for [color=yellow]" + \
-                str(halfPrice) + " renown [/color]."
-        elif potion in potionDictionary[0]['rare']:
-            price = potionDictionary[0]['rare'][potion][0]
-            halfPrice = int(price / 2)
-            sellerData['renown'] += halfPrice
-            sellerData['potions'].remove(potion)
-            msg = sellerData['name'] + " has sold a [color=red]" + potion + "[/color] for [color=yellow]" +\
-                str(halfPrice) + " renown [/color]."
-        elif potion in potionDictionary[0]['vrare']:
-            price = potionDictionary[0]['vrare'][potion][0]
-            halfPrice = int(price / 2)
-            sellerData['renown'] += halfPrice
-            sellerData['potions'].remove(potion)
-            msg = sellerData['name'] + " has sold a [color=red]" + potion + "[/color] for [color=yellow]" + \
-                str(halfPrice) + " renown [/color]."
-        elif potion in potionDictionary[0]['relic']:
-            price = potionDictionary[0]['relic'][potion][0]
-            halfPrice = int(price / 2)
-            sellerData['renown'] += halfPrice
-            sellerData['potions'].remove(potion)
-            msg = sellerData['name'] + " has sold a [color=red]" + potion + "[/color] for [color=yellow]" + \
-                str(halfPrice) + " renown [/color]."
+                  str(halfPrice) + " renown[/color]."
+        else:
+            msg = "That potion does not exist in the potion data."
     else:
         msg = "You do not have that potion to sell."
+
     file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
     json.dump(sellerData, file, ensure_ascii=False, indent=2)
     file.close()

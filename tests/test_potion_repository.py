@@ -5,6 +5,7 @@ from src.potion_repository import (
     get_potion_dictionary,
     get_potion_effect_value,
     get_potion_price,
+    get_potion_sell_value,
     get_potion_shop_lists,
 )
 
@@ -54,3 +55,10 @@ def test_get_potion_helpers_return_none_for_unknown_potion():
     assert get_potion_price("fake potion") is None
     assert get_potion_description("fake potion") is None
     assert get_potion_effect_value("fake potion") is None
+
+def test_get_potion_sell_value_returns_half_price():
+        assert get_potion_sell_value("hp5") == 75
+
+
+def test_get_potion_sell_value_returns_none_for_unknown_potion():
+        assert get_potion_sell_value("fake potion") is None

@@ -59,3 +59,12 @@ def get_potion_effect_value(potion_name):
 
     _, potion_info = result
     return potion_info[2]
+
+
+def get_potion_sell_value(potion_name):
+    price = get_potion_price(potion_name)
+
+    if price is None:
+        return None
+
+    return int(price / 2)
