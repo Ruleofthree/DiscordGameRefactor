@@ -870,3 +870,137 @@ def select_character_feat(character, feat_name, feat_list, feat_dictionary, char
             save_character(character, char_data, characters_dir=character_dir)
 
     return msg
+
+
+def calculate_character_view_totals(char_data):
+    build = char_data["build"]
+
+    strength = (
+        char_data["strength"]
+        + char_data["pstrength"]
+        + char_data["armorstrength"]
+        + char_data["potionstr"]
+    )
+    dexterity = (
+        char_data["dexterity"]
+        + char_data["pdexterity"]
+        + char_data["armordexterity"]
+        + char_data["potiondex"]
+    )
+    constitution = (
+        char_data["constitution"]
+        + char_data["pconstitution"]
+        + char_data["armorconstitution"]
+        + char_data["potioncon"]
+    )
+
+    ac = char_data["ac"]
+
+    if build == "constitution":
+        thp = (
+            char_data["hp"]
+            + char_data["feathp"]
+            + char_data["armorhp"]
+            + char_data["potionhp"]
+            + char_data["traithp"]
+            + int(int(constitution / 2) * 3)
+        )
+        thit = (
+            char_data["hit"]
+            + char_data["feathit"]
+            + char_data["armorhit"]
+            + char_data["traithit"]
+            - char_data["cursed"]
+            + int((strength + constitution) / 2.4)
+        )
+        tdamage = (
+            char_data["damage"]
+            + char_data["featdamage"]
+            + char_data["armordamage"]
+            - char_data["cursed"]
+            + char_data["traitdamage"]
+            + int(thp / 15)
+            + int(strength / 5)
+        )
+        ac += 4
+
+    elif build == "dexterity":
+        thp = (
+            char_data["hp"]
+            + char_data["feathp"]
+            + char_data["armorhp"]
+            + char_data["potionhp"]
+            + char_data["traithp"]
+            + int(int(constitution / 2) * 5)
+        )
+        thit = (
+            char_data["hit"]
+            + char_data["feathit"]
+            + char_data["armorhit"]
+            + char_data["traithit"]
+            - char_data["cursed"]
+            + int(dexterity / 1.5)
+        )
+        tdamage = (
+            char_data["damage"]
+            + char_data["featdamage"]
+            + char_data["armordamage"]
+            + char_data["traitdamage"]
+            - char_data["cursed"]
+            + int(dexterity / 4)
+            + int(strength / 5)
+        )
+
+    else:
+        thit = (
+            char_data["hit"]
+            + char_data["feathit"]
+            + char_data["armorhit"]
+            + char_data["traithit"]
+            - char_data["cursed"]
+            + int(strength / 2)
+        )
+        tdamage = (
+            char_data["damage"]
+            + char_data["featdamage"]
+            + char_data["armordamage"]
+            - char_data["cursed"]
+            + char_data["traitdamage"]
+            + int(strength / 1.5)
+        )
+        thp = (
+            char_data["hp"]
+            + char_data["feathp"]
+            + char_data["armorhp"]
+            + char_data["potionhp"]
+            + char_data["traithp"]
+            + int(int(constitution / 2) * 5)
+        )
+        ac += 2
+
+    tac = (
+        ac
+        + char_data["featac"]
+        + char_data["armorac"]
+        + char_data["traitac"]
+        - char_data["cursed"]
+        + int(dexterity / 2)
+    )
+    tdr = char_data["armordr"] + char_data["traitdr"]
+    regen = char_data["traitregen"] + char_data["potionregen"]
+    blur = char_data["potionblur"] + char_data["armorblur"] + char_data["blur"]
+    initiative = int(dexterity / 2) + char_data["armorinitiative"]
+
+    return {
+        "strength": strength,
+        "dexterity": dexterity,
+        "constitution": constitution,
+        "thp": thp,
+        "tac": tac,
+        "tdr": tdr,
+        "thit": thit,
+        "tdamage": tdamage,
+        "regeneration": regen,
+        "blur": blur,
+        "initiative": initiative,
+    }
