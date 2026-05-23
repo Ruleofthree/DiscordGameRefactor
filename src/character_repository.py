@@ -363,3 +363,241 @@ def assign_character_stats(char_dir, character, message):
         json.dump(char_data, file, ensure_ascii=False, indent=2)
 
     return msg
+
+
+def select_character_trait(char_folder, character, message, trait_list, trait_dictionary, trait):
+    char_folder = Path(char_folder)
+    character_file = char_folder / f"{character.lower()}.json"
+
+    with character_file.open("r", encoding="utf-8") as char_sheet:
+        char_data = json.load(char_sheet)
+
+    regeneration = char_data["traitregen"]
+    brawler = char_data["traithit"]
+    thug = char_data["traitdamage"]
+    nimble = char_data["traitac"]
+    hearty = char_data["traithp"]
+    thickskinned = char_data["traitdr"]
+    opportunist = char_data["initiative"]
+    nebulous = char_data["blur"]
+    strength = char_data["strength"]
+    dexterity = char_data["dexterity"]
+    constitution = char_data["constitution"]
+
+    if char_data["trait"] != "":
+        return "You've already selected a trait. If you wish to change it, you must !respec if you have the points."
+
+    if strength >= 0 and dexterity >= 0 and constitution >= 0:
+        with character_file.open("r+", encoding="utf-8") as file:
+            char_data = json.load(file)
+
+            if trait in trait_list:
+                level = char_data["level"]
+                char_data["trait"] = trait
+
+                if trait == "cursed" and level in range(1, 5):
+                    cursed = trait_dictionary[0]["cursed"]["bonus"][0]
+                    char_data["cursed"] = cursed
+                    msg = "The trait 'cursed' has been added to your character sheet."
+                elif trait == "cursed" and level in range(5, 10):
+                    cursed = trait_dictionary[0]["cursed"]["bonus"][1]
+                    char_data["cursed"] = cursed
+                    msg = "The trait 'cursed' has been added to your character sheet."
+                elif trait == "cursed" and level in range(10, 15):
+                    cursed = trait_dictionary[0]["cursed"]["bonus"][2]
+                    char_data["cursed"] = cursed
+                    msg = "The trait 'cursed' has been added to your character sheet."
+                elif trait == "cursed" and level in range(15, 20):
+                    cursed = trait_dictionary[0]["cursed"]["bonus"][3]
+                    char_data["cursed"] = cursed
+                    msg = "The trait 'cursed' has been added to your character sheet."
+                elif trait == "cursed" and level == 20:
+                    cursed = trait_dictionary[0]["cursed"]["bonus"][4]
+                    char_data["cursed"] = cursed
+                    msg = "The trait 'cursed' has been added to your character sheet."
+
+                if char_data["tdr"] == 0:
+                    if trait == "regeneration" and level in range(1, 5):
+                        regeneration = trait_dictionary[0]["regeneration"]["bonus"][0]
+                        char_data["traitregen"] = regeneration
+                        msg = "The trait Regeneration' has been added to your character sheet."
+                    elif trait == "regeneration" and level in range(5, 10):
+                        regeneration = trait_dictionary[0]["regeneration"]["bonus"][1]
+                        char_data["traitregen"] = regeneration
+                        msg = "The trait 'Regeneration' has been added to your character sheet."
+                    elif trait == "regeneration" and level in range(10, 15):
+                        regeneration = trait_dictionary[0]["regeneration"]["bonus"][2]
+                        char_data["traitregen"] = regeneration
+                        msg = "The trait 'Regeneration' has been added to your character sheet."
+                    elif trait == "regeneration" and level in range(15, 20):
+                        regeneration = trait_dictionary[0]["regeneration"]["bonus"][3]
+                        char_data["traitregen"] = regeneration
+                        msg = "The trait 'Regeneration' has been added to your character sheet."
+                    elif trait == "regeneration" and level == 20:
+                        regeneration = trait_dictionary[0]["regeneration"]["bonus"][4]
+                        char_data["traitregen"] = regeneration
+                        msg = "The trait 'Regeneration' has been added to your character sheet."
+                else:
+                    msg = "You can not take regeneration as you have a non-zero value for Damage Reduction"
+
+                if trait == "brawler" and level in range(1, 5):
+                    brawler = trait_dictionary[0]["brawler"]["bonus"][0]
+                    char_data["traithit"] = brawler
+                    msg = "The trait 'Brawler' has been added to your character sheet."
+                elif trait == "brawler" and level in range(5, 10):
+                    brawler = trait_dictionary[0]["brawler"]["bonus"][1]
+                    char_data["traithit"] = brawler
+                    msg = "The trait 'Brawler' has been added to your character sheet."
+                elif trait == "bralwer" and level in range(10, 15):
+                    brawler = trait_dictionary[0]["brawler"]["bonus"][2]
+                    char_data["traithit"] = brawler
+                    msg = "The trait 'Brawler' has been added to your character sheet."
+                elif trait == "brawler" and level in range(15, 20):
+                    brawler = trait_dictionary[0]["brawler"]["bonus"][3]
+                    char_data["traithit"] = brawler
+                    msg = "The trait 'Brawler' has been added to your character sheet."
+                elif trait == "brawler" and level == 20:
+                    brawler = trait_dictionary[0]["brawler"]["bonus"][4]
+                    char_data["traithit"] = brawler
+                    msg = "The trait 'Brawler' has been added to your character sheet."
+
+                if trait == "thug" and level in range(1, 5):
+                    thug = trait_dictionary[0]["thug"]["bonus"][0]
+                    char_data["traitdamage"] = thug
+                    msg = "The trait 'Thug' has been added to your character sheet."
+                elif trait == "thug" and level in range(5, 10):
+                    thug = trait_dictionary[0]["thug"]["bonus"][1]
+                    char_data["traitdamage"] = thug
+                    msg = "The trait 'Thug' has been added to your character sheet."
+                elif trait == "thug" and level in range(10, 15):
+                    thug = trait_dictionary[0]["thug"]["bonus"][2]
+                    char_data["traitdamage"] = thug
+                    msg = "The trait 'Thug' has been added to your character sheet."
+                elif trait == "thug" and level in range(15, 20):
+                    thug = trait_dictionary[0]["thug"]["bonus"][3]
+                    char_data["traitdamage"] = thug
+                    msg = "The trait 'Thug' has been added to your character sheet."
+                elif trait == "thug" and level == 20:
+                    thug = trait_dictionary[0]["thug"]["bonus"][4]
+                    char_data["traitdamage"] = thug
+                    msg = "The trait 'Thug' has been added to your character sheet."
+
+                if trait == "hearty" and level in range(1, 5):
+                    hearty = trait_dictionary[0]["hearty"]["bonus"][0]
+                    char_data["traithp"] = hearty
+                    msg = "The trait 'Hearty' has been added to your character sheet."
+                elif trait == "hearty" and level in range(5, 10):
+                    hearty = trait_dictionary[0]["hearty"]["bonus"][1]
+                    char_data["traithp"] = hearty
+                    msg = "The trait 'Hearty' has been added to your character sheet."
+                elif trait == "hearty" and level in range(10, 15):
+                    hearty = trait_dictionary[0]["hearty"]["bonus"][2]
+                    char_data["traithp"] = hearty
+                    msg = "The trait 'Hearty' has been added to your character sheet."
+                elif trait == "hearty" and level in range(15, 20):
+                    hearty = trait_dictionary[0]["hearty"]["bonus"][3]
+                    char_data["traithp"] = hearty
+                    msg = "The trait 'Hearty' has been added to your character sheet."
+                elif trait == "hearty" and level == 20:
+                    hearty = trait_dictionary[0]["hearty"]["bonus"][4]
+                    char_data["traithp"] = hearty
+                    msg = "The trait 'Hearty' has been added to your character sheet."
+
+                if trait == "nimble" and level in range(1, 5):
+                    nimble = trait_dictionary[0]["nimble"]["bonus"][0]
+                    char_data["traitac"] = nimble
+                    msg = "The trait 'Nimble' has been added to your character sheet."
+                elif trait == "nimble" and level in range(5, 10):
+                    nimble = trait_dictionary[0]["nimble"]["bonus"][1]
+                    char_data["traitac"] = nimble
+                    msg = "The trait 'Nimble' has been added to your character sheet."
+                elif trait == "nimble" and level in range(10, 15):
+                    nimble = trait_dictionary[0]["nimble"]["bonus"][2]
+                    char_data["traitac"] = nimble
+                    msg = "The trait 'Nimble' has been added to your character sheet."
+                elif trait == "nimble" and level in range(15, 20):
+                    nimble = trait_dictionary[0]["nimble"]["bonus"][3]
+                    char_data["traitac"] = nimble
+                    msg = "The trait 'Nimble' has been added to your character sheet."
+                elif trait == "nimble" and level == 20:
+                    nimble = trait_dictionary[0]["nimble"]["bonus"][4]
+                    char_data["traitac"] = nimble
+                    msg = "The trait 'Nimble' has been added to your character sheet."
+
+                if char_data["regeneration"] == 0:
+                    if trait == "thickskinned" and level in range(1, 5):
+                        thickskinned = trait_dictionary[0]["thickskinned"]["bonus"][0]
+                        char_data["traitdr"] = thickskinned
+                        msg = "The trait 'Thickskinned' has been added to your character sheet."
+                    elif trait == "thickskinned" and level in range(5, 10):
+                        thickskinned = trait_dictionary[0]["thickskinned"]["bonus"][1]
+                        char_data["traitdr"] = thickskinned
+                        msg = "The trait 'Thickskinned' has been added to your character sheet."
+                    elif trait == "thickskinned" and level in range(10, 15):
+                        thickskinned = trait_dictionary[0]["thickskinned"]["bonus"][2]
+                        char_data["traitdr"] = thickskinned
+                        msg = "The trait 'Thickskinned' has been added to your character sheet."
+                    elif trait == "thickskinned" and level in range(15, 20):
+                        thickskinned = trait_dictionary[0]["thickskinned"]["bonus"][3]
+                        char_data["traitdr"] = thickskinned
+                        msg = "The trait 'Thickskinned' has been added to your character sheet."
+                    elif trait == "thickskinned" and level == 20:
+                        thickskinned = trait_dictionary[0]["thickskinned"]["bonus"][4]
+                        char_data["traitdr"] = thickskinned
+                        msg = "The trait 'Thickskinned' has been added to your character sheet."
+                else:
+                    msg = "You can not take thickskinned as you have a non-zero value for regeneration"
+
+                if trait == "opportunist" and level in range(1, 5):
+                    opportunist = trait_dictionary[0]["opportunist"]["bonus"][0]
+                    char_data["initiative"] = opportunist
+                    msg = "The trait 'Opportunist' has been added to your character sheet."
+                elif trait == "opportunist" and level in range(5, 10):
+                    opportunist = trait_dictionary[0]["opportunist"]["bonus"][1]
+                    char_data["initiative"] = opportunist
+                    msg = "The trait 'Opportunist' has been added to your character sheet."
+                elif trait == "opportunist" and level in range(10, 15):
+                    opportunist = trait_dictionary[0]["opportunist"]["bonus"][2]
+                    char_data["initiative"] = opportunist
+                    msg = "The trait 'Opportunist' has been added to your character sheet."
+                elif trait == "opportunist" and level in range(15, 20):
+                    opportunist = trait_dictionary[0]["opportunist"]["bonus"][3]
+                    char_data["initiative"] = opportunist
+                    msg = "The trait 'Opportunist' has been added to your character sheet."
+                elif trait == "opportunist" and level == 20:
+                    opportunist = trait_dictionary[0]["opportunist"]["bonus"][4]
+                    char_data["initiative"] = opportunist
+                    msg = "The trait 'Opportunist' has been added to your character sheet."
+
+                if trait == "nebulous" and level in range(1, 5):
+                    nebulous = trait_dictionary[0]["nebulous"]["bonus"][0]
+                    char_data["blur"] = nebulous
+                    msg = "The trait 'Nebulous' has been added to your character sheet."
+                elif trait == "nebulous" and level in range(5, 10):
+                    nebulous = trait_dictionary[0]["nebulous"]["bonus"][1]
+                    char_data["blur"] = nebulous
+                    msg = "The trait 'Nebulous' has been added to your character sheet."
+                elif trait == "nebulous" and level in range(10, 15):
+                    nebulous = trait_dictionary[0]["nebulous"]["bonus"][2]
+                    char_data["blur"] = nebulous
+                    msg = "The trait 'Nebulous' has been added to your character sheet."
+                elif trait == "nebulous" and level in range(15, 20):
+                    nebulous = trait_dictionary[0]["nebulous"]["bonus"][3]
+                    char_data["blur"] = nebulous
+                    msg = "The trait 'Nebulous' has been added to your character sheet."
+                elif trait == "nebulous" and level == 20:
+                    nebulous = trait_dictionary[0]["nebulous"]["bonus"][4]
+                    char_data["blur"] = nebulous
+                    msg = "The trait 'Nebulous' has been added to your character sheet."
+
+                file.seek(0)
+                file.write(json.dumps(char_data, ensure_ascii=False, indent=2))
+                file.truncate()
+                return msg
+
+            if trait not in trait_list:
+                return message + " is not a trait. Please use [color=pink]!traitlist[/color] for a list ot traits."
+
+            return "You need to set up your stats first, before selecting a trait. please use the !stats command."
+
+    return "You need to set up your stats first, before selecting a trait. please use the !stats command."
