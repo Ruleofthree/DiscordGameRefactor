@@ -1,6 +1,6 @@
 from src.armor_repository import get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
-from src.character_repository import character_exists, load_character, save_character
+from src.character_repository import character_exists, load_character, save_character, select_character_build
 import os
 import json
 import random
@@ -212,38 +212,7 @@ def pri_6_stats(message, character, charData, charFile):
 
 # !build <strength> <dexterity> <constitution>
 def pri_6_build(charFolder, message, charFile, character):
-    charData = load_character(character, charFolder)
-    baseDamage = charData['base damage']
-    # minimum, maximum = baseDamage.split('d')
-    # minimum = int(minimum)
-    # maximum = int(maximum)
-    if charData['build'] == "":
-        if message == "strength":
-            charData['build'] = message
-            if charData['level'] <= 3:
-                charData['feats taken'].append("focus")
-            # elif charData['level'] <= 12:
-            #     charData['feats taken'].append("improved focus")
-            # elif charData['level'] <= 15:
-            #     charData['feats taken'].append("greater focus")
-            # elif charData['level'] <= 18:
-            #     charData['feats taken'].append("perfect focus")
-            # maximum += 2
-            # charData['base damage'] = str(minimum) + "d" + str(maximum)
-        elif message == "dexterity":
-            charData['build'] = message
-            # maximum -= 4
-            # charData['base damage'] = str(minimum) + "d" + str(maximum)
-        elif message == "constitution":
-            charData['build'] = message
-        msg = "You have identified your character as a " + message + " build, and it has been recorded as such in your" \
-              " character sheet. Please ues [color=pink]!stats[/color] command to select your stat points, before selecting" \
-              " feats."
-    else:
-        msg = "You already have selected a build."
-
-    save_character(character, charData, charFolder)
-    return msg
+    return select_character_build(character, message, charFolder)
 
 # Automatically adds 1 point to Strength, Dexterity, or Constitution. used only when character reaches 5, 10, 15, or 20
 # !add strength, !add dexterity, !add constitution OR !add str, !add dex, !add con
