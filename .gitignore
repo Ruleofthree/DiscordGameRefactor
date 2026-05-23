@@ -1,22 +1,26 @@
-# Python virtual environment
-.venv/
-
-# Python cache files
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-
-# PyCharm project settings
-.idea/
-
-# Test/cache folders
 .pytest_cache/
 .coverage
 htmlcov/
 
+# Virtual environment
+.venv/
+venv/
+env/
+
+# PyCharm
+.idea/
+
+# Runtime/local secrets
+credentials.json
+room.json
+
+# Runtime folders/data that should not be public unless intentionally shared
+characters/
+gamefiles/
+
 # OS junk
 .DS_Store
 Thumbs.db
-
-# Logs
-*.log
