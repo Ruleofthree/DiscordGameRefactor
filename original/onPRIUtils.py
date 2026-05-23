@@ -270,35 +270,27 @@ def pri_4_add(message, character):
         path = os.getcwd()
         charFolder = os.path.join(path + "/characters/")
 
-        with open(charFolder + player + ".json", "r+", encoding="utf-8") as file:
-            charData = json.load(file)
-            total = charData['apboost']
-            if total:
-                charData['apboost'] = False
-                if ability == "strength" or ability == "str":
-                    charData['strength'] += 1
-                    file.seek(0)
-                    file.write(json.dumps(charData, ensure_ascii=False, indent=2))
-                    file.truncate()
-                    msg.append("You have added an ability point to Strength. Please do a [color=pink]!viewchar[/color] "
-                               "to ensure changes.")
-                if ability == "dexterity" or ability == "dex":
-                    charData['dexterity'] += 1
-                    file.seek(0)
-                    file.write(json.dumps(charData, ensure_ascii=False, indent=2))
-                    file.truncate()
-                    msg.append("You have added an ability point to Dexterity. Please do a [color=pink]!viewchar[/color] "
-                               "to ensure changes.")
-                if ability == "constitution" or ability == "con":
-                    charData['constitution'] += 1
-                    file.seek(0)
-                    file.write(json.dumps(charData, ensure_ascii=False, indent=2))
-                    file.truncate()
-                    msg.append("You have added an ability point to Constitution. Please do a [color=pink]!viewchar[/color] "
-                               "to ensure changes.")
-                file.close()
-            else:
-                msg.append("You do not have any more ability points to spend.")
+        charData = load_character(player, charFolder)
+        total = charData['apboost']
+        if total:
+            charData['apboost'] = False
+            if ability == "strength" or ability == "str":
+                charData['strength'] += 1
+                save_character(player, charData, charFolder)
+                msg.append("You have added an ability point to Strength. Please do a [color=pink]!viewchar[/color] "
+                           "to ensure changes.")
+            if ability == "dexterity" or ability == "dex":
+                charData['dexterity'] += 1
+                save_character(player, charData, charFolder)
+                msg.append("You have added an ability point to Dexterity. Please do a [color=pink]!viewchar[/color] "
+                           "to ensure changes.")
+            if ability == "constitution" or ability == "con":
+                charData['constitution'] += 1
+                save_character(player, charData, charFolder)
+                msg.append("You have added an ability point to Constitution. Please do a [color=pink]!viewchar[/color] "
+                           "to ensure changes.")
+        else:
+            msg.append("You do not have any more ability points to spend.")
     return msg
 
 # Shows character sheet in its entirety.
