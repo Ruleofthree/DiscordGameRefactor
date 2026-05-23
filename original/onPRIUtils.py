@@ -26,93 +26,88 @@ def pri_discord_echo(note):
 def pri_7_respec(character):
     path = os.getcwd()
     charFolder = os.path.join(path + "/characters/")
-    file = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
-    charData = json.load(file)
-    file.close()
+    charData = load_character(character, charFolder)
     reset = charData['reset']
     tFeats = charData['total feats']
     renown = charData['renown']
+
     if reset != 0:
         reset -= 1
-        with open(charFolder + character.lower() + ".json", "r+", encoding="utf-8") as file:
-            charData = json.load(file)
-            charData['build'] = ""
-            charData['base damage'] = "1d10"
-            charData['strength'] = 0
-            charData['dexterity'] = 0
-            charData['constitution'] = 0
-            charData['regeneration'] = 0
-            charData['traithit'] = 0
-            charData['traitdamage'] = 0
-            charData['traitac'] = 0
-            charData['traitdr'] = 0
-            charData['traithp'] = 0
-            charData['traitregen'] = 0
-            charData['cursed'] = 0
-            charData['initiative'] = 0
-            charData['blur'] = 0
-            charData['feats taken'] = []
-            charData['hfeats taken'] = []
-            charData["feathp"] = 0
-            charData["feathit"] = 0
-            charData["featdamage"] = 0
-            charData["featac"] = 0
-            charData["dexfighter"] = 0
-            charData['remaining feats'] = tFeats
-            charData['reset'] = reset
-            charData['tdr'] = 0
-            charData['trait'] = ""
-            file.seek(0)
-            file.write(json.dumps(charData, ensure_ascii=False, indent=2))
-            file.truncate()
-            file.close()
+        charData = load_character(character, charFolder)
+        charData['build'] = ""
+        charData['base damage'] = "1d10"
+        charData['strength'] = 0
+        charData['dexterity'] = 0
+        charData['constitution'] = 0
+        charData['regeneration'] = 0
+        charData['traithit'] = 0
+        charData['traitdamage'] = 0
+        charData['traitac'] = 0
+        charData['traitdr'] = 0
+        charData['traithp'] = 0
+        charData['traitregen'] = 0
+        charData['cursed'] = 0
+        charData['initiative'] = 0
+        charData['blur'] = 0
+        charData['feats taken'] = []
+        charData['hfeats taken'] = []
+        charData["feathp"] = 0
+        charData["feathit"] = 0
+        charData["featdamage"] = 0
+        charData["featac"] = 0
+        charData["dexfighter"] = 0
+        charData['remaining feats'] = tFeats
+        charData['reset'] = reset
+        charData['tdr'] = 0
+        charData['trait'] = ""
+        save_character(character, charData, charFolder)
+
         msg = "your characters abilities, trait, and feats have been reset. Please use [color=pink]!build[/color]" \
               " to select your character's build path, then please use the [color=pink]!stats[/color]" \
-              " command to select new Strength, Dexterity, and Constitution, the [color=pink]!traitpick[/color]"\
-              " command to pick a new trait, and the [color=pink]!featpick[/color] command to select new feats."\
+              " command to select new Strength, Dexterity, and Constitution, the [color=pink]!traitpick[/color]" \
+              " command to pick a new trait, and the [color=pink]!featpick[/color] command to select new feats." \
               " (you have [color=red]" + str(reset) + "[/color] reset points remaining.)"
+
     elif reset == 0 and renown > 250:
         renown -= 250
-        with open(charFolder + character.lower() + ".json", "r+", encoding="utf-8") as file:
-            charData = json.load(file)
-            charData['build'] = ""
-            charData['base damage'] = "1d10"
-            charData['strength'] = 0
-            charData['dexterity'] = 0
-            charData['constitution'] = 0
-            charData['regeneration'] = 0
-            charData['traithit'] = 0
-            charData['traitdamage'] = 0
-            charData['traitac'] = 0
-            charData['traitdr'] = 0
-            charData['traithp'] = 0
-            charData['traitregen'] = 0
-            charData['cursed'] = 0
-            charData['initiative'] = 0
-            charData['blur'] = 0
-            charData['feats taken'] = []
-            charData['hfeats taken'] = []
-            charData["feathp"] = 0
-            charData["feathit"] = 0
-            charData["featdamage"] = 0
-            charData["featac"] = 0
-            charData["dexfighter"] = 0
-            charData['remaining feats'] = tFeats
-            charData['reset'] = reset
-            charData['tdr'] = 0
-            charData['trait'] = ""
-            charData['trait'] = ""
-            file.seek(0)
-            file.write(json.dumps(charData, ensure_ascii=False, indent=2))
-            file.truncate()
-            file.close()
+        charData = load_character(character, charFolder)
+        charData['build'] = ""
+        charData['base damage'] = "1d10"
+        charData['strength'] = 0
+        charData['dexterity'] = 0
+        charData['constitution'] = 0
+        charData['regeneration'] = 0
+        charData['traithit'] = 0
+        charData['traitdamage'] = 0
+        charData['traitac'] = 0
+        charData['traitdr'] = 0
+        charData['traithp'] = 0
+        charData['traitregen'] = 0
+        charData['cursed'] = 0
+        charData['initiative'] = 0
+        charData['blur'] = 0
+        charData['feats taken'] = []
+        charData['hfeats taken'] = []
+        charData["feathp"] = 0
+        charData["feathit"] = 0
+        charData["featdamage"] = 0
+        charData["featac"] = 0
+        charData["dexfighter"] = 0
+        charData['remaining feats'] = tFeats
+        charData['reset'] = reset
+        charData['tdr'] = 0
+        charData['trait'] = ""
+        charData['trait'] = ""
+        save_character(character, charData, charFolder)
+
         msg = "your characters abilities, trait, and feats have been reset. Please use [color=pink]!build[/color]" \
               " to select your character's build path, then please use the [color=pink]!stats[/color]" \
-              " command to select new Strength, Dexterity, and Constitution, the [color=pink]!traitpick[/color]"\
-              " command to pick a new trait, and the [color=pink]!featpick[/color] command to select new feats."\
+              " command to select new Strength, Dexterity, and Constitution, the [color=pink]!traitpick[/color]" \
+              " command to pick a new trait, and the [color=pink]!featpick[/color] command to select new feats." \
               " (As you had no reset points, [color=yellow]250 renown[/color] was taken from your total.)"
     else:
         msg = "You currently have no more reset points to use, or renown to spend."
+
     return msg
 
 # Set up a character's stats after creation. Stat points MUST equal 15 in total, and no single stat can be above 10
