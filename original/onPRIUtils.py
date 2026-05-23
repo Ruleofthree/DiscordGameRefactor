@@ -1,3 +1,4 @@
+from src.armor_repository import get_armor_dictionary
 import os
 import json
 import random
@@ -1481,9 +1482,7 @@ def pri_11_givepotion(character, item, gifted, charFolder):
 # DEVELOPER USE ONLY - Stocks the store with 20 new pieces of equipment
 def pri_11_stockarmor(catOneCommonList, catOneUncommonList, catOneRareList, catTwoCommonList, catTwoUncommonList,
                       catTwoRareList, catThreeCommonList, catThreeUncommonList, catThreeRareList):
-    armorFile = open("armor.json", "r", encoding="utf-8")
-    armorDictionary = json.load(armorFile)
-    armorFile.close()
+    armorData = get_armor_dictionary()
     num = 1
     msg = []
     for num in range(1, 21):
@@ -1549,9 +1548,7 @@ def pri_11_stockarmor(catOneCommonList, catOneUncommonList, catOneRareList, catT
 # Allows player to view armor shop
 # !armorshop
 def pri_10_armorshop(myList):
-    armorFile = open("armor.json", "r", encoding="utf-8")
-    armorDictionary = json.load(armorFile)
-    armorFile.close()
+    armorData = get_armor_dictionary()
     armorPrice = []
     num = 0
     for item in myList:
@@ -1627,9 +1624,7 @@ def pri_10_armorshop(myList):
 # Use to buy a piece of equipment from the shop
 # !buyarmor <armor name>
 def pri_9_buyarmor(character, armor, charFolder):
-    armorFile = open("armor.json", "r", encoding="utf-8")
-    armorData = json.load(armorFile)
-    armorFile.close()
+    armorData = get_armor_dictionary()
     try:
         charFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
         charSheet = json.load(charFile)
@@ -1709,9 +1704,7 @@ def pri_9_buyarmor(character, armor, charFolder):
 # Use to sell a piece of equipment
 # !sellarmor <armor name>
 def pri_10_sellarmor(character, armor, charFolder):
-    armorFile = open("armor.json", "r", encoding="utf-8")
-    armorDictionary = json.load(armorFile)
-    armorFile.close()
+    armorData = get_armor_dictionary()
 
     try:
         sellerFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
@@ -1784,9 +1777,7 @@ def pri_6_equip(character, armor, charFolder, game):
         msg = "You don't have a character made to use this command."
         return msg
 
-    armorFile = open("armor.json", "r", encoding="utf-8")
-    armorDictionary = json.load(armorFile)
-    armorFile.close()
+    armorData = get_armor_dictionary()
 
     if game != 1:
         charSheet["armorhit"] = 0
