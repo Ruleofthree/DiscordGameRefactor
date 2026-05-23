@@ -3,6 +3,7 @@ from src.potion_repository import (
     find_potion,
     get_potion_description,
     get_potion_dictionary,
+    get_potion_effect_info,
     get_potion_effect_value,
     get_potion_price,
     get_potion_sell_value,
@@ -62,3 +63,13 @@ def test_get_potion_sell_value_returns_half_price():
 
 def test_get_potion_sell_value_returns_none_for_unknown_potion():
         assert get_potion_sell_value("fake potion") is None
+
+
+def test_get_potion_effect_info_returns_effect_and_description():
+    result = get_potion_effect_info("hp5")
+
+    assert result == (5, "increasing hp by 5 for duration of fight")
+
+
+def test_get_potion_effect_info_returns_none_for_unknown_potion():
+    assert get_potion_effect_info("fake potion") is None

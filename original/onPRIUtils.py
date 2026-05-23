@@ -1,5 +1,5 @@
 from src.armor_repository import get_armor_dictionary
-from src.potion_repository import get_potion_sell_value
+from src.potion_repository import get_potion_effect_info, get_potion_sell_value
 import os
 import json
 import random
@@ -1229,10 +1229,6 @@ def pri_11_sellpotion(character, potion, charFolder):
 # !usepotion <potion name>
 def pri_10_usepotion(character, potion, commonList, uncommonList, rareList,
                          vrareList, relicList, charFolder):
-    potionFile = open("potions.json", "r", encoding="utf-8")
-    potionData = json.load(potionFile)
-    potionFile.close()
-
     try:
         charFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
         charSheet = json.load(charFile)
@@ -1243,22 +1239,12 @@ def pri_10_usepotion(character, potion, commonList, uncommonList, rareList,
         return msg
     print("in potion method")
     potionList = commonList + uncommonList + rareList + vrareList + relicList
-    if potion in potionList:
-        if potion in commonList:
-            potionEffect = potionData[0]['common'][potion][2]
-            potionDescription = potionData[0]['common'][potion][1]
-        elif potion in uncommonList:
-            potionEffect = potionData[0]['uncommon'][potion][2]
-            potionDescription = potionData[0]['uncommon'][potion][1]
-        elif potion in rareList:
-            potionEffect = potionData[0]['rare'][potion][2]
-            potionDescription = potionData[0]['rare'][potion][1]
-        elif potion in vrareList:
-            potionEffect = potionData[0]['vrare'][potion][2]
-            potionDescription = potionData[0]['vrare'][potion][1]
-        elif potion in relicList:
-            potionEffect = potionData[0]['relic'][potion][2]
-            potionDescription = potionData[0]['relic'][potion][1]
+    print("in potion method")
+    potionInfo = get_potion_effect_info(potion)
+
+    if potionInfo is not None:
+        potionEffect, potionDescription = potionInfo
+
         if potion == "str1" and charSheet['pstrength'] == 0:
             charSheet['pstrength'] = 1
             msg = charSheet['name'] + " drank a " + potion + \

@@ -68,3 +68,13 @@ def get_potion_sell_value(potion_name):
         return None
 
     return int(price / 2)
+
+
+def get_potion_effect_info(potion_name):
+    result = find_potion(potion_name)
+
+    if result is None:
+        return None
+
+    _, potion_info = result
+    return potion_info[2], potion_info[1]
