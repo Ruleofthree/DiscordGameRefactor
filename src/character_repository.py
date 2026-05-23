@@ -1004,3 +1004,49 @@ def calculate_character_view_totals(char_data):
         "blur": blur,
         "initiative": initiative,
     }
+
+
+def format_character_view_armor_inventory(char_data):
+    key_dict = []
+    for key in char_data["armor"]:
+        key_dict.append(key)
+
+    armor_one = key_dict[0]
+    armor_two = key_dict[1]
+    armor_three = key_dict[2]
+
+    armor_inv_one = "n/a"
+    armor_inv_two = "n/a"
+    armor_inv_three = "n/a"
+
+    if char_data["armor"][armor_one] != "n/a":
+        equipprice = int(char_data["armor"][armor_one][-1] / 2)
+        del char_data["armor"][armor_one][-1]
+        armor_inv_one = (
+            ", ".join(char_data["armor"][armor_one])
+            + " Selling Value: [color=yellow]"
+            + str(equipprice)
+            + "[/color] renown"
+        )
+
+    if char_data["armor"][armor_two] != "n/a":
+        equipprice = int(char_data["armor"][armor_two][-1] / 2)
+        del char_data["armor"][armor_two][-1]
+        armor_inv_two = (
+            ", ".join(char_data["armor"][armor_two])
+            + " Selling Value: [color=yellow]"
+            + str(equipprice)
+            + "[/color] rewnown"
+        )
+
+    if char_data["armor"][armor_three] != "n/a":
+        equipprice = int(char_data["armor"][armor_three][-1] / 2)
+        del char_data["armor"][armor_three][-1]
+        armor_inv_three = (
+            ", ".join(char_data["armor"][armor_three])
+            + " Selling Value: [color=yellow]"
+            + str(equipprice)
+            + "[/color] renown"
+        )
+
+    return armor_inv_one, armor_inv_two, armor_inv_three
