@@ -208,3 +208,38 @@ def create_character(character, name, char_folder):
         json.dump(player_database, file, sort_keys=True, indent=2)
 
     return True
+
+def select_character_build(character: str, build: str, characters_dir: Path | str = CHARACTERS_DIR) -> str:
+    characters_path = Path(characters_dir)
+    character_path = characters_path / f"{character.lower()}.json"
+
+    with character_path.open("r+", encoding="utf-8") as file:
+        character_data = json.load(file)
+
+        if character_data["build"] == "":
+            if build == "strength":
+                character_data["build"] = build
+
+                if character_data["level"] <= 3:
+                    character_data["feats taken"].append("focus")
+
+            elif build == "dexterity":
+                character_data["build"] = build
+
+            elif build == "constitution":
+                character_data["build"] = build
+
+            msg = (
+                "You have identified your character as a " + build
+                + " build, and it has been recorded as such in your character sheet. "
+                "Please ues [color=pink]!stats[/color] command to select your stat points, "
+                "before selecting feats."
+            )
+        else:
+            msg = "You already have selected a build."
+
+        file.seek(0)
+        file.write(json.dumps(character_data, ensure_ascii=False, indent=2))
+        file.truncate()
+
+    return msg
