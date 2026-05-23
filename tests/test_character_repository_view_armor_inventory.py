@@ -12,7 +12,7 @@ def test_format_character_view_armor_inventory_returns_na_for_empty_slots():
 
     result = format_character_view_armor_inventory(char_data)
 
-    assert result == ("n/a", "n/a", "n/a")
+    assert result == ("armor1", "armor2", "armor3", "n/a", "n/a", "n/a")
 
 
 def test_format_character_view_armor_inventory_formats_first_slot_and_preserves_legacy_mutation():
@@ -26,9 +26,12 @@ def test_format_character_view_armor_inventory_formats_first_slot_and_preserves_
 
     result = format_character_view_armor_inventory(char_data)
 
-    assert result[0] == "Iron Armor, +1 AC Selling Value: [color=yellow]500[/color] renown"
-    assert result[1] == "n/a"
-    assert result[2] == "n/a"
+    assert result[0] == "armor1"
+    assert result[1] == "armor2"
+    assert result[2] == "armor3"
+    assert result[3] == "Iron Armor, +1 AC Selling Value: [color=yellow]500[/color] renown"
+    assert result[4] == "n/a"
+    assert result[5] == "n/a"
 
     assert char_data["armor"]["armor1"] == ["Iron Armor", "+1 AC"]
 
@@ -44,9 +47,12 @@ def test_format_character_view_armor_inventory_formats_all_three_slots_with_lega
 
     result = format_character_view_armor_inventory(char_data)
 
-    assert result[0] == "Iron Armor, +1 AC Selling Value: [color=yellow]500[/color] renown"
-    assert result[1] == "Leather Armor, +1 Dex Selling Value: [color=yellow]375[/color] rewnown"
-    assert result[2] == "Steel Armor, +2 HP Selling Value: [color=yellow]150[/color] renown"
+    assert result[0] == "armor1"
+    assert result[1] == "armor2"
+    assert result[2] == "armor3"
+    assert result[3] == "Iron Armor, +1 AC Selling Value: [color=yellow]500[/color] renown"
+    assert result[4] == "Leather Armor, +1 Dex Selling Value: [color=yellow]375[/color] rewnown"
+    assert result[5] == "Steel Armor, +2 HP Selling Value: [color=yellow]150[/color] renown"
 
     assert char_data["armor"]["armor1"] == ["Iron Armor", "+1 AC"]
     assert char_data["armor"]["armor2"] == ["Leather Armor", "+1 Dex"]

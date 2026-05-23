@@ -2,7 +2,7 @@ from src.armor_repository import get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
 from src.character_repository import (assign_character_stats, character_exists, load_character, save_character,
                                       select_character_build, select_character_feat, select_character_trait,
-                                      calculate_character_view_totals)
+                                      calculate_character_view_totals, format_character_view_armor_inventory)
 import os
 import json
 import random
@@ -173,33 +173,7 @@ def pri_viewchar(character):
     else:
         # try:
         charData = load_character(character, charFolder)
-        #print(charData['armor']["[url=https://static.f-list.net/images/charimage/21526036.jpg]x-45 agile combat armor[/url]"])
-        keyDict = []
-        for key in charData['armor']:
-            keyDict.append(key)
-        armorOne = keyDict[0]
-        armorTwo = keyDict[1]
-        armorThree = keyDict[2]
-        #print(charData['armor'][armorThree])
-        armorInvOne = "n/a"
-        armorInvTwo = "n/a"
-        armorInvThree = "n/a"
-        if charData['armor'][armorOne] != "n/a":
-            equipprice = int(charData['armor'][armorOne][-1] / 2)
-            del charData['armor'][armorOne][-1]
-            armorInvOne = ", ".join(charData['armor'][armorOne]) + \
-                          " Selling Value: [color=yellow]" + str(equipprice) + "[/color] renown"
-        if charData['armor'][armorTwo] != "n/a":
-            equipprice = int(charData['armor'][armorTwo][-1] / 2)
-            del charData['armor'][armorTwo][-1]
-            armorInvTwo = ", ".join(charData['armor'][armorTwo]) +\
-                          " Selling Value: [color=yellow]" + str(equipprice) + "[/color] rewnown"
-        if charData['armor'][armorThree] != "n/a":
-            equipprice = int(charData['armor'][armorThree][-1] / 2)
-            del charData['armor'][armorThree][-1]
-            armorInvThree = ", ".join(charData['armor'][armorThree]) +\
-                            " Selling Value: [color=yellow]" + str(equipprice) + "[/color] renown"
-        #print(armorInvThree)
+        armorOne, armorTwo, armorThree, armorInvOne, armorInvTwo, armorInvThree = format_character_view_armor_inventory(charData)
         equip = charData['equip']
         name = charData['name']
         build = charData['build']

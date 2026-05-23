@@ -1049,4 +1049,4 @@ def format_character_view_armor_inventory(char_data):
             + "[/color] renown"
         )
 
-    return armor_inv_one, armor_inv_two, armor_inv_three
+    return armor_one, armor_two, armor_three, armor_inv_one, armor_inv_two, armor_inv_three
