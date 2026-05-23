@@ -1,4 +1,5 @@
 import pytest
+from src.feat_repository import get_feat_dictionary_and_names
 from src.feat_repository import (
     get_feat,
     get_feat_action,
@@ -53,3 +54,13 @@ def test_get_feat_action_returns_action_field():
     result = get_feat_action("power attack")
 
     assert result == [1, 2, 3, 4, 5]
+
+
+def test_get_feat_dictionary_and_names_matches_old_featdict_shape():
+    feat_dictionary, feat_names = get_feat_dictionary_and_names()
+
+    assert isinstance(feat_dictionary, list)
+    assert isinstance(feat_dictionary[0], dict)
+    assert isinstance(feat_names, list)
+    assert "power attack" in feat_dictionary[0]
+    assert "power attack" in feat_names

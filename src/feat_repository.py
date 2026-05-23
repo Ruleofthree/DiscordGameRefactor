@@ -45,3 +45,14 @@ def get_feat_action(feat_name):
     """Return the action field for a feat."""
     feat = get_feat(feat_name)
     return feat["action"]
+
+
+def get_feat_dictionary_and_names():
+    """
+    Return feat data and feat names in the same shape as the old featDict() helper.
+
+    This exists as a temporary bridge while old bot cold is being refactored.
+    """
+    feat_dictionary = get_feat_dictionary()
+    feat_names = list(feat_dictionary.keys())
+    return [feat_dictionary], feat_names
