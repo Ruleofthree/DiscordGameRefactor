@@ -1,3 +1,4 @@
+from src.feat_repository import get_feat_dictionary_and_names
 import os
 import json
 import random
@@ -11,16 +12,7 @@ from feat_methods import *
 #1502
 
 def featDict():
-    # Open up the json object containing the list of feats.
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
-
-    # place all keys within a list for comparison later
-    featList = []
-    for keys in featDictionary[0]:
-        featList.append(keys)
-    return featDictionary, featList
+    return get_feat_dictionary_and_names()
 
 def message_8_compile(users):
     noNoList = ["Unspoiled Desire"]
