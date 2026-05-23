@@ -243,3 +243,123 @@ def select_character_build(character: str, build: str, characters_dir: Path | st
         file.truncate()
 
     return msg
+
+
+def assign_character_stats(char_dir, character, message):
+    char_dir = Path(char_dir)
+    char_file = char_dir / f"{character.lower()}.json"
+
+    msg = []
+
+    info = message.split(" ")
+    strength = int(info[1])
+    dexterity = int(info[2])
+    constitution = int(info[3])
+
+    if not char_file.is_file():
+        msg.append(
+            "You don't even have a character created yet. Type !name <name> in the room. "
+            "Where <name> is your character's actual name. (Example: !name Joe)"
+        )
+        return msg
+
+    with char_file.open("r", encoding="utf-8") as file:
+        char_data = json.load(file)
+
+    ap = char_data["ap"]
+    build = char_data["build"]
+    level = char_data["level"]
+
+    if (
+        char_data["strength"] != 0
+        and char_data["dexterity"] != 0
+        and char_data["constitution"] != 0
+    ):
+        msg.append(
+            "You have already set up your character's stats. If you want to change them, you will "
+            "need to use the [color=pink]!respec[/color] command."
+        )
+        return msg
+
+    if build == "":
+        msg.append("You need to pick a build path first. Please use the [color=pink]!build[/color] command.")
+        return msg
+
+    total = strength + dexterity + constitution
+
+    if total > ap or total < ap:
+        msg.append("Make sure total points used is no more or less than " + str(ap) + ".")
+        return msg
+
+    if (strength > 10 or dexterity > 10 or constitution > 10) and level in [1, 2, 3, 4]:
+        msg.append("No one stat can be above 10 at this point in time. Please try again.")
+        return msg
+
+    if (strength > 11 or dexterity > 11 or constitution > 11) and level in [5, 6, 7, 8, 9]:
+        msg.append("No one stat can be above 11 at this point in time. Please try again.")
+        return msg
+
+    if (strength > 12 or dexterity > 12 or constitution > 12) and level in [10, 11, 12, 13, 14]:
+        msg.append("No one stat can be above 12 at this point in time. Please try again.")
+        return msg
+
+    if (strength > 13 or dexterity > 13 or constitution > 13) and level in [15, 16, 17, 18, 19]:
+        msg.append("No one stat can be above 13 at this point in time. Please try again.")
+        return msg
+
+    if (strength > 14 or dexterity > 14 or constitution > 14) and level == 20:
+        msg.append("No one stat can be above 14 at this point in time. Please try again.")
+        return msg
+
+    if strength < 0 or dexterity < 0 or constitution < 0:
+        msg.append("Why would you even try to pick a negative stat? Please try again.")
+        return msg
+
+    hit_mod = 0
+
+    if build == "strength":
+        hit_mod = int(strength / 2)
+        str_mod = int(strength / 2)
+        dex_mod = int(dexterity / 2)
+        con_mod = int(constitution / 2) * 5
+    elif build == "dexterity":
+        str_mod = int(strength / 5)
+        dex_mod = int(dexterity / 2)
+        con_mod = int(constitution / 2) * 5
+    elif build == "constitution":
+        str_mod = int(strength / 3)
+        dex_mod = int(dexterity / 2)
+        con_mod = int(constitution / 2) * 3
+
+    msg.append(
+        "Allocating the following: \n\nStrength: " + str(strength) +
+        "   (+" + str(hit_mod) + " bonus to hit and " +
+        str(str_mod) + " to damage.)\nDexterity: " +
+        str(dexterity) + "   (+" + str(dex_mod) + " bonus to armor class.)\n"
+        "Constitution: " + str(constitution) + "   (+" + str(con_mod) + " bonus to hit points.)\n"
+    )
+
+    msg.append(
+        "The above points have been placed on your character sheet. Please "
+        "type [color=pink]!viewchar[/color] to see your character sheet. "
+        "You need to chose two feats, and a trait as well. Type [color=pink]!featlist[/color] "
+        "to see a list of feats. Type [color=pink]!feathelp <feat name>[/color], "
+        "to get help on a specific feat, or type "
+        "[color=pink]!featpick <feat name>[/color] to choose that feat. To see a list of traits, "
+        "use [color=pink]!traitlist[/color], use [color=pink]!traithelp <trait name>[/color] for its "
+        "description and use [color=pink]!traitpick <trait name>[/color] to select that trait."
+    )
+
+    char_data["strength"] = int(strength)
+    char_data["dexterity"] = int(dexterity)
+    char_data["constitution"] = int(constitution)
+    char_data["abhit"] = str_mod
+    char_data["abdamage"] = str_mod
+    char_data["abac"] = dex_mod
+    char_data["abhp"] = con_mod
+    char_data["initiative"] = dex_mod
+
+    with char_file.open("w", encoding="utf-8") as file:
+        json.dump(char_data, file, ensure_ascii=False, indent=2)
+
+    return msg

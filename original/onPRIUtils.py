@@ -1,6 +1,6 @@
 from src.armor_repository import get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
-from src.character_repository import character_exists, load_character, save_character, select_character_build
+from src.character_repository import assign_character_stats, character_exists, load_character, save_character, select_character_build
 import os
 import json
 import random
@@ -115,100 +115,7 @@ def pri_7_respec(character):
 def pri_6_stats(message, character, charData, charFile):
     path = os.getcwd()
     charFolder = os.path.join(path + "/characters/")
-    msg = []
-    ap = charData["ap"]
-    reset = charData["reset"]
-    build = charData["build"]
-    level = charData["level"]
-    rangeOne = [1, 2, 3, 4]
-    rangeTwo = [5, 6, 7, 8, 9]
-    rangeThree = [10, 11, 12, 13, 14]
-    rangeFour = [15, 16, 17, 18, 19]
-    rangeFive = 20
-    info = message.split(" ")
-    hitMod = 0
-    strength = int(info[1])
-    dexterity = int(info[2])
-    constitution = int(info[3])
-    total = strength + dexterity + constitution
-    # Find out if player even has a character created yet. If not. Tell them they are an idiot.
-    if not character_exists(character, charFolder):
-        msg.append("You don't even have a character created yet. Type !name <name> in the room. "
-                   "Where <name> is your character's actual name. (Example: !name Joe)")
-    # Find out if player has reset points to use. If not. Tell them they are an idiot.
-    elif charData['strength'] != 0 and charData['dexterity'] != 0 and charData['constitution'] != 0:
-        msg.append("You have already set up your character's stats. If you want to change them, you will "
-                   "need to use the [color=pink]!respec[/color] command.")
-    # If it turns out, they aren't an idiot, and are using the command correctly. Record information and place
-    # it in .json.
-    elif build == "":
-        msg.append("You need to pick a build path first. Please use the [color=pink]!build[/color] command.")
-    else:
-        total = strength + dexterity + constitution
-        if total > ap or total < ap:
-            msg.append("Make sure total points used is no more or less than " +
-                       str(ap) + ".")
-        elif (strength > 10 or dexterity > 10 or constitution > 10) and charData["level"] in rangeOne:
-            msg.append("No one stat can be above 10 at this point in time. Please try again.")
-        elif (strength > 11 or dexterity > 11 or constitution > 11) and charData["level"] in rangeTwo:
-            msg.append("No one stat can be above 11 at this point in time. Please try again.")
-        elif (strength > 12 or dexterity > 12 or constitution > 12) and charData["level"] in rangeThree:
-            msg.append("No one stat can be above 12 at this point in time. Please try again.")
-        elif (strength > 13 or dexterity > 13 or constitution > 13) and charData["level"] in rangeFour:
-            msg.append("No one stat can be above 13 at this point in time. Please try again.")
-        elif (strength > 14 or dexterity > 14 or constitution > 14) and charData["level"] == 20:
-            msg.append("No one stat can be above 14 at this point in time. Please try again.")
-        elif strength < 0 or dexterity < 0 or constitution < 0:
-            msg.append("Why would you even try to pick a negative stat? Please try again.")
-        else:
-            if build == "strength":
-                hitMod = int(int(strength) / 2)
-                strMod = int(int(strength) / 2)
-                dexMod = int(int(dexterity) / 2)
-                conMod = int(int(constitution) / 2) * 5
-                # rawDamage = "1d12"
-            elif build == "dexterity":
-                strMod = int(int(strength) / 5)
-                dexMod = int(int(dexterity) / 2)
-                conMod = int(int(constitution) / 2) * 5
-                # rawDamage = "1d6"
-            elif build == "constitution":
-                strMod = int(int(strength) / 3)
-                dexMod = int(int(dexterity) / 2)
-                conMod = int(int(constitution) / 2) * 3
-                # rawDamage = "1d10"
-            # if strenth < 2:
-            #     strMod = int(int(strength - strength) - 2)
-            # elif dexterity < 2:
-            #     dexMod = int(int(dexterity - dexterity) - 2)
-            # elif constitution < 2:
-            #     conMod = int(int(constitution - constitution) - 10)
-            msg.append("Allocating the following: \n\nStrength: " + str(strength) +
-                       "   (+" + str(hitMod) + " bonus to hit and " +
-                       str(strMod) + " to damage.)\nDexterity: " +
-                       str(dexterity) + "   (+" + str(dexMod) + " bonus to armor class.)\n"
-                          "Constitution: " + str(constitution) + "   (+" + str(conMod) + " bonus to hit points.)\n")
-                          # "And base damage is: " + rawDamage)
-            msg.append("The above points have been placed on your character sheet. Please "
-                       "type [color=pink]!viewchar[/color] to see your character sheet. "
-                       "You need to chose two feats, and a trait as well. Type [color=pink]!featlist[/color] "
-                       "to see a list of feats. Type [color=pink]!feathelp <feat name>[/color], "
-                       "to get help on a specific feat, or type "
-                       "[color=pink]!featpick <feat name>[/color] to choose that feat. To see a list of traits, "
-                       "use [color=pink]!traitlist[/color], use [color=pink]!traithelp <trait name>[/color] for its "
-                       "description and use [color=pink]!traitpick <trait name>[/color] to select that trait.")
-            # load the new data in the character's .json file.
-            charData = load_character(character, charFolder)
-            charData["strength"] = int(strength)
-            charData["dexterity"] = int(dexterity)
-            charData["constitution"] = int(constitution)
-            charData["abhit"] = strMod
-            charData["abdamage"] = strMod
-            charData["abac"] = dexMod
-            charData["abhp"] = conMod
-            charData["initiative"] = dexMod
-            save_character(character, charData, charFolder)
-    return msg
+    return assign_character_stats(charFolder, character, message)
 
 # !build <strength> <dexterity> <constitution>
 def pri_6_build(charFolder, message, charFile, character):
