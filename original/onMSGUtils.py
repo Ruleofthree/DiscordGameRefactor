@@ -1,5 +1,5 @@
 from src.feat_repository import get_feat_dictionary_and_names
-from src.character_repository import character_exists, delete_character, load_character, save_character
+from src.character_repository import create_character, character_exists, delete_character, load_character, save_character
 import os
 import json
 import random
@@ -78,6 +78,34 @@ def message_5_bell(channel, unspoiledBarOOC, character, message):
     else:
         msg = "For some reason, try as you might, the bell makes no sound."
     return msg
+
+
+def message_5_name(channel, charFolder, message, charFile, character):
+    msg = []
+
+    if charFile.is_file():
+        msg.append("You've already created a character.")
+    elif message == "!name":
+        msg.append("You need to give your character a name.")
+    else:
+        name = message[6:]
+        msg.append("Your character name is: " + name)
+
+        created = create_character(
+            character=character,
+            name=name,
+            char_folder=charFolder,
+        )
+
+        if created:
+            msg.append("Your character sheet has been created.")
+            msg.append("PM [color=pink]Unspoiled Desire[/color] with '!build <strength> <constitution> <dexterity>' to"
+                       " determine general build path, and bonuses obtained from selected feats. Example: !build strength")
+        else:
+            msg.append("You've already created a character.")
+
+    return msg
+
 
 # Displays the top five players in the desired category:
 # !leaderboard wins
