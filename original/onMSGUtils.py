@@ -210,14 +210,12 @@ def message_7_player(channel, charFolder, unspoiledBarOOC, message):
     msg = ""
     if channel == unspoiledBarOOC:
         name = message[8:].lower()
-        charFile = Path(charFolder + name + ".json")
-        if not charFile.is_file():
+
+        if not character_exists(name, charFolder):
             msg = "Either they don't have a character, or you fucked up typing. (type: !player <profile name>, " \
                 "[b]not[/b] character name. Example: !player their perfect doll"
         else:
-            charSheet = open(charFolder + name + ".json", "r", encoding="utf-8")
-            score = json.load(charSheet)
-            charSheet.close()
+            score = load_character(name, charFolder)
             name = score['name']
             wins = score['wins']
             losses = score['losses']
@@ -233,126 +231,6 @@ def message_7_player(channel, charFolder, unspoiledBarOOC, message):
                     "on how you justify a person that has never entered the arena yet."
     else:
         msg = "This Command can only be used in [session=Unspoiled Desire (Command and OoC Room)]adh-8216a753c1ef08445052[/session]"
-    return msg
-
-# Creates a character.
-# !name <character name>
-def message_5_name(channel, charFolder, message, charFile, character):
-    msg = []
-    if charFile.is_file():
-        msg.append("You've already created a character.")
-    elif message == "!name":
-        msg.append("You need to give your character a name.")
-    else:
-        name = message[6:]
-        character = character.lower()
-        msg.append("Your character name is: " + name)
-        msg.append("Your character sheet has been created.")
-
-        levelFile = open(charFolder + "levelchart.json", "r", encoding="utf-8")
-        levelDict = json.load(levelFile)
-
-        characterFile = {}
-        level = 1
-        xp = 0
-        characterFile["name"] = name
-        characterFile["level"] = level
-        characterFile["build"] = ""
-        characterFile["trait"] = ""
-        hp = levelDict["1"][0]
-        characterFile["hp"] = hp
-        tFeats = levelDict["1"][4]
-        characterFile["total feats"] = tFeats
-        numberOfDice = levelDict["1"][1]
-        numberOfSides = levelDict["1"][2]
-        characterFile["base damage"] = str(numberOfDice) + "d" + str(numberOfSides)
-        characterFile["hit"] = levelDict["1"][5]
-        characterFile["damage"] = levelDict["1"][5]
-        characterFile["ac"] = levelDict["1"][6]
-        characterFile["currentxp"] = xp
-        nextLevel = levelDict["1"][7]
-        characterFile["nextlevel"] = nextLevel
-        characterFile["strength"] = 0
-        characterFile["dexterity"] = 0
-        characterFile["constitution"] = 0
-        characterFile["remaining feats"] = 2
-        ap = levelDict["1"][3]
-        characterFile["ap"] = ap
-        characterFile['apboost'] = False
-        characterFile["regeneration"] = 0
-        characterFile["feats taken"] = []
-        characterFile["armor"] = {"armor1": "n/a", "armor2": "n/a", "armor3": "n/a",}
-        characterFile["equip"] = ""
-        characterFile["hfeats taken"] = []
-        characterFile["reset"] = 3
-        characterFile["wins"] = 0
-        characterFile["losses"] = 0
-        characterFile["forfeits"] = 0
-        characterFile["abhp"] = 0
-        characterFile["abhit"] = 0
-        characterFile["abdamage"] = 0
-        characterFile["abac"] = 0
-        characterFile["feathp"] = 0
-        characterFile["feathit"] = 0
-        characterFile["featdamage"] = 0
-        characterFile["featac"] = 0
-        characterFile["thp"] = 0
-        characterFile["tac"] = 0
-        characterFile["thit"] = 0
-        characterFile["tdamage"] = 0
-        characterFile["tdr"] = 0
-        characterFile["dexfighter"] = 0
-        characterFile["renown"] = 0
-        characterFile["initiative"] = 0
-        characterFile["potions"] = []
-        characterFile["potioneffect"] = ""
-        characterFile["potionhit"] = 0
-        characterFile["potiondamage"] = 0
-        characterFile["potionac"] = 0
-        characterFile["potionhp"] = 0
-        characterFile["potionblur"] = 0
-        characterFile["potionstr"] = 0
-        characterFile["potiondex"] = 0
-        characterFile["potioncon"] = 0
-        characterFile["potionregen"] = 0
-        characterFile["pstrength"] = 0
-        characterFile["pdexterity"] = 0
-        characterFile["pconstitution"] = 0
-        characterFile["armorhit"] = 0
-        characterFile["armordamage"] = 0
-        characterFile["armorac"] = 0
-        characterFile["armorhp"] = 0
-        characterFile["armordr"] = 0
-        characterFile["armorstrength"] = 0
-        characterFile["armordexterity"] = 0
-        characterFile["armorconstitution"] = 0
-        characterFile["armorblur"] = 0
-        characterFile["armorinitiative"] = 0
-        characterFile["blur"] = 0
-        characterFile['traithit'] = 0
-        characterFile['traitdamage'] = 0
-        characterFile['traitac'] = 0
-        characterFile['traitdr'] = 0
-        characterFile['traithp'] = 0
-        characterFile['traitregen'] = 0
-        characterFile['cursed'] = 0
-        characterFile['status'] = ""
-        characterFile['statuscounter'] = 0
-        characterFile['fight'] = 0
-        file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
-        json.dump(characterFile, file, ensure_ascii=False, indent=2)
-        file.close()
-        with open(charFolder + "playerDatabase.json", 'r', encoding="utf-8") as file2:
-            playerDatabase = json.loads(file2.read())
-            file2.close()
-        playerDatabase[name] = character.lower()
-        file.close()
-        with open(charFolder + "playerDatabase.json", 'w') as file2:
-            file2.write(json.dumps(playerDatabase, sort_keys=True, indent=2))
-            file2.close()
-
-        msg.append("PM [color=pink]Unspoiled Desire[/color] with '!build <strength> <constitution> <dexterity>' to"
-                   " determine general build path, and bonuses obtained from selected feats. Example: !build strength")
     return msg
 
 # Erases a character. Once erase command was used. player must !confirm deletion, or !deny
