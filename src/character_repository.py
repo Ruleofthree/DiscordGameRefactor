@@ -787,6 +787,27 @@ def select_character_feat(character, feat_name, feat_list, feat_dictionary, char
                 has_taken.pop(index)
 
             char_data["remaining feats"] = remaining_feats
+
+            if answer == "improved evasion":
+                index = has_taken.index("evasion")
+                has_taken.pop(index)
+
+            if answer == "greater evasion":
+                index = has_taken.index("improved evasion")
+                has_taken.pop(index)
+
+            if answer == "improved quick strike":
+                index = has_taken.index("quick strike")
+                has_taken.pop(index)
+
+            if answer == "greater quick strike":
+                index = has_taken.index("improved quick strike")
+                has_taken.pop(index)
+
+            if answer == "riposte":
+                index = has_taken.index("greater quick strike")
+                has_taken.pop(index)
+
             char_data["feats taken"] = has_taken
             char_data["hfeats taken"] = hidden_taken
 

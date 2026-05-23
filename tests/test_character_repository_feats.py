@@ -755,3 +755,157 @@ def test_select_character_feat_improved_bear_endurance_replaces_visible_lower_fe
     assert saved["feats taken"] == ["improved bear endurance"]
     assert saved["hfeats taken"] == ["bear endurance", "improved bear endurance"]
     assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_improved_evasion_replaces_visible_lower_feat(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=12,
+            build="dexterity",
+            **{
+                "remaining feats": 1,
+                "feats taken": ["evasion"],
+                "hfeats taken": ["evasion"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "improved evasion": {
+                "requirements": [12, 0, 0, 0, "evasion"],
+                "action": "0.75",
+            }
+        }
+    ]
+    feat_list = ["improved evasion"]
+
+    select_character_feat(
+        character="tester",
+        feat_name="improved evasion",
+        feat_list=feat_list,
+        feat_dictionary=feat_dictionary,
+        character_dir=char_dir,
+    )
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["improved evasion"]
+    assert saved["hfeats taken"] == ["evasion", "improved evasion"]
+    assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_greater_evasion_replaces_visible_lower_feat(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=18,
+            build="dexterity",
+            **{
+                "remaining feats": 1,
+                "feats taken": ["improved evasion"],
+                "hfeats taken": ["evasion", "improved evasion"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "greater evasion": {
+                "requirements": [18, 0, 0, 0, "improved evasion"],
+                "action": None,
+            }
+        }
+    ]
+    feat_list = ["greater evasion"]
+
+    select_character_feat(
+        character="tester",
+        feat_name="greater evasion",
+        feat_list=feat_list,
+        feat_dictionary=feat_dictionary,
+        character_dir=char_dir,
+    )
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["greater evasion"]
+    assert saved["hfeats taken"] == ["evasion", "improved evasion", "greater evasion"]
+    assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_improved_quick_strike_replaces_visible_lower_feat(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=9,
+            **{
+                "remaining feats": 1,
+                "feats taken": ["quick strike"],
+                "hfeats taken": ["quick strike"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "improved quick strike": {
+                "requirements": [9, 0, 0, 0, "quick strike"],
+                "action": [1, 8, 4, 3],
+            }
+        }
+    ]
+    feat_list = ["improved quick strike"]
+
+    select_character_feat(
+        character="tester",
+        feat_name="improved quick strike",
+        feat_list=feat_list,
+        feat_dictionary=feat_dictionary,
+        character_dir=char_dir,
+    )
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["improved quick strike"]
+    assert saved["hfeats taken"] == ["quick strike", "improved quick strike"]
+    assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_riposte_replaces_visible_greater_quick_strike(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=18,
+            **{
+                "remaining feats": 1,
+                "feats taken": ["greater quick strike"],
+                "hfeats taken": ["quick strike", "improved quick strike", "greater quick strike"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "riposte": {
+                "requirements": [18, 0, 0, 0, "greater quick strike"],
+                "action": [1, 8, 4, 4],
+            }
+        }
+    ]
+    feat_list = ["riposte"]
+
+    select_character_feat(
+        character="tester",
+        feat_name="riposte",
+        feat_list=feat_list,
+        feat_dictionary=feat_dictionary,
+        character_dir=char_dir,
+    )
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["riposte"]
+    assert saved["hfeats taken"] == ["quick strike", "improved quick strike", "greater quick strike", "riposte"]
+    assert saved["remaining feats"] == 0
