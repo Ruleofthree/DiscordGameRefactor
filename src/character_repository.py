@@ -601,3 +601,106 @@ def select_character_trait(char_folder, character, message, trait_list, trait_di
             return "You need to set up your stats first, before selecting a trait. please use the !stats command."
 
     return "You need to set up your stats first, before selecting a trait. please use the !stats command."
+
+
+def select_character_feat(character, feat_name, feat_list, feat_dictionary, character_dir=None):
+    msg = []
+
+    char_data = load_character(character, characters_dir=character_dir)
+
+    level = char_data["level"]
+    build = char_data["build"]
+    strength = char_data["strength"]
+    dexterity = char_data["dexterity"]
+    constitution = char_data["constitution"]
+    remaining_feats = char_data["remaining feats"]
+    has_taken = char_data["feats taken"]
+    hidden_taken = char_data["hfeats taken"]
+    ap = char_data["ap"]
+
+    total = strength + dexterity + constitution
+
+    toggle_feat = ["defensive fighting", "power attack", "masochist"]
+    str_only = [
+        "hurt me",
+        "improved hurt me",
+        "greater hurt me",
+        "hurt me more",
+        "bullrush",
+        "improved bullrush",
+        "greater bullrush",
+    ]
+    dex_only = [
+        "evasion",
+        "improved evasion",
+        "greater evasion",
+        "cheap shot",
+        "improved cheap shot",
+        "greater cheap shot",
+    ]
+    con_only = [
+        "deaths door",
+        "improved deaths door",
+        "greater deaths door",
+        "inner strength",
+        "improved inner strength",
+        "greater inner strength",
+    ]
+    nope = ["focus", "improved focus", "greater focus", "perfect focus"]
+
+    answer = feat_name.lower()
+
+    if total < ap:
+        msg.append("Please select your character stats with the [color=pink]!stats[/color] command first.")
+    elif (
+        answer in str_only and build != "strength"
+        or answer in dex_only and build != "dexterity"
+        or answer in con_only and build != "constitution"
+    ):
+        msg.append("This feat is not available for your build choice.")
+    elif answer in toggle_feat and (
+        "defensive fighting" in has_taken
+        or "power attack" in has_taken
+        or "masochist" in has_taken
+    ):
+        msg.append(
+            "You can not take more than one toggle feat. You already have either [color=yellow]Power "
+            "Attack[/color], [color=yellow]Defensive Fighting[/color], or [color=yellow]Masochist[/color]."
+        )
+    elif answer in nope:
+        msg.append(
+            "This feat is given to strength builds automatically at levels 3/9/15/18, and can not be taken "
+            "in any other fashion"
+        )
+    elif remaining_feats == 0:
+        msg.append("You have no feat slots left to select a new feat")
+    elif answer in hidden_taken:
+        msg.append("Why are you trying to take a weaker feat than the one you already have? No.")
+    elif answer not in feat_list:
+        msg.append("Make sure you have spelled the feat correctly")
+    else:
+        req_level = feat_dictionary[0][answer]["requirements"][0]
+        req_feats = feat_dictionary[0][answer]["requirements"][4]
+
+        if req_level > level:
+            msg.append("You are not the required level for this feat.")
+        elif req_feats not in has_taken and req_feats != "none":
+            msg.append("You do hot have the required prerequisites to take this feat.")
+        elif answer not in has_taken:
+            msg.append(answer + " has been added to your character sheet.")
+            msg.append(
+                "Make sure you use [color=pink]!viewchar[/color] to ensure you are "
+                "obtaining proper bonuses during fights."
+            )
+
+            remaining_feats -= 1
+            hidden_taken.append(answer)
+            has_taken.append(answer)
+
+            char_data["remaining feats"] = remaining_feats
+            char_data["feats taken"] = has_taken
+            char_data["hfeats taken"] = hidden_taken
+
+            save_character(character, char_data, characters_dir=character_dir)
+
+    return msg
