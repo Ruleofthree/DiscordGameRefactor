@@ -58,6 +58,32 @@ def load_character(
         return json.load(file)
 
 
+def delete_character(character, characters_dir):
+    characters_path = Path(characters_dir)
+    player = character.lower()
+    character_file = characters_path / f"{player}.json"
+    player_database_file = characters_path / "playerDatabase.json"
+
+    with player_database_file.open("r", encoding="utf-8") as file:
+        player_database = json.loads(file.read())
+
+    name = ""
+    for database_name, database_player in player_database.items():
+        if database_player == player:
+            name = database_name
+
+    player_database.pop(name, None)
+
+    with player_database_file.open("w", encoding="utf-8") as file:
+        json.dump(player_database, file, sort_keys=True, indent=2)
+
+    try:
+        character_file.unlink()
+        return f"{name} has been erased."
+    except FileNotFoundError:
+        return "You don't have a character to delete."
+
+
 def save_character(
     character_name: str,
     character_data: dict[str, Any],

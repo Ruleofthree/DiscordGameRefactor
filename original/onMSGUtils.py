@@ -1,5 +1,5 @@
 from src.feat_repository import get_feat_dictionary_and_names
-from src.character_repository import character_exists, load_character, save_character
+from src.character_repository import character_exists, delete_character, load_character, save_character
 import os
 import json
 import random
@@ -227,29 +227,9 @@ def message_7_player(channel, charFolder, unspoiledBarOOC, message):
 # Erases a character. Once erase command was used. player must !confirm deletion, or !deny
 # !erase
 def message_7_erase(character):
-    msg = ""
-    player = character.lower()
     path = os.getcwd()
     charFolder = os.path.join(path + "/characters/")
-    charFile = Path(charFolder + player + ".json")
-
-    with open(charFolder + "playerDatabase.json", 'r', encoding="utf-8") as file:
-        playerDatabase = json.loads(file.read())
-        file.close()
-    name = ""
-    for item in playerDatabase.items():
-        if item[1] == player:
-            name = item[0]
-    playerDatabase.pop(name, None)
-    with open(charFolder + "playerDatabase.json", "w", encoding="utf-8") as file:
-        json.dump(playerDatabase, file, sort_keys=True, indent=2)
-        file.close()
-    try:
-        os.remove(charFile)
-        msg = name + " has been erased."
-    except FileNotFoundError:
-        msg = "You don't have a character to delete."
-    return msg
+    return delete_character(character, charFolder)
 
 # Issue a challange to a player. USE PROFILE NAME
 # !challenge <profile name>
