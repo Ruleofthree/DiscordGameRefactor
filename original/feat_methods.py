@@ -1,3 +1,4 @@
+from src.feat_repository import get_feat_dictionary
 import os
 import json
 import random
@@ -80,9 +81,7 @@ def featStoneskin(pOneInfo, pTwoInfo, pOneFeatUsed, token):
 # Crippling Blow
 def featCripplingBlow(pOneInfo, pTwoInfo, total):
     modifier = ""
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if "crippling blow" in pTwoInfo['feats taken']:
         if pTwoInfo['build'] == "strength":
             percent = featDictionary[0]["crippling blow"]["action"][2]
@@ -128,9 +127,7 @@ def featVileTouch(pOneInfo, pTwoInfo, pOneFeatUsed, token):
 # Sylzana's creation
 def featOneVileDamage(pOneInfo, pTwoInfo, pOneVile, pTwoVile, vileOne, pOneCurrentHP, pTwoCurrentHP,
                       modifier):
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if "vile touch" in pOneInfo["feats taken"]:
         if pOneInfo['build'] == "dexterity":
             minimum = featDictionary[0]["vile touch"]["action"][1]
@@ -167,9 +164,7 @@ def featOneVileDamage(pOneInfo, pTwoInfo, pOneVile, pTwoVile, vileOne, pOneCurre
 
 def featHeavyCounter(pOneInfo, pOneFeatUsed):
     modifier = ""
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     print("In Heavy Counter: ")
     if "heavy hand" in pOneInfo["feats taken"]:
         bonus = featDictionary[0]["heavy hand"]["action"]
@@ -202,9 +197,7 @@ def featHeavyCounter(pOneInfo, pOneFeatUsed):
 # Heavy Hand
 def featHeavyHand(pOneInfo, pOneMaximum, pOneHeavy):
     modifier = ""
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if "heavy hand" in pOneInfo["feats taken"]:
         bonus = featDictionary[0]["heavy hand"]["action"]
         if pOneInfo['build'] == "strength":
@@ -253,9 +246,7 @@ def featStaggeringBlow(pOneInfo, pTwoInfo, strength, nonStrength, total):
 
 # Nerve Strike
 def featNerveStrike(pOneInfo, pTwoInfo, total, hit, totalAC):
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     modifier = ""
     nerveDamage = 0
     if 'nerve strike' in pOneInfo['feats taken']:
@@ -309,9 +300,7 @@ def featHurtMe(pOneInfo, pTwoInfo, pOneCurrentHP, pOneTotalHP, pOneModifier, bon
     modifier = ""
     number = (pOneCurrentHP / pOneTotalHP) * 100
     percentage = int(number)
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if 'hurt me' in pOneInfo['feats taken']:
         hurtMe = featDictionary[0]["hurt me"]["action"]
         if 33 < percentage <= 66:
@@ -377,9 +366,7 @@ def featRelentlessCounter(pOneInfo, pOneFeatUsed):
 
 def featRelentlessDamage(pOneRelentless, pOneRelentlessDamage, pOneInfo, totalHit, totalAC, hit):
     modifier = ""
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if pOneRelentless == 1:
         modifier = pOneInfo['name'] + "'s [color=yellow]relentlessness[/color] has paid off, doing an" \
                                       " additional[color=red] " + str(pOneRelentlessDamage) + "[/color] damage"
@@ -433,9 +420,7 @@ def featRelentlessDamage(pOneRelentless, pOneRelentlessDamage, pOneInfo, totalHi
 # Bullrush
 def featBullrush(pOneInfo, pTwoInfo, pOneFeatInfo, pOneBullrush, total):
     modifier = ""
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if pOneBullrush == 0:
         if "bullrush" in pOneInfo["feats taken"]:
             bullrush = featDictionary[0]["bullrush"]["action"]
@@ -461,9 +446,7 @@ def featBullrush(pOneInfo, pTwoInfo, pOneFeatInfo, pOneBullrush, total):
 #Sunder
 def featSunder(pOneInfo, pTwoInfo):
     modifier = ""
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if "sunder" in pOneInfo['feats taken']:
         sunder = featDictionary[0]["sunder"]["action"]
     elif "improved sunder" in pOneInfo['feats taken']:
@@ -487,9 +470,7 @@ def featFocus(pOneInfo, pOneCurrentHP, pOneTotalHP, pOneMinimum, pOneMaximum):
     modifier = ""
     number = (pOneCurrentHP / pOneTotalHP) * 100
     percentage = int(number)
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if "focus" in pOneInfo['feats taken']:
         focus = featDictionary[0]["focus"]["action"]
         if 33 < percentage <= 66:
@@ -612,9 +593,7 @@ def featQuickCounter(pOneInfo, pTwoInfo, pOneFeatUsed):
 def featQuickStrike(pOneInfo, pTwoInfo, pTwoQuick, pTwoFeatUsed):
     modifier = ""
     pTwoModifier = pTwoInfo['tdamage']
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if "quick strike" in pTwoInfo["feats taken"]:
         if pTwoInfo['build'] == "dexterity":
             minimum = featDictionary[0]["quick strike"]["action"][0]
@@ -708,9 +687,7 @@ def featEvasion(pOneInfo, pTwoInfo, bEvasion):
 
 # Deaths Door
 def featDeathsDoor(pOneInfo, pTwoInfo, pTwoCurrentHP, pTwoDeathsDoor):
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     modifier = ""
     revive = random.randint(1, 100)
     if pTwoCurrentHP <= 0:
@@ -751,9 +728,7 @@ def featDeathsDoor(pOneInfo, pTwoInfo, pTwoCurrentHP, pTwoDeathsDoor):
 
 # Deaths Door (onMSGUtils)
 def evasionDeathDoor(pOneInfo, pTwoInfo, pOneCurrentHP, pOneDeathsDoor):
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     modifier = ""
     revive = random.randint(1, 100)
     if ("deaths door" in pOneInfo['feats taken']
@@ -790,9 +765,7 @@ def evasionDeathDoor(pOneInfo, pTwoInfo, pOneCurrentHP, pOneDeathsDoor):
     return pTwoCurrentHP, pOneDeathsDoor, modifier
 
 def featInnerDuration(pOneInfo):
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     modifier = ""
     if "inner strength" in pOneInfo["feats taken"]:
         duration = featDictionary[0]["inner strength"]["action"][0]
@@ -810,9 +783,7 @@ def featInnerDuration(pOneInfo):
     return innerBonus, duration, modifier
 
 def featExposeCounter(pOneInfo, pTwoInfo):
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     print("Why?")
     if "expose" in pOneInfo["feats taken"]:
         print("inside expose statement")
@@ -843,9 +814,7 @@ def featExposeCounter(pOneInfo, pTwoInfo):
     return duration, modifier
 
 def featExpose(pOneInfo, pTwoInfo):
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     modifier = ""
     print("Why?")
     if "expose" in pOneInfo["feats taken"]:
@@ -877,9 +846,7 @@ def featExpose(pOneInfo, pTwoInfo):
     return defense, modifier
 
 def featExposeRegeneration(pOneInfo, pTwoInfo):
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     if "expose" in pTwoInfo["feats taken"]:
         expose = featDictionary[0]["expose"]["action"]
         if pTwoInfo['build'] == 'dexterity':
@@ -908,9 +875,7 @@ def featExposeRegeneration(pOneInfo, pTwoInfo):
                "'s weakness, removing [color=red]" + str(defense) + "[/color] points from their DR/Regeneration."
     return defense, modifier
 def featCheapShot(pOneInfo, pTwoInfo):
-    featFile = open("feats.json", "r", encoding="utf-8")
-    featDictionary = json.load(featFile)
-    featFile.close()
+    featDictionary = get_feat_dictionary()
     modifier = ""
     lockout = random.randint(1, 100)
     pOneLockout = 0
