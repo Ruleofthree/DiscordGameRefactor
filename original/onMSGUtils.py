@@ -1,4 +1,5 @@
 from src.feat_repository import get_feat_dictionary_and_names
+from src.character_repository import character_exists, load_character
 import os
 import json
 import random
@@ -170,9 +171,11 @@ def message_4_who(channel, charFolder, unspoiledBarOOC, message):
             if item[1] == profile:
                 name = item[0]
         try:
-            with open(charFolder + profile + ".json", "r+", encoding="utf-8") as file:
-                charData = json.load(file)
-                file.close()
+            if not character_exists(profile, charFolder):
+                raise FileNotFoundError
+
+            charData = load_character(profile, charFolder)
+
             build = charData['build']
             wins = charData['wins']
             losses = charData['losses']
