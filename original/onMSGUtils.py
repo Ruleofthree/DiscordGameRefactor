@@ -1,5 +1,5 @@
 from src.feat_repository import get_feat_dictionary_and_names
-from src.character_repository import character_exists, load_character
+from src.character_repository import character_exists, load_character, save_character
 import os
 import json
 import random
@@ -36,22 +36,13 @@ def status_compile(character, statusmsg, masterList):
             if findRoom in statusmsg:
                 path = os.getcwd()
                 charFolder = os.path.join(path + "/characters/")
-                charSheet = Path(charFolder + character + ".json")
-                with open(charFolder + character.lower() + '.json', 'r+') as file:
-                    pInfo = json.load(file)
-                    pInfo['status'] = findRoom
-                    file.seek(0)
-                    file.write(json.dumps(pInfo, ensure_ascii=False, indent=2))
-                    file.truncate()
-                    file.close()
+                pInfo = load_character(character, charFolder)
+                pInfo['status'] = findRoom
+                save_character(character, pInfo, charFolder)
             else:
-                with open(charFolder + character.lower() + '.json', 'r+') as file:
-                    pInfo = json.load(file)
-                    pInfo['status'] = ""
-                    file.seek(0)
-                    file.write(json.dumps(pInfo, ensure_ascii=False, indent=2))
-                    file.truncate()
-                    file.close()
+                pInfo = load_character(character, charFolder)
+                pInfo['status'] = ""
+                save_character(character, pInfo, charFolder)
     except:
         pass
 
