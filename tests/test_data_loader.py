@@ -10,10 +10,8 @@ from src.data_loader import (
     load_traits,
 )
 
-from src.data_loader import DATA_DIR, load_data_file, load_json_file
 
-
-def test_load_json_file_loads_valid_jason(tmp_path):
+def test_load_json_file_loads_valid_json(tmp_path):
     test_file = tmp_path / "sample.json"
     test_data = {"name": "test", "level": 1}
 
