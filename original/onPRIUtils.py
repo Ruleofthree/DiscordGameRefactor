@@ -1,7 +1,8 @@
 from src.armor_repository import get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
 from src.character_repository import (assign_character_stats, character_exists, load_character, save_character,
-                                      select_character_build, select_character_feat, select_character_trait)
+                                      select_character_build, select_character_feat, select_character_trait,
+                                      calculate_character_view_totals)
 import os
 import json
 import random
@@ -280,38 +281,22 @@ def pri_viewchar(character):
         #     print("Something above doesn't exist")
         print("What?")
 
-        strength = baseStrength + pstrength + armorstrength + potionstr
-        dexterity = baseDexterity + pdexterity + armordexterity + potiondex
-        constitution = baseConstitution + pconstitution + armorconstitution + potioncon
+        totals = calculate_character_view_totals(charData)
 
-        if build == "constitution":
-            thp = hp + feathp + armorhp + potionhp + traitHP + int(int(constitution / 2) * 3)
-            thit = hit + feathit + armorhit + traitHit - cursed + int((strength + constitution) / 2.4)
-            tdamage = damage + featdamage + armordamage - cursed + traitDamage + int(thp / 15) + int(strength / 5)
-            ac += 4
-            print(thit)
-            print(tdamage)
-            print(thp)
-        elif build == "dexterity":
-            thp = hp + feathp + armorhp + potionhp + traitHP + int(int(constitution / 2) * 5)
-            thit = hit + feathit + armorhit + traitHit - cursed + int(dexterity / 1.5)
-            tdamage = damage + featdamage + armordamage + traitDamage - cursed + int(dexterity / 4) + int(strength / 5)
-        else:
-            thit = hit + feathit + armorhit + traitHit - cursed + int(strength / 2)
-            tdamage = damage + featdamage + armordamage - cursed + traitDamage + int(strength / 1.5)
-            thp = hp + feathp + armorhp + potionhp + traitHP + int(int(constitution / 2) * 5)
-            ac += 2
+        strength = totals["strength"]
+        dexterity = totals["dexterity"]
+        constitution = totals["constitution"]
+        thp = totals["thp"]
+        tac = totals["tac"]
+        tdr = totals["tdr"]
+        thit = totals["thit"]
+        tdamage = totals["tdamage"]
+        regen = totals["regeneration"]
+        blur = totals["blur"]
+        initiative = totals["initiative"]
 
-
-        tac = ac + featac + armorac + traitAC - cursed + int(dexterity / 2)
-        tdr = armordr + traitDR
-        # print("Armor: " + str(amrordr))
-        # print("traitDR " + str(traitDR))
-        regen = traitRegen + potionRegen
         hasTakenList = ", ".join(hasTaken)
         potionInventoryList = ", ".join(potionInventory)
-        blur = potionblur + armorblur + nblur
-        initiative = int(dexterity / 2) + armorinitiative
 
         msg.append("\n" + name + "'s Character Sheet:\n"
                    "𝙲𝚑𝚊𝚛𝚊𝚌𝚝𝚎𝚛 𝙽𝚊𝚖𝚎:\t\t\t\t\t[color=red]" + name + "[/color]\n"
