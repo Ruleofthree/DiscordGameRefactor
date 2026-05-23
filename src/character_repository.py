@@ -788,6 +788,62 @@ def select_character_feat(character, feat_name, feat_list, feat_dictionary, char
 
             char_data["remaining feats"] = remaining_feats
 
+            if answer == "improved deflect":
+                index = has_taken.index("deflect")
+                has_taken.pop(index)
+
+            if answer == "greater deflect":
+                index = has_taken.index("improved deflect")
+                has_taken.pop(index)
+
+            if answer == "improved hurt me":
+                index = has_taken.index("hurt me")
+                has_taken.pop(index)
+
+            if answer == "greater hurt me":
+                index = has_taken.index("improved hurt me")
+                has_taken.pop(index)
+
+            if answer == "hurt me more":
+                index = has_taken.index("greater hurt me")
+                has_taken.pop(index)
+
+            if answer == "improved reckless abandon":
+                index = has_taken.index("reckless abandon")
+                has_taken.pop(index)
+
+            if answer == "greater reckless abandon":
+                index = has_taken.index("improved reckless abandon")
+                has_taken.pop(index)
+
+            if answer == "improved deaths door":
+                index = has_taken.index("deaths door")
+                has_taken.pop(index)
+
+            if answer == "greater deaths door":
+                index = has_taken.index("improved deaths door")
+                has_taken.pop(index)
+
+            if answer == "improved vile touch":
+                index = has_taken.index("vile touch")
+                has_taken.pop(index)
+
+            if answer == "greater vile touch":
+                index = has_taken.index("improved vile touch")
+                has_taken.pop(index)
+
+            if answer == "death touch":
+                index = has_taken.index("greater vile touch")
+                has_taken.pop(index)
+
+            if answer == "improved heavy hand":
+                index = has_taken.index("heavy hand")
+                has_taken.pop(index)
+
+            if answer == "greater heavy hand":
+                index = has_taken.index("improved heavy hand")
+                has_taken.pop(index)
+
             if answer == "improved evasion":
                 index = has_taken.index("evasion")
                 has_taken.pop(index)

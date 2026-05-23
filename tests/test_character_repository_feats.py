@@ -909,3 +909,230 @@ def test_select_character_feat_riposte_replaces_visible_greater_quick_strike(tmp
     assert saved["feats taken"] == ["riposte"]
     assert saved["hfeats taken"] == ["quick strike", "improved quick strike", "greater quick strike", "riposte"]
     assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_improved_deflect_replaces_visible_lower_feat(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=12,
+            **{
+                "remaining feats": 1,
+                "feats taken": ["deflect"],
+                "hfeats taken": ["deflect"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "improved deflect": {
+                "requirements": [12, 0, 0, 0, "deflect"],
+                "action": [1],
+            }
+        }
+    ]
+    feat_list = ["improved deflect"]
+
+    select_character_feat("tester", "improved deflect", feat_list, feat_dictionary, character_dir=char_dir)
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["improved deflect"]
+    assert saved["hfeats taken"] == ["deflect", "improved deflect"]
+    assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_greater_deflect_replaces_visible_lower_feat(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=18,
+            **{
+                "remaining feats": 1,
+                "feats taken": ["improved deflect"],
+                "hfeats taken": ["deflect", "improved deflect"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "greater deflect": {
+                "requirements": [18, 0, 0, 0, "improved deflect"],
+                "action": [1],
+            }
+        }
+    ]
+    feat_list = ["greater deflect"]
+
+    select_character_feat("tester", "greater deflect", feat_list, feat_dictionary, character_dir=char_dir)
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["greater deflect"]
+    assert saved["hfeats taken"] == ["deflect", "improved deflect", "greater deflect"]
+    assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_improved_hurt_me_replaces_visible_lower_feat(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=9,
+            build="strength",
+            **{
+                "remaining feats": 1,
+                "feats taken": ["hurt me"],
+                "hfeats taken": ["hurt me"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "improved hurt me": {
+                "requirements": [9, 0, 0, 0, "hurt me"],
+                "action": [1],
+            }
+        }
+    ]
+    feat_list = ["improved hurt me"]
+
+    select_character_feat("tester", "improved hurt me", feat_list, feat_dictionary, character_dir=char_dir)
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["improved hurt me"]
+    assert saved["hfeats taken"] == ["hurt me", "improved hurt me"]
+    assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_hurt_me_more_replaces_visible_greater_hurt_me(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=18,
+            build="strength",
+            **{
+                "remaining feats": 1,
+                "feats taken": ["greater hurt me"],
+                "hfeats taken": ["hurt me", "improved hurt me", "greater hurt me"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "hurt me more": {
+                "requirements": [18, 0, 0, 0, "greater hurt me"],
+                "action": [1],
+            }
+        }
+    ]
+    feat_list = ["hurt me more"]
+
+    select_character_feat("tester", "hurt me more", feat_list, feat_dictionary, character_dir=char_dir)
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["hurt me more"]
+    assert saved["hfeats taken"] == ["hurt me", "improved hurt me", "greater hurt me", "hurt me more"]
+    assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_improved_deaths_door_replaces_visible_lower_feat(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=12,
+            build="constitution",
+            **{
+                "remaining feats": 1,
+                "feats taken": ["deaths door"],
+                "hfeats taken": ["deaths door"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "improved deaths door": {
+                "requirements": [12, 0, 0, 0, "deaths door"],
+                "action": [1],
+            }
+        }
+    ]
+    feat_list = ["improved deaths door"]
+
+    select_character_feat("tester", "improved deaths door", feat_list, feat_dictionary, character_dir=char_dir)
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["improved deaths door"]
+    assert saved["hfeats taken"] == ["deaths door", "improved deaths door"]
+    assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_death_touch_replaces_visible_greater_vile_touch(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=18,
+            **{
+                "remaining feats": 1,
+                "feats taken": ["greater vile touch"],
+                "hfeats taken": ["vile touch", "improved vile touch", "greater vile touch"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "death touch": {
+                "requirements": [18, 0, 0, 0, "greater vile touch"],
+                "action": [7, 1, 4, 6],
+            }
+        }
+    ]
+    feat_list = ["death touch"]
+
+    select_character_feat("tester", "death touch", feat_list, feat_dictionary, character_dir=char_dir)
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["death touch"]
+    assert saved["hfeats taken"] == ["vile touch", "improved vile touch", "greater vile touch", "death touch"]
+    assert saved["remaining feats"] == 0
+
+
+def test_select_character_feat_greater_heavy_hand_replaces_visible_improved_heavy_hand(tmp_path):
+    char_dir = write_character(
+        tmp_path,
+        "tester",
+        base_character(
+            level=15,
+            **{
+                "remaining feats": 1,
+                "feats taken": ["improved heavy hand"],
+                "hfeats taken": ["heavy hand", "improved heavy hand"],
+            },
+        ),
+    )
+
+    feat_dictionary = [
+        {
+            "greater heavy hand": {
+                "requirements": [15, 0, 0, 0, "improved heavy hand"],
+                "action": [3, 4, 6],
+            }
+        }
+    ]
+    feat_list = ["greater heavy hand"]
+
+    select_character_feat("tester", "greater heavy hand", feat_list, feat_dictionary, character_dir=char_dir)
+
+    saved = load_character("tester", characters_dir=char_dir)
+    assert saved["feats taken"] == ["greater heavy hand"]
+    assert saved["hfeats taken"] == ["heavy hand", "improved heavy hand", "greater heavy hand"]
+    assert saved["remaining feats"] == 0
