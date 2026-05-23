@@ -120,7 +120,6 @@ def pri_7_respec(character):
 def pri_6_stats(message, character, charData, charFile):
     path = os.getcwd()
     charFolder = os.path.join(path + "/characters/")
-    charFile = Path(charFolder + character.lower() + ".json")
     msg = []
     ap = charData["ap"]
     reset = charData["reset"]
@@ -138,7 +137,7 @@ def pri_6_stats(message, character, charData, charFile):
     constitution = int(info[3])
     total = strength + dexterity + constitution
     # Find out if player even has a character created yet. If not. Tell them they are an idiot.
-    if not charFile.is_file():
+    if not character_exists(character, charFolder):
         msg.append("You don't even have a character created yet. Type !name <name> in the room. "
                    "Where <name> is your character's actual name. (Example: !name Joe)")
     # Find out if player has reset points to use. If not. Tell them they are an idiot.
@@ -204,20 +203,16 @@ def pri_6_stats(message, character, charData, charFile):
                        "use [color=pink]!traitlist[/color], use [color=pink]!traithelp <trait name>[/color] for its "
                        "description and use [color=pink]!traitpick <trait name>[/color] to select that trait.")
             # load the new data in the character's .json file.
-            with open(charFolder + character.lower() + ".json", "r+", encoding="utf-8") as file:
-                charData = json.load(file)
-                charData["strength"] = int(strength)
-                charData["dexterity"] = int(dexterity)
-                charData["constitution"] = int(constitution)
-                charData["abhit"] = strMod
-                charData["abdamage"] = strMod
-                charData["abac"] = dexMod
-                charData["abhp"] = conMod
-                charData["initiative"] = dexMod
-                file.seek(0)
-                file.write(json.dumps(charData, ensure_ascii=False, indent=2))
-                file.truncate()
-                file.close()
+            charData = load_character(character, charFolder)
+            charData["strength"] = int(strength)
+            charData["dexterity"] = int(dexterity)
+            charData["constitution"] = int(constitution)
+            charData["abhit"] = strMod
+            charData["abdamage"] = strMod
+            charData["abac"] = dexMod
+            charData["abhp"] = conMod
+            charData["initiative"] = dexMod
+            save_character(character, charData, charFolder)
     return msg
 
 # !build <strength> <dexterity> <constitution>
