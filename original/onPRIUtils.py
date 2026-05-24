@@ -226,17 +226,7 @@ def pri_viewchar(character):
         pstrength = charData["pstrength"]
         pdexterity = charData["pdexterity"]
         pconstitution = charData["pconstitution"]
-        # Trait Bonuses
-        nblur = charData['blur']
-        traitHit = charData['traithit']
-        traitDamage = charData['traitdamage']
-        traitAC = charData['traitac']
-        traitDR = charData['traitdr']
-        traitHP = charData['traithp']
-        traitRegen = charData['traitregen']
-        cursed = charData['cursed']
-        ninitiative = charData["initiative"]
-
+        
         # except:
         #     print("Something above doesn't exist")
         print("What?")
