@@ -13,6 +13,14 @@ from src.character_repository import load_character
 def message_accept(channel, charFolder, unspoiledArena, character, game, opponent, pOneInfo):
     update = False
     msg = []
+    pTwoInfo = None
+    new_game = None
+    playerTwo = None
+    bTimer = False
+    bGameTimer = False
+    new_oppenent = None
+    token = None
+
     if channel == unspoiledArena:
         # make sure that this command cannot be ran if a fight is taking place. During a fight, game counter will
         # be set to 1.
@@ -20,14 +28,6 @@ def message_accept(channel, charFolder, unspoiledArena, character, game, opponen
             path = os.getcwd()
             charFolder = os.path.join(path + "/characters/")
             charFile = Path(charFolder + character.lower() + ".json")
-            pTwoInfo = None
-            new_game = None
-            playerTwo = ""
-            bTimer = False
-            bGameTimer = False
-            new_oppenent = None
-            token = None
-            playerTwo = None
             print("why?")
             playerTwo = character.lower()
             if opponent == character.lower():
