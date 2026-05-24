@@ -1326,3 +1326,75 @@ def build_character_challenge_message(challenger_info, opponent_info, opponent_p
         + ", "
         + "Type [color=pink]!accept[/color])"
     )
+
+
+def build_challenge_accept_initiative_result(
+    player_one_info,
+    player_two_info,
+    player_one_roll,
+    player_two_roll,
+    coin_flip=None,
+):
+    msg = []
+
+    player_one_name = player_one_info["name"]
+    player_two_name = player_two_info["name"]
+    player_one_mod = int(player_one_info["initiative"])
+    player_two_mod = int(player_two_info["initiative"])
+
+    total_one = player_one_roll + player_one_mod
+    total_two = player_two_roll + player_two_mod
+
+    msg.append(
+        "\nRolling Initiative to see who goes first. In result of tie, person with "
+        "highest dexterity modifier goes first. Should [b]that[/b] tie as well, then fuck "
+        "it, coin flip. " + player_one_name + " wins on a One."
+    )
+    msg.append(
+        player_one_name + " rolled: " + str(player_one_roll) + " + " +
+        str(player_one_mod) + " and got [color=red]" + str(total_one) + "[/color]\n" +
+        player_two_name + " rolled: " + str(player_two_roll) + " + " +
+        str(player_two_mod) + " and got [color=red]" + str(total_two) + "[/color]"
+    )
+
+    if total_one > total_two:
+        msg.append(player_one_name + " Goes first")
+        token = 1
+        msg.append("Type [color=pink]!usefeat <feat>[/color] to use a feat.")
+    elif total_two > total_one:
+        msg.append(player_two_name + " Goes first")
+        token = 2
+        msg.append("Type [color=pink]!usefeat <feat>[/color] to use a feat.")
+    else:
+        msg.append(
+            player_one_name + "'s dexterity: [color=red]" + str(player_one_mod) +
+            "[/color]\n" + player_two_name + "'s dexterity: [color=red]" +
+            str(player_two_mod) + "[/color]"
+        )
+        if player_one_mod > player_two_mod:
+            msg.append(
+                player_one_name + " Goes first. Type [color=pink]!usefeat <feat>"
+                "[/color] to use a feat."
+            )
+            token = 1
+        elif player_one_mod < player_two_mod:
+            msg.append(
+                player_two_name + " Goes first. Type [color=pink]!usefeat <feat>"
+                "[/color] to use a feat."
+            )
+            token = 2
+        else:
+            if coin_flip == 1:
+                msg.append(
+                    player_one_name + " Goes first. Type [color=pink]!usefeat <feat>"
+                    "[/color] to use a feat."
+                )
+                token = 1
+            else:
+                msg.append(
+                    player_two_name + " Goes first. Type [color=pink]!usefeat <feat>"
+                    "[/color] to use a feat."
+                )
+                token = 2
+
+    return msg, token
