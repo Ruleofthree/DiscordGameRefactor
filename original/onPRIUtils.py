@@ -196,28 +196,28 @@ def pri_viewchar(character):
         armorInvThree = view_context["armor_inv_three"]
 
         potionInventoryList = view_context["potion_inventory"]
-        equip = charData['equip']
-        name = charData['name']
-        build = charData['build']
-        trait = charData['trait']
-        level = charData['level']
-        tFeats = charData['total feats']
-        baseDamage = charData['base damage']
-        renown = charData['renown']
-        xp = charData['currentxp']
-        nextLevel = charData['nextlevel']
-        remainingFeats = charData['remaining feats']
-        hasTaken = charData['feats taken']
-        ap = charData['ap']
-        reset = charData['reset']
-        wins = charData['wins']
-        losses = charData['losses']
-        forfeits = charData['forfeits']
-        # Potion Bonuses
-        potionEffect = charData["potioneffect"]
-        pstrength = charData["pstrength"]
-        pdexterity = charData["pdexterity"]
-        pconstitution = charData["pconstitution"]
+
+        equip = view_context["equip"]
+        name = view_context["name"]
+        build = view_context["build"]
+        trait = view_context["trait"]
+        level = view_context["level"]
+        tFeats = view_context["total_feats"]
+        baseDamage = view_context["base_damage"]
+        renown = view_context["renown"]
+        xp = view_context["current_xp"]
+        nextLevel = view_context["next_level"]
+        remainingFeats = view_context["remaining_feats"]
+        hasTakenList = view_context["feats_taken"]
+        ap = view_context["ap"]
+        reset = view_context["reset"]
+        wins = view_context["wins"]
+        losses = view_context["losses"]
+        forfeits = view_context["forfeits"]
+        potionEffect = view_context["potion_effect"]
+        pstrength = view_context["permanent_strength"]
+        pdexterity = view_context["permanent_dexterity"]
+        pconstitution = view_context["permanent_constitution"]
 
         # except:
         #     print("Something above doesn't exist")
@@ -234,8 +234,6 @@ def pri_viewchar(character):
         regen = totals["regeneration"]
         blur = totals["blur"]
         initiative = totals["initiative"]
-
-        hasTakenList = ", ".join(hasTaken)
 
         msg.append("\n" + name + "'s Character Sheet:\n"
                    "𝙲𝚑𝚊𝚛𝚊𝚌𝚝𝚎𝚛 𝙽𝚊𝚖𝚎:\t\t\t\t\t[color=red]" + name + "[/color]\n"
