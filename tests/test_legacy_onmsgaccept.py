@@ -170,3 +170,38 @@ def test_message_accept_reports_no_challenge_when_game_is_not_pending():
     assert new_opponent is None
     assert token is None
     assert update is False
+
+
+def test_message_accept_rejects_wrong_channel():
+    (
+        msg,
+        p_two_info,
+        new_game,
+        player_two,
+        b_timer,
+        b_game_timer,
+        new_opponent,
+        token,
+        update,
+    ) = message_accept(
+        channel="wrong-channel",
+        charFolder="unused/",
+        unspoiledArena=UNSPOILED_ARENA,
+        character="Bob",
+        game=0.5,
+        opponent="bob",
+        pOneInfo={"name": "Alice", "initiative": 3},
+    )
+
+    assert msg == [
+        "This command is only available in "
+        "[session=Unspoiled Desire Arena]adh-abfb9b6ebd20f1e7a693[/session]."
+    ]
+    assert p_two_info is None
+    assert new_game is None
+    assert player_two is None
+    assert b_timer is False
+    assert b_game_timer is False
+    assert new_opponent is None
+    assert token is None
+    assert update is False
