@@ -21,7 +21,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `205 passed`
+- `211 passed`
 
 This includes:
 
@@ -622,6 +622,39 @@ Status:
 
 ---
 
+## Character Who Lookup Extraction
+
+### Completed Work
+
+The public `!who <profile name>` command behavior was extracted from `original/onMSGUtils.py`.
+
+Created:
+
+- `build_character_who_messages()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `message_4_who()` now delegates profile lookup and message construction to `build_character_who_messages()`.
+
+Behavior preserved:
+
+- Command still only works in the Unspoiled Desire OOC room.
+- Profile names are still read from `playerDatabase.json`.
+- Character sheets are still loaded by profile name.
+- Character name, level, build, cursed status, wins, losses, forfeits, and win/loss ratio are still displayed.
+- Zero-fight characters still use the original ZeroDivisionError fallback message.
+- Missing character sheets still use the original invalid-profile message.
+- Legacy output strings were preserved.
+
+Tests:
+
+- `tests/test_character_repository_who.py`
+- `tests/test_legacy_onmsgutils_who.py`
+
+Status:
+
+- Complete.
+
 ## Current Position
 
 The safest read-only and simple character repository paths have now been refactored and tested.
@@ -641,6 +674,7 @@ Completed character-related areas include:
 - Feat selection
 - Ability-point adding
 - Character level listing
+- Character who/profile lookup
 - Character view calculations and context preparation
 
 `botCommand.py` is still not imported directly in pytest because of runtime dependencies.
@@ -654,11 +688,6 @@ Completed character-related areas include:
 ### Medium Risk
 
 These are reasonable future targets, but they need dedicated tests first:
-
-- `message_4_who` in `original/onMSGUtils.py`
-  - Reads `playerDatabase.json`.
-  - Loads a character file.
-  - Displays build, trait, level, wins, losses, forfeits, and ratio.
 
 - `message_7_player` in `original/onMSGUtils.py`
   - Deprecated, but still reads character score data.
