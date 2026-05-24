@@ -1131,3 +1131,45 @@ def apply_character_view_totals(char_data, totals):
     char_data["initiative"] = totals["initiative"]
     char_data["regeneration"] = totals["regeneration"]
     return char_data
+
+
+def add_ability_point(char_data: dict, ability: str) -> tuple[dict, list[str]]:
+    msg = []
+
+    valid_abilities = ["str", "strength", "dex", "dexterity", "con", "constitution"]
+
+    if ability not in valid_abilities:
+        msg.append(
+            "You need to specify the ability you want to point the point to. "
+            "Type '!add str' or '!add strength' for strength, and so on."
+        )
+        return char_data, msg
+
+    if not char_data["apboost"]:
+        msg.append("You do not have any more ability points to spend.")
+        return char_data, msg
+
+    char_data["apboost"] = False
+
+    if ability == "strength" or ability == "str":
+        char_data["strength"] += 1
+        msg.append(
+            "You have added an ability point to Strength. Please do a [color=pink]!viewchar[/color] "
+            "to ensure changes."
+        )
+
+    if ability == "dexterity" or ability == "dex":
+        char_data["dexterity"] += 1
+        msg.append(
+            "You have added an ability point to Dexterity. Please do a [color=pink]!viewchar[/color] "
+            "to ensure changes."
+        )
+
+    if ability == "constitution" or ability == "con":
+        char_data["constitution"] += 1
+        msg.append(
+            "You have added an ability point to Constitution. Please do a [color=pink]!viewchar[/color] "
+            "to ensure changes."
+        )
+
+    return char_data, msg

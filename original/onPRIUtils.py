@@ -1,6 +1,7 @@
 from src.armor_repository import get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
 from src.character_repository import (
+    add_ability_point,
     apply_character_view_totals,
     assign_character_stats,
     build_character_view_context,
@@ -137,39 +138,27 @@ def pri_6_build(charFolder, message, charFile, character):
 # Automatically adds 1 point to Strength, Dexterity, or Constitution. used only when character reaches 5, 10, 15, or 20
 # !add strength, !add dexterity, !add constitution OR !add str, !add dex, !add con
 def pri_4_add(message, character):
-    msg = []
     ability = message[5:]
-    ability.lower()
-    answer = ["str", "strength", "dex", "dexterity", "con", "constitution"]
-    if ability not in answer:
-        msg.append("You need to specify the ability you want to point the point to. "
-                   "Type '!add str' or '!add strength' for strength, and so on.")
-    else:
-        player = character.lower()
-        path = os.getcwd()
-        charFolder = os.path.join(path + "/characters/")
+    ability = ability.lower()
+    player = character.lower()
+    path = os.getcwd()
+    charFolder = os.path.join(path + "/characters/")
+    charFile = Path(charFolder + player + ".json")
 
-        charData = load_character(player, charFolder)
-        total = charData['apboost']
-        if total:
-            charData['apboost'] = False
-            if ability == "strength" or ability == "str":
-                charData['strength'] += 1
-                save_character(player, charData, charFolder)
-                msg.append("You have added an ability point to Strength. Please do a [color=pink]!viewchar[/color] "
-                           "to ensure changes.")
-            if ability == "dexterity" or ability == "dex":
-                charData['dexterity'] += 1
-                save_character(player, charData, charFolder)
-                msg.append("You have added an ability point to Dexterity. Please do a [color=pink]!viewchar[/color] "
-                           "to ensure changes.")
-            if ability == "constitution" or ability == "con":
-                charData['constitution'] += 1
-                save_character(player, charData, charFolder)
-                msg.append("You have added an ability point to Constitution. Please do a [color=pink]!viewchar[/color] "
-                           "to ensure changes.")
-        else:
-            msg.append("You do not have any more ability points to spend.")
+    if ability not in ["str", "strength", "dex", "dexterity", "con", "constitution"]:
+        msg = [
+            "You need to specify the ability you want to point the point to. "
+            "Type '!add str' or '!add strength' for strength, and so on."
+        ]
+        return msg
+
+    with open(charFile, "r+", encoding="utf-8") as file:
+        charData = json.load(file)
+        charData, msg = add_ability_point(charData, ability)
+        file.seek(0)
+        file.write(json.dumps(charData, ensure_ascii=False, indent=2))
+        file.truncate()
+
     return msg
 
 # Shows character sheet in its entirety.
