@@ -1,6 +1,7 @@
 from src.armor_repository import get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
 from src.character_repository import (
+    apply_character_view_totals,
     assign_character_stats,
     build_character_view_context,
     calculate_character_view_totals,
@@ -270,13 +271,8 @@ def pri_viewchar(character):
                    "𝙰𝚛𝚖𝚘𝚛 𝙸𝚗𝚟𝚎𝚗𝚝𝚘𝚛𝚢:\t\t\t\t\t[color=red] " + armorOne + ": (" + armorInvOne + "), " +
                    armorTwo + ": (" + armorInvTwo + "), " + armorThree + ": (" + armorInvThree + "), [/color]\n"
                    "𝙰𝚛𝚖𝚘𝚛 𝙴𝚚𝚞𝚒𝚙𝚙𝚎𝚍:\t\t\t\t[color=red] " + equip)
-        charData['thp'] = thp
-        charData['tac'] = tac
-        charData['tdr'] = tdr
-        charData['thit'] = thit
-        charData['tdamage'] = tdamage
-        charData['initiative'] = initiative
-        charData['regeneration'] = regen
+
+        apply_character_view_totals(charData, totals)
         save_character(character, charData, charFolder)
     return msg
 
