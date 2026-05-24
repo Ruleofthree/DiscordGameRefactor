@@ -1,5 +1,6 @@
 from src.feat_repository import get_feat_dictionary_and_names
 from src.character_repository import (build_character_who_messages,
+                                      build_character_player_score_message,
                                       create_character,
                                       character_exists,
                                       delete_character,
@@ -198,25 +199,7 @@ def message_7_player(channel, charFolder, unspoiledBarOOC, message):
     msg = ""
     if channel == unspoiledBarOOC:
         name = message[8:].lower()
-
-        if not character_exists(name, charFolder):
-            msg = "Either they don't have a character, or you fucked up typing. (type: !player <profile name>, " \
-                "[b]not[/b] character name. Example: !player their perfect doll"
-        else:
-            score = load_character(name, charFolder)
-            name = score['name']
-            wins = score['wins']
-            losses = score['losses']
-            forfeits = score['forfeits']
-            total = wins + losses
-            try:
-                ratio = int((wins / total) * 100)
-                msg = name + "'s current win/loss score is: [color=pink]" + str(wins) + " wins[/color], "\
-                    "and [color=yellow]" + str(losses) + " losses[/color]. ([color=red]" + str(ratio) + "%[/color])" \
-                    "They have also forfeited " + str(forfeits) + " times."
-            except ZeroDivisionError:
-                msg = "Either " + name + " has a 0% win/loss ratio, or 100%. It all depends " \
-                    "on how you justify a person that has never entered the arena yet."
+        msg = build_character_player_score_message(charFolder, name)
     else:
         msg = "This Command can only be used in [session=Unspoiled Desire (Command and OoC Room)]adh-8216a753c1ef08445052[/session]"
     return msg

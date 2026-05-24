@@ -19,9 +19,11 @@ The guiding rules for this refactor are:
 
 ## Current Test Status
 
+## Current Test Status
+
 Current full pytest result:
 
-- `211 passed`
+- `215 passed`
 
 This includes:
 
@@ -655,6 +657,41 @@ Status:
 
 - Complete.
 
+---
+
+## Character Player Score Extraction
+
+### Completed Work
+
+The deprecated public `!player <profile name>` command behavior was extracted from `original/onMSGUtils.py`.
+
+Created:
+
+- `build_character_player_score_message()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `message_7_player()` now delegates player score message construction to `build_character_player_score_message()`.
+
+Behavior preserved:
+
+- Command still only works in the Unspoiled Desire OOC room.
+- Profile names are still read from the `!player` command text.
+- Character sheets are still loaded by profile name.
+- Existing character profiles still display wins, losses, forfeits, and win/loss ratio.
+- Zero-fight characters still use the original ZeroDivisionError fallback message.
+- Missing character sheets still use the original missing-character message.
+- Legacy output strings were preserved, including spacing and punctuation.
+
+Tests:
+
+- `tests/test_character_repository_player_score.py`
+- `tests/test_legacy_onmsgutils_player.py`
+
+Status:
+
+- Complete.
+- 
 ## Current Position
 
 The safest read-only and simple character repository paths have now been refactored and tested.
@@ -675,6 +712,7 @@ Completed character-related areas include:
 - Ability-point adding
 - Character level listing
 - Character who/profile lookup
+- Character player score lookup
 - Character view calculations and context preparation
 
 `botCommand.py` is still not imported directly in pytest because of runtime dependencies.
@@ -688,10 +726,6 @@ Completed character-related areas include:
 ### Medium Risk
 
 These are reasonable future targets, but they need dedicated tests first:
-
-- `message_7_player` in `original/onMSGUtils.py`
-  - Deprecated, but still reads character score data.
-  - Should either be tested before removal or left untouched until deprecated-command cleanup.
 
 - `message_10_challenge` in `original/onMSGUtils.py`
   - Reads two character files.

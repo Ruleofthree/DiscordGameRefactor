@@ -1260,3 +1260,36 @@ def build_character_who_messages(char_folder, profile):
         )
 
     return msg
+
+
+def build_character_player_score_message(char_folder, profile_name):
+    profile = profile_name.lower()
+    character_path = Path(char_folder) / f"{profile}.json"
+
+    if not character_path.is_file():
+        return (
+            "Either they don't have a character, or you fucked up typing. (type: !player <profile name>, "
+            "[b]not[/b] character name. Example: !player their perfect doll"
+        )
+
+    with character_path.open("r", encoding="utf-8") as character_file:
+        score = json.load(character_file)
+
+    name = score["name"]
+    wins = score["wins"]
+    losses = score["losses"]
+    forfeits = score["forfeits"]
+    total = wins + losses
+
+    try:
+        ratio = int((wins / total) * 100)
+        return (
+            name + "'s current win/loss score is: [color=pink]" + str(wins) + " wins[/color], "
+            "and [color=yellow]" + str(losses) + " losses[/color]. ([color=red]" + str(ratio) + "%[/color])"
+            "They have also forfeited " + str(forfeits) + " times."
+        )
+    except ZeroDivisionError:
+        return (
+            "Either " + name + " has a 0% win/loss ratio, or 100%. It all depends "
+            "on how you justify a person that has never entered the arena yet."
+        )
