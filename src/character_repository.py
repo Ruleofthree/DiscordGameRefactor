@@ -1054,3 +1054,24 @@ def format_character_view_armor_inventory(char_data):
 
 def format_character_view_potion_inventory(char_data):
     return ", ".join(char_data["potions"])
+
+
+def build_character_view_context(char_data):
+    totals = calculate_character_view_totals(char_data)
+
+    armor_one, armor_two, armor_three, armor_inv_one, armor_inv_two, armor_inv_three = (
+        format_character_view_armor_inventory(char_data)
+    )
+
+    potion_inventory = format_character_view_potion_inventory(char_data)
+
+    return {
+        "totals": totals,
+        "armor_one": armor_one,
+        "armor_two": armor_two,
+        "armor_three": armor_three,
+        "armor_inv_one": armor_inv_one,
+        "armor_inv_two": armor_inv_two,
+        "armor_inv_three": armor_inv_three,
+        "potion_inventory": potion_inventory,
+    }
