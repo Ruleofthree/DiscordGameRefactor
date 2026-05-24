@@ -5,6 +5,8 @@ import time
 
 from pathlib import Path
 from threading import Timer
+from src.character_repository import load_character
+
 
 #101
 
