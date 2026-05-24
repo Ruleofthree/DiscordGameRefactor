@@ -1120,3 +1120,14 @@ def build_character_view_context(char_data):
         "permanent_dexterity": char_data["pdexterity"],
         "permanent_constitution": char_data["pconstitution"],
     }
+
+
+def apply_character_view_totals(char_data, totals):
+    char_data["thp"] = totals["thp"]
+    char_data["tac"] = totals["tac"]
+    char_data["tdr"] = totals["tdr"]
+    char_data["thit"] = totals["thit"]
+    char_data["tdamage"] = totals["tdamage"]
+    char_data["initiative"] = totals["initiative"]
+    char_data["regeneration"] = totals["regeneration"]
+    return char_data
