@@ -1,5 +1,10 @@
 from src.feat_repository import get_feat_dictionary_and_names
-from src.character_repository import create_character, character_exists, delete_character, load_character, save_character
+from src.character_repository import (build_character_who_messages,
+                                      create_character,
+                                      character_exists,
+                                      delete_character,
+                                      load_character,
+                                      save_character)
 import os
 import json
 import random
@@ -182,43 +187,7 @@ def message_4_who(channel, charFolder, unspoiledBarOOC, message):
     msg = []
     if channel == unspoiledBarOOC:
         profile = message[5:].lower()
-        with open(charFolder + "playerDatabase.json", 'r', encoding="utf-8") as file2:
-            playerDatabase = json.loads(file2.read())
-            file2.close()
-        name = ""
-        for item in playerDatabase.items():
-            if item[1] == profile:
-                name = item[0]
-        try:
-            if not character_exists(profile, charFolder):
-                raise FileNotFoundError
-
-            charData = load_character(profile, charFolder)
-
-            build = charData['build']
-            wins = charData['wins']
-            losses = charData['losses']
-            forfeits = charData['forfeits']
-            trait = charData['trait']
-            total = wins + losses
-            if trait == 'cursed':
-                msg.append(profile + "'s character name is: " + name + ", and they are a level: " + str(charData['level']) +
-                           " [color=pink]" + build + "[/color] build. They are also [color=cyan]cursed[/color]")
-            else:
-                msg.append(
-                    profile + "'s character name is: " + name + ", and they are a level: " + str(charData['level']) +
-                    " [color=pink]" + build + "[/color] build.")
-            try:
-                ratio = int((wins / total) * 100)
-                msg.append(name + "'s current win/loss score is: [color=pink]" + str(wins) + " wins[/color], and "
-                           "[color=yellow]" + str(losses) + " losses[/color]. ([color=red]" + str(ratio) + "%[/color]) "
-                           "They have also [color=green]forfeited " + str(forfeits) + " times.[/color]")
-            except ZeroDivisionError:
-                msg.append("Either " + name + " has a 0% win/loss ratio, or 100%. It all depends " \
-                           "on how you justify a person that has never entered the arena yet.")
-        except FileNotFoundError:
-            msg.append(profile + " isn't a valid name for a character sheet. You are just typing "\
-                  "in their [color=red]profile name.[/color] example: !who <profile name>")
+        msg = build_character_who_messages(charFolder, profile)
     else:
         msg.append("This Command can only be used in [session=Unspoiled Desire (Command and OoC Room)]adh-8216a753c1ef08445052[/session]")
 

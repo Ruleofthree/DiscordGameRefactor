@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -1192,3 +1193,70 @@ def add_ability_point(char_data: dict, ability: str) -> tuple[dict, list[str]]:
         )
 
     return char_data, msg
+
+
+def build_character_who_messages(char_folder, profile):
+    profile = profile.lower()
+    msg = []
+
+    player_database_path = os.path.join(char_folder, "playerDatabase.json")
+
+    with open(player_database_path, "r", encoding="utf-8") as file:
+        player_database = json.loads(file.read())
+
+    name = ""
+    for item in player_database.items():
+        if item[1] == profile:
+            name = item[0]
+
+    try:
+        character_path = os.path.join(char_folder, profile + ".json")
+
+        with open(character_path, "r+", encoding="utf-8") as file:
+            char_data = json.load(file)
+
+        build = char_data["build"]
+        wins = char_data["wins"]
+        losses = char_data["losses"]
+        forfeits = char_data["forfeits"]
+        trait = char_data["trait"]
+        total = wins + losses
+
+        if trait == "cursed":
+            msg.append(
+                profile + "'s character name is: " + name
+                + ", and they are a level: " + str(char_data["level"])
+                + " [color=pink]" + build + "[/color] build. "
+                + "They are also [color=cyan]cursed[/color]"
+            )
+        else:
+            msg.append(
+                profile + "'s character name is: " + name
+                + ", and they are a level: " + str(char_data["level"])
+                + " [color=pink]" + build + "[/color] build."
+            )
+
+        try:
+            ratio = int((wins / total) * 100)
+            msg.append(
+                name + "'s current win/loss score is: [color=pink]"
+                + str(wins) + " wins[/color], and "
+                + "[color=yellow]" + str(losses)
+                + " losses[/color]. ([color=red]" + str(ratio)
+                + "%[/color]) They have also [color=green]forfeited "
+                + str(forfeits) + " times.[/color]"
+            )
+        except ZeroDivisionError:
+            msg.append(
+                "Either " + name
+                + " has a 0% win/loss ratio, or 100%. It all depends "
+                + "on how you justify a person that has never entered the arena yet."
+            )
+
+    except FileNotFoundError:
+        msg.append(
+            profile + " isn't a valid name for a character sheet. You are just typing "
+            "in their [color=red]profile name.[/color] example: !who <profile name>"
+        )
+
+    return msg
