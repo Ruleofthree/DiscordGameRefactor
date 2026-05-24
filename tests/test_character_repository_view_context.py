@@ -3,6 +3,24 @@ from src.character_repository import build_character_view_context
 
 def make_character_data():
     return {
+        "equip": "n/a",
+        "name": "Test Character",
+        "trait": "brawler",
+        "level": 1,
+        "total feats": 2,
+        "base damage": "1d10",
+        "renown": 100,
+        "currentxp": 25,
+        "nextlevel": 100,
+        "remaining feats": 1,
+        "feats taken": ["focus", "power attack"],
+        "ap": 15,
+        "reset": 3,
+        "wins": 2,
+        "losses": 1,
+        "forfeits": 0,
+        "potioneffect": "none",
+
         "build": "strength",
         "hp": 20,
         "hit": 3,
@@ -13,9 +31,9 @@ def make_character_data():
         "dexterity": 6,
         "constitution": 4,
 
-        "pstrength": 0,
-        "pdexterity": 0,
-        "pconstitution": 0,
+        "pstrength": 1,
+        "pdexterity": 2,
+        "pconstitution": 3,
 
         "potionstr": 0,
         "potiondex": 0,
@@ -71,13 +89,13 @@ def test_build_character_view_context_includes_calculated_totals():
 
     result = build_character_view_context(char_data)
 
-    assert result["totals"]["strength"] == 8
-    assert result["totals"]["dexterity"] == 6
-    assert result["totals"]["constitution"] == 4
+    assert result["totals"]["strength"] == 9
+    assert result["totals"]["dexterity"] == 8
+    assert result["totals"]["constitution"] == 7
     assert result["totals"]["thit"] == 7
-    assert result["totals"]["tdamage"] == 7
-    assert result["totals"]["thp"] == 30
-    assert result["totals"]["tac"] == 15
+    assert result["totals"]["tdamage"] == 8
+    assert result["totals"]["thp"] == 35
+    assert result["totals"]["tac"] == 16
 
 
 def test_build_character_view_context_includes_armor_display_values():
@@ -107,3 +125,31 @@ def test_build_character_view_context_preserves_legacy_armor_mutation():
     build_character_view_context(char_data)
 
     assert char_data["armor"]["armor1"] == ["Iron Armor", "+1 AC"]
+    
+
+def test_build_character_view_context_includes_basic_display_fields():
+    char_data = make_character_data()
+
+    result = build_character_view_context(char_data)
+
+    assert result["equip"] == "n/a"
+    assert result["name"] == "Test Character"
+    assert result["build"] == "strength"
+    assert result["trait"] == "brawler"
+    assert result["level"] == 1
+    assert result["total_feats"] == 2
+    assert result["base_damage"] == "1d10"
+    assert result["renown"] == 100
+    assert result["current_xp"] == 25
+    assert result["next_level"] == 100
+    assert result["remaining_feats"] == 1
+    assert result["feats_taken"] == "focus, power attack"
+    assert result["ap"] == 15
+    assert result["reset"] == 3
+    assert result["wins"] == 2
+    assert result["losses"] == 1
+    assert result["forfeits"] == 0
+    assert result["potion_effect"] == "none"
+    assert result["permanent_strength"] == 1
+    assert result["permanent_dexterity"] == 2
+    assert result["permanent_constitution"] == 3
