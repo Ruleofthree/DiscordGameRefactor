@@ -1436,6 +1436,64 @@ def build_challenge_accept_initiative_result(
     return msg, token
 
 
+def build_challenge_acceptance_result(
+    character,
+    opponent,
+    player_one_info,
+    player_one_roll,
+    player_two_roll,
+    coin_flip,
+    characters_dir=CHARACTERS_DIR,
+):
+    msg = []
+    p_two_info = None
+    new_game = None
+    player_two = character.lower()
+    b_timer = False
+    b_game_timer = False
+    new_oppenent = None
+    token = None
+    update = False
+
+    if opponent == character.lower():
+        b_timer = True
+        new_game = 1
+        p_two_info = load_character(character, characters_dir)
+
+        initiative_msg, token = build_challenge_accept_initiative_result(
+            player_one_info,
+            p_two_info,
+            player_one_roll=player_one_roll,
+            player_two_roll=player_two_roll,
+            coin_flip=coin_flip,
+        )
+
+        msg.extend(initiative_msg)
+        b_game_timer = True
+        update = True
+    else:
+        try:
+            msg.append(
+                "I may be a bot, but I'm pretty sure you aren't "
+                + opponent
+                + ". A for effort, though."
+            )
+        except TypeError:
+            msg.append("Wait for the pervious challenge to expire.")
+
+    return (
+        msg,
+        p_two_info,
+        new_game,
+        player_two,
+        b_timer,
+        b_game_timer,
+        new_oppenent,
+        token,
+        update,
+    )
+
+
 def build_character_leaderboard_messages(characters_dir, category):
     characters_path = Path(characters_dir)
 

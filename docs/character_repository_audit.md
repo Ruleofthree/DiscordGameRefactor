@@ -21,7 +21,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `249 passed`
+- `252 passed`
 
 This includes:
 
@@ -842,10 +842,11 @@ The public `!accept` challenge acceptance boundary was tested and partially extr
 Created:
 
 - `build_challenge_accept_initiative_result()` in `src.character_repository`
+- `build_challenge_acceptance_result()` in `src.character_repository`
 
 Legacy wrapper:
 
-- `message_accept()` in `original/onMSGAccept.py` now delegates initiative message construction and token selection to `build_challenge_accept_initiative_result()`.
+- `message_accept()` in `original/onMSGAccept.py` now delegates challenge acceptance state construction and initiative message construction to repository helpers.
 
 Behavior preserved:
 
@@ -859,6 +860,9 @@ Behavior preserved:
 - Attempts to accept when no challenge is pending are rejected.
 - Attempts to accept outside the arena channel are rejected.
 - Legacy return tuple shape is preserved.
+- Wrong accepting characters still preserve the legacy rejection message through repository-backed acceptance handling.
+- Missing pending-opponent values still preserve the legacy expired-challenge message.
+- Legacy timer flags, update flags, player-two assignment, new-game state, and token return values remain compatible with the existing caller.
 
 Boundary stabilization:
 
@@ -873,7 +877,7 @@ Tests:
 
 Status:
 
-- Complete for challenge acceptance boundary and initiative result extraction.
+- Complete for challenge acceptance boundary, acceptance state construction, and initiative result extraction.
 
 ---
 
@@ -902,6 +906,7 @@ Completed character-related areas include:
 - Character renown transfer behavior
 - Character challenge message construction
 - Character challenge acceptance boundary behavior
+- Character challenge acceptance state construction
 - Character challenge acceptance initiative message construction and token selection
 - Character view calculations and context preparation
 - Character status compile boundary behavior
@@ -921,8 +926,8 @@ Completed character-related areas include:
 These are reasonable future targets, but they need dedicated tests first:
 
 - Further `message_accept` cleanup in `original/onMSGAccept.py`
-  - Character loading still happens inside the legacy wrapper.
   - Random initiative roll generation still happens inside the legacy wrapper.
+  - Coin-flip detection still performs a lightweight character load in the legacy wrapper.
   - Timer handoff behavior remains owned by `botCommand.py`.
   - Full combat-start state integration remains in the legacy runtime path.
   - Any further extraction should be handled carefully with additional legacy tests.
