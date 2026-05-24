@@ -201,21 +201,13 @@ def pri_viewchar(character):
         build = charData['build']
         trait = charData['trait']
         level = charData['level']
-        hp = charData['hp']
         tFeats = charData['total feats']
         baseDamage = charData['base damage']
-        hit = charData['hit']
-        damage = charData['damage']
-        ac = charData['ac']
         renown = charData['renown']
         xp = charData['currentxp']
         nextLevel = charData['nextlevel']
-        baseStrength = charData['strength']
-        baseDexterity = charData['dexterity']
-        baseConstitution = charData['constitution']
         remainingFeats = charData['remaining feats']
         hasTaken = charData['feats taken']
-        hiddenTaken = charData['hfeats taken']
         ap = charData['ap']
         reset = charData['reset']
         wins = charData['wins']
@@ -226,7 +218,7 @@ def pri_viewchar(character):
         pstrength = charData["pstrength"]
         pdexterity = charData["pdexterity"]
         pconstitution = charData["pconstitution"]
-        
+
         # except:
         #     print("Something above doesn't exist")
         print("What?")
