@@ -21,7 +21,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `246 passed`
+- `249 passed`
 
 This includes:
 
@@ -36,6 +36,7 @@ This includes:
 - Character challenge message and challenge acceptance tests
 - Character renown transfer tests
 - Character leaderboard message tests
+- Character status compile boundary tests
 - Legacy wrapper tests for selected `onMSGUtils.py`, `onPRIUtils.py`, and `onMSGAccept.py` command functions
 
 ---
@@ -764,7 +765,38 @@ Status:
 
 - Complete.
 
----
+## Character Status Compile Boundary
+
+### Completed Work
+
+The status parsing and character status mutation boundary from `original/onMSGUtils.py` was tested and moved behind a repository helper.
+
+Created:
+
+- `update_character_status_from_status_message()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `status_compile()` now delegates status parsing and status-field mutation to `update_character_status_from_status_message()`.
+
+Behavior preserved:
+
+- Characters in the active master list can have their `status` field updated from the legacy OOC room status text.
+- Characters not in the master list are ignored.
+- Status messages without the expected legacy OOC room marker continue to leave the existing status unchanged.
+- Missing character files continue to be swallowed without raising an error.
+- Malformed status text continues to be swallowed without raising an error.
+- Character status updates do not touch `statuscounter` or `renown`.
+- Character JSON access remains testable through temporary character directories.
+
+Tests:
+
+- `tests/test_character_repository_status.py`
+- `tests/test_legacy_onmsgutils_status_compile.py`
+
+Status:
+
+- Complete for current status compile boundary behavior.
 
 ## Character Challenge Message Extraction
 
@@ -872,6 +904,7 @@ Completed character-related areas include:
 - Character challenge acceptance boundary behavior
 - Character challenge acceptance initiative message construction and token selection
 - Character view calculations and context preparation
+- Character status compile boundary behavior
 
 `botCommand.py` is still not imported directly in pytest because of runtime dependencies.
 
@@ -894,10 +927,10 @@ These are reasonable future targets, but they need dedicated tests first:
   - Full combat-start state integration remains in the legacy runtime path.
   - Any further extraction should be handled carefully with additional legacy tests.
 
-- `status_compile` in `original/onMSGUtils.py`
-  - Parses status room text and mutates character status.
-  - Uses broad exception swallowing.
-  - Should be handled only after a dedicated test harness is written for status parsing edge cases.
+- Further status parsing cleanup
+  - The current boundary is tested and delegated.
+  - Broad exception behavior is still preserved intentionally.
+  - Any future cleanup should first decide whether malformed status strings should continue to no-op or be handled explicitly.
 
 ### High Risk
 

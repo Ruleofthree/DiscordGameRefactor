@@ -1511,3 +1511,30 @@ def build_character_leaderboard_messages(characters_dir, category):
     msg = []
     msg.append(complete_message)
     return msg
+
+
+def update_character_status_from_status_message(
+    character: str,
+    statusmsg: str,
+    master_list: list[str],
+    characters_dir: Path | str = CHARACTERS_DIR,
+) -> None:
+    try:
+        if character in master_list:
+            split1 = statusmsg.split("[session=Unspoiled Desire (Command and OoC Room)]")
+            room = "adh-8216a753c1ef08445052[/session]"
+            split2 = split1[1].split("[")
+            if room in split1:
+                split2 = room
+            split3 = split2.split("[/session]")
+            find_room = split3[0]
+            if find_room in statusmsg:
+                character_data = load_character(character, characters_dir)
+                character_data["status"] = find_room
+                save_character(character, character_data, characters_dir)
+            else:
+                character_data = load_character(character, characters_dir)
+                character_data["status"] = ""
+                save_character(character, character_data, characters_dir)
+    except:
+        pass
