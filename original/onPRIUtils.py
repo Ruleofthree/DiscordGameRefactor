@@ -1,9 +1,18 @@
 from src.armor_repository import get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
-from src.character_repository import (assign_character_stats, character_exists, load_character, save_character,
-                                      select_character_build, select_character_feat, select_character_trait,
-                                      calculate_character_view_totals, format_character_view_armor_inventory,
-                                      format_character_view_potion_inventory)
+from src.character_repository import (
+    assign_character_stats,
+    build_character_view_context,
+    calculate_character_view_totals,
+    character_exists,
+    format_character_view_armor_inventory,
+    format_character_view_potion_inventory,
+    load_character,
+    save_character,
+    select_character_build,
+    select_character_feat,
+    select_character_trait,
+)
 import os
 import json
 import random
@@ -174,7 +183,19 @@ def pri_viewchar(character):
     else:
         # try:
         charData = load_character(character, charFolder)
-        armorOne, armorTwo, armorThree, armorInvOne, armorInvTwo, armorInvThree = format_character_view_armor_inventory(charData)
+
+        view_context = build_character_view_context(charData)
+
+        totals = view_context["totals"]
+
+        armorOne = view_context["armor_one"]
+        armorTwo = view_context["armor_two"]
+        armorThree = view_context["armor_three"]
+        armorInvOne = view_context["armor_inv_one"]
+        armorInvTwo = view_context["armor_inv_two"]
+        armorInvThree = view_context["armor_inv_three"]
+
+        potionInventoryList = view_context["potion_inventory"]
         equip = charData['equip']
         name = charData['name']
         build = charData['build']
@@ -245,18 +266,9 @@ def pri_viewchar(character):
         cursed = charData['cursed']
         ninitiative = charData["initiative"]
 
-        #Total bonuses
-        thp = charData["thp"] + charData['potionhp']
-        tac = charData["tac"]
-        tdr = charData["tdr"]
-        thit = charData["thit"]
-        tdamage = charData["tdamage"]
-
         # except:
         #     print("Something above doesn't exist")
         print("What?")
-
-        totals = calculate_character_view_totals(charData)
 
         strength = totals["strength"]
         dexterity = totals["dexterity"]
@@ -271,7 +283,6 @@ def pri_viewchar(character):
         initiative = totals["initiative"]
 
         hasTakenList = ", ".join(hasTaken)
-        potionInventoryList = format_character_view_potion_inventory(charData)
 
         msg.append("\n" + name + "'s Character Sheet:\n"
                    "𝙲𝚑𝚊𝚛𝚊𝚌𝚝𝚎𝚛 𝙽𝚊𝚖𝚎:\t\t\t\t\t[color=red]" + name + "[/color]\n"
