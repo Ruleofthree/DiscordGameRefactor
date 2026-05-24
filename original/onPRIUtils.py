@@ -221,17 +221,6 @@ def pri_viewchar(character):
         wins = charData['wins']
         losses = charData['losses']
         forfeits = charData['forfeits']
-        # Ability Bonuses
-        abhp = charData["abhp"]
-        abhit = charData["abhit"]
-        abdamage = charData["abdamage"]
-        abac = charData["abac"]
-        # Feat Bonuses
-        feathp = charData["feathp"]
-        feathit = charData["feathit"]
-        featdamage = charData["featdamage"]
-        featac = charData["featac"]
-        dexfighter = charData["dexfighter"]
         # Potion Bonuses
         potionEffect = charData["potioneffect"]
         potionInventory = charData["potions"]
