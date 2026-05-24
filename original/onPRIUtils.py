@@ -9,6 +9,7 @@ from src.character_repository import (
     character_exists,
     format_character_view_armor_inventory,
     format_character_view_potion_inventory,
+    list_characters_by_level,
     load_character,
     save_character,
     select_character_build,
@@ -270,32 +271,15 @@ def pri_viewchar(character):
 def pri_9_wholevel(character, message):
     path = os.getcwd()
     charFolder = os.path.join(path + "/characters/")
-    files = os.listdir(charFolder)
 
-    profile = []
-    response = []
+    requested_level = int(message[10:])
+    response = list_characters_by_level(requested_level, charFolder)
+
     msg = []
-    with open(charFolder + "playerDatabase.json", 'r', encoding="utf-8") as file2:
-        playerDatabase = json.loads(file2.read())
-        file2.close()
-
-    for item in playerDatabase.items():
-        name = item[1]
-        profile.append(name)
-    levelList = {}
-    for player in profile:
-        with open(charFolder + player + ".json", "r+", encoding="utf-8") as file:
-            charData = json.load(file)
-            file.close()
-        name = player
-        level = charData['level']
-        levelList[name] = level
     msg.append("Level " + str(message[10:] + " characters:"))
-    for key, value in levelList.items():
-        if value == int(message[10:]):
-            response.append(key)
     stringResponse = "\n" + "\n".join(response)
     msg.append(stringResponse)
+
     return msg
 
 # select a starting trait for character

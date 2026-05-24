@@ -245,6 +245,25 @@ def select_character_build(character: str, build: str, characters_dir: Path | st
     return msg
 
 
+def list_characters_by_level(level: int, characters_dir: Path | str = CHARACTERS_DIR) -> list[str]:
+    characters_path = Path(characters_dir)
+    matching_profiles = []
+
+    with (characters_path / "playerDatabase.json").open("r", encoding="utf-8") as file:
+        player_database = json.loads(file.read())
+
+    for profile_name in player_database.values():
+        character_path = characters_path / f"{profile_name}.json"
+
+        with character_path.open("r+", encoding="utf-8") as file:
+            character_data = json.load(file)
+
+        if character_data["level"] == level:
+            matching_profiles.append(profile_name)
+
+    return matching_profiles
+
+
 def assign_character_stats(char_dir, character, message):
     char_dir = Path(char_dir)
     char_file = char_dir / f"{character.lower()}.json"
