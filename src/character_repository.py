@@ -1293,3 +1293,69 @@ def build_character_player_score_message(char_folder, profile_name):
             "Either " + name + " has a 0% win/loss ratio, or 100%. It all depends "
             "on how you justify a person that has never entered the arena yet."
         )
+
+
+def build_character_challenge_message(challenger_info, opponent_info, opponent_profile, challenger_profile):
+    if opponent_profile == challenger_profile:
+        return "You can't fight yourself. No one is that special."
+
+    if len(challenger_info["hfeats taken"]) < challenger_info["total feats"]:
+        return challenger_info["name"] + " has empty feat slots, and cannot fight yet"
+
+    if len(opponent_info["hfeats taken"]) < opponent_info["total feats"]:
+        return opponent_info["name"] + " has empty feat slots, and cannot fight yet"
+
+    if challenger_info["trait"] == "cursed" or opponent_info["trait"] == "cursed":
+        return (
+            challenger_info["name"].title()
+            + " is challenging "
+            + opponent_info["name"].title()
+            + " ("
+            + opponent_profile.title()
+            + ", "
+            + "Type [color=pink]!accept[/color]) Please be aware that one of the opponents"
+            + " is [color=cyan]cursed[/color], and no xp/renown will be awarded at end of match."
+        )
+
+    return (
+        challenger_info["name"].title()
+        + " is challenging "
+        + opponent_info["name"].title()
+        + " ("
+        + opponent_profile.title()
+        + ", "
+        + "Type [color=pink]!accept[/color])"
+    )
+
+
+def build_character_challenge_message(challenger_info, opponent_info, opponent_profile, challenger_profile):
+    if opponent_profile == challenger_profile:
+        return "You can't fight yourself. No one is that special."
+
+    if len(challenger_info["hfeats taken"]) < challenger_info["total feats"]:
+        return challenger_info["name"] + " has empty feat slots, and cannot fight yet"
+
+    if len(opponent_info["hfeats taken"]) < opponent_info["total feats"]:
+        return opponent_info["name"] + " has empty feat slots, and cannot fight yet"
+
+    if challenger_info["trait"] == "cursed" or opponent_info["trait"] == "cursed":
+        return (
+            challenger_info["name"].title()
+            + " is challenging "
+            + opponent_info["name"].title()
+            + " ("
+            + opponent_profile.title()
+            + ", "
+            + "Type [color=pink]!accept[/color]) Please be aware that one of the opponents"
+            + " is [color=cyan]cursed[/color], and no xp/renown will be awarded at end of match."
+        )
+
+    return (
+        challenger_info["name"].title()
+        + " is challenging "
+        + opponent_info["name"].title()
+        + " ("
+        + opponent_profile.title()
+        + ", "
+        + "Type [color=pink]!accept[/color])"
+    )

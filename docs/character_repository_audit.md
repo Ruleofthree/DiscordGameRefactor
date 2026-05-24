@@ -19,11 +19,9 @@ The guiding rules for this refactor are:
 
 ## Current Test Status
 
-## Current Test Status
-
 Current full pytest result:
 
-- `215 passed`
+- `220 passed`
 
 This includes:
 
@@ -691,7 +689,44 @@ Tests:
 Status:
 
 - Complete.
-- 
+
+---
+
+## Character Challenge Message Extraction
+
+### Completed Work
+
+The public `!challenge <profile name>` message-construction behavior was extracted from `original/onMSGUtils.py`.
+
+Created:
+
+- `build_character_challenge_message()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `message_10_challenge()` now delegates challenge message construction to `build_character_challenge_message()`.
+
+Behavior preserved:
+
+- Valid challenges still produce the legacy challenge message.
+- Cursed-opponent warnings are still included when either character has the `cursed` trait.
+- Self-challenges are still rejected with the legacy message.
+- Challengers with empty feat slots are still rejected.
+- Opponents with empty feat slots are still rejected.
+- Legacy return shapes and challenge state values are preserved.
+- Legacy wrong-channel, active-game, and pending-game error behavior is preserved.
+
+Tests:
+
+- `tests/test_character_repository_challenge.py`
+- `tests/test_legacy_onmsgutils_challenge.py`
+
+Status:
+
+- Complete.
+
+---
+
 ## Current Position
 
 The safest read-only and simple character repository paths have now been refactored and tested.
@@ -713,6 +748,7 @@ Completed character-related areas include:
 - Character level listing
 - Character who/profile lookup
 - Character player score lookup
+- Character challenge message construction
 - Character view calculations and context preparation
 
 `botCommand.py` is still not imported directly in pytest because of runtime dependencies.
@@ -726,12 +762,6 @@ Completed character-related areas include:
 ### Medium Risk
 
 These are reasonable future targets, but they need dedicated tests first:
-
-- `message_10_challenge` in `original/onMSGUtils.py`
-  - Reads two character files.
-  - Performs fight-readiness checks.
-  - Initializes challenge state.
-  - Should be treated carefully because it touches combat-adjacent flow.
 
 - `message_accept` in `original/onMSGAccept.py`
   - Loads the accepting player.

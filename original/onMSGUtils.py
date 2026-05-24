@@ -1,6 +1,7 @@
 from src.feat_repository import get_feat_dictionary_and_names
-from src.character_repository import (build_character_who_messages,
+from src.character_repository import (build_character_challenge_message,
                                       build_character_player_score_message,
+                                      build_character_who_messages,
                                       create_character,
                                       character_exists,
                                       delete_character,
@@ -237,20 +238,18 @@ def message_10_challenge(channel, charFolder, message, unspoiledArena, character
                 opponent = message[11:].lower()
                 pOneInfo = load_character(character, charFolder)
                 pTwoInfo = load_character(opponent, charFolder)
-                if opponent == playerOne:
-                    msg = "You can't fight yourself. No one is that special."
-                elif len(pOneInfo['hfeats taken']) < pOneInfo['total feats']:
-                    msg = pOneInfo['name'] + " has empty feat slots, and cannot fight yet"
-                elif len(pTwoInfo['hfeats taken']) < pTwoInfo['total feats']:
-                    msg = pTwoInfo['name'] + " has empty feat slots, and cannot fight yet"
-                else:
-                    if pOneInfo['trait'] == "cursed" or pTwoInfo['trait'] == "cursed":
-                        msg = pOneInfo['name'].title() + " is challenging " + pTwoInfo['name'].title() + " (" + opponent.title() + ", " \
-                              "Type [color=pink]!accept[/color]) Please be aware that one of the opponents" \
-                              " is [color=cyan]cursed[/color], and no xp/renown will be awarded at end of match."
-                    else:
-                        msg = pOneInfo['name'].title() + " is challenging " + pTwoInfo['name'].title() + " (" + opponent.title() + ", " \
-                              "Type [color=pink]!accept[/color])"
+                msg = build_character_challenge_message(
+                    pOneInfo,
+                    pTwoInfo,
+                    opponent,
+                    playerOne,
+                )
+
+                if (
+                        opponent != playerOne
+                        and len(pOneInfo["hfeats taken"]) >= pOneInfo["total feats"]
+                        and len(pTwoInfo["hfeats taken"]) >= pTwoInfo["total feats"]
+                ):
                     new_game = 0.5
                     timeout = 60
                     bTimer = True
