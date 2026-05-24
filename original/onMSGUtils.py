@@ -1,5 +1,6 @@
 from src.feat_repository import get_feat_dictionary_and_names
 from src.character_repository import (build_character_challenge_message,
+                                      build_character_leaderboard_messages,
                                       build_character_player_score_message,
                                       build_character_who_messages,
                                       create_character,
@@ -122,62 +123,12 @@ def message_12_leaderboard(channel, charFolder, unspoiledBarOOC, message):
     path = os.getcwd()
     charFolder = os.path.join(path + "/characters/")
 
-    msg = []
     if channel == unspoiledBarOOC:
-        profile = []
-        with open(charFolder + "playerDatabase.json", 'r', encoding="utf-8") as file2:
-            playerDatabase = json.loads(file2.read())
-            file2.close()
-        for item in playerDatabase.items():
-            name = item[1]
-            profile.append(name)
-        ratio = {}
-        num = 1
-        for player in profile:
-            with open(charFolder + player + ".json", "r+", encoding="utf-8") as file:
-                charData = json.load(file)
-                file.close()
-            name = charData['name']
-            wins = charData['wins']
-            lose = charData['losses']
-            level = charData['level']
-            total = wins + lose
-            try:
-                percent = (wins / total) * 100
-                charData['percent'] = int(percent)
-            except ZeroDivisionError:
-                percent = 0
-                charData['percent'] = percent
-            ratio[num] = [player, name, wins, lose, percent, level]
-            num += 1
         answer = message[13:]
-        if answer == "win":
-            indexSearch = 2
-        elif answer == "loss":
-            indexSearch = 3
-        elif answer == "percent":
-            indexSearch = 4
-        else:
-            indexSearch = 2
-        indices = sorted(ratio, key=lambda d: ratio[d][indexSearch], reverse=True)
-        sortedDict = {}
-        index = 1
-        for i in indices:
-            sortedDict[index] = ratio[i]
-            index += 1
-        num = 5
-        stringDict = []
-        for num in range(1, num + 1):
-            total = sortedDict[num][2] + sortedDict[num][3]
-            stringDict.append("\n" + sortedDict[num][1] + " (" + sortedDict[num][0] + ", Level: [color=green]" +
-                              str(sortedDict[num][5]) + "[/color]): [color=pink]" + str(sortedDict[num][2]) +
-                              "[/color] wins/[color=yellow]" + str(sortedDict[num][3]) + "[/color] losses. [color=red]("
-                              + str(round(sortedDict[num][4], 2)) + "%)[/color]")
-        seperator = " "
-        completeMessage = seperator.join(stringDict)
-        msg.append(completeMessage)
+        msg = build_character_leaderboard_messages(charFolder, answer)
     else:
         msg = "This Command can only be used in [session=Unspoiled Desire (Command and OoC Room)]adh-8216a753c1ef08445052[/session]"
+
     return msg
 
 # Displays players wins, losses, and ratio. Also display number of forfeits. MUST USE PROFILE NAME

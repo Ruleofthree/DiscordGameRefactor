@@ -1398,3 +1398,80 @@ def build_challenge_accept_initiative_result(
                 token = 2
 
     return msg, token
+
+
+def build_character_leaderboard_messages(characters_dir, category):
+    characters_path = Path(characters_dir)
+
+    profile = []
+    with (characters_path / "playerDatabase.json").open("r", encoding="utf-8") as file:
+        player_database = json.loads(file.read())
+
+    for item in player_database.items():
+        name = item[1]
+        profile.append(name)
+
+    ratio = {}
+    num = 1
+    for player in profile:
+        with (characters_path / f"{player}.json").open("r+", encoding="utf-8") as file:
+            char_data = json.load(file)
+
+        name = char_data["name"]
+        wins = char_data["wins"]
+        lose = char_data["losses"]
+        level = char_data["level"]
+        total = wins + lose
+
+        try:
+            percent = (wins / total) * 100
+            char_data["percent"] = int(percent)
+        except ZeroDivisionError:
+            percent = 0
+            char_data["percent"] = percent
+
+        ratio[num] = [player, name, wins, lose, percent, level]
+        num += 1
+
+    if category == "win":
+        index_search = 2
+    elif category == "loss":
+        index_search = 3
+    elif category == "percent":
+        index_search = 4
+    else:
+        index_search = 2
+
+    indices = sorted(ratio, key=lambda d: ratio[d][index_search], reverse=True)
+
+    sorted_dict = {}
+    index = 1
+    for item in indices:
+        sorted_dict[index] = ratio[item]
+        index += 1
+
+    string_dict = []
+    for num in range(1, 6):
+        total = sorted_dict[num][2] + sorted_dict[num][3]
+        string_dict.append(
+            "\n"
+            + sorted_dict[num][1]
+            + " ("
+            + sorted_dict[num][0]
+            + ", Level: [color=green]"
+            + str(sorted_dict[num][5])
+            + "[/color]): [color=pink]"
+            + str(sorted_dict[num][2])
+            + "[/color] wins/[color=yellow]"
+            + str(sorted_dict[num][3])
+            + "[/color] losses. [color=red]("
+            + str(round(sorted_dict[num][4], 2))
+            + "%)[/color]"
+        )
+
+    seperator = " "
+    complete_message = seperator.join(string_dict)
+
+    msg = []
+    msg.append(complete_message)
+    return msg

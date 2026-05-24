@@ -21,7 +21,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `230 passed`
+- `237 passed`
 
 This includes:
 
@@ -33,7 +33,9 @@ This includes:
 - Character repository tests
 - Character creation and deletion tests
 - Character build, stat, trait, feat, ability-point, level-listing, and view-calculation tests
-- Legacy wrapper tests for selected `onMSGUtils.py` and `onPRIUtils.py` command functions
+- Character challenge message and challenge acceptance tests
+- Character leaderboard message tests
+- Legacy wrapper tests for selected `onMSGUtils.py`, `onPRIUtils.py`, and `onMSGAccept.py` command functions
 
 ---
 
@@ -47,7 +49,7 @@ For that reason:
 
 - `botCommand.py` is not imported directly in pytest.
 - Refactored command logic should be moved into smaller testable functions.
-- Tests should target repository modules or helper modules such as `original/onMSGUtils.py` and `original/onPRIUtils.py`.
+- Tests should target repository modules or helper modules such as `original/onMSGUtils.py`, `original/onPRIUtils.py`, and `original/onMSGAccept.py`.
 - `botCommand.py` should remain a thin caller where possible until it can be safely reduced later.
 
 ---
@@ -692,7 +694,77 @@ Status:
 
 ---
 
+## Character Leaderboard Extraction
+
+### Completed Work
+
+The public `!leaderboard` command behavior was extracted from `original/onMSGUtils.py`.
+
+Created:
+
+- `build_character_leaderboard_messages()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `message_12_leaderboard()` now delegates leaderboard message construction to `build_character_leaderboard_messages()`.
+
+Behavior preserved:
+
+- Command still only works in the Unspoiled Desire OOC room.
+- `!leaderboard win` still sorts by wins.
+- `!leaderboard loss` still sorts by losses.
+- `!leaderboard percent` still sorts by win percentage.
+- Unknown leaderboard categories still default to wins.
+- Zero-fight characters still use `0` percent.
+- Player database order is still used before sorting.
+- The legacy top-five output shape is preserved.
+- Legacy output strings were preserved, including spacing, color tags, and percentage formatting.
+
+Tests:
+
+- `tests/test_character_repository_leaderboard.py`
+- `tests/test_legacy_onmsgutils_leaderboard.py`
+
+Status:
+
+- Complete.
+
+---
+
 ## Character Challenge Message Extraction
+
+### Completed Work
+
+The public `!challenge <profile name>` message-construction behavior was extracted from `original/onMSGUtils.py`.
+
+Created:
+
+- `build_character_challenge_message()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `message_10_challenge()` now delegates challenge message construction to `build_character_challenge_message()`.
+
+Behavior preserved:
+
+- Valid challenges still produce the legacy challenge message.
+- Cursed-opponent warnings are still included when either character has the `cursed` trait.
+- Self-challenges are still rejected with the legacy message.
+- Challengers with empty feat slots are still rejected.
+- Opponents with empty feat slots are still rejected.
+- Legacy return shapes and challenge state values are preserved.
+- Legacy wrong-channel, active-game, and pending-game error behavior is preserved.
+
+Tests:
+
+- `tests/test_character_repository_challenge.py`
+- `tests/test_legacy_onmsgutils_challenge.py`
+
+Status:
+
+- Complete.
+
+---
 
 ## Character Challenge Acceptance Boundary
 
@@ -735,37 +807,6 @@ Tests:
 Status:
 
 - Complete for challenge acceptance boundary and initiative result extraction.
-- 
-### Completed Work
-
-The public `!challenge <profile name>` message-construction behavior was extracted from `original/onMSGUtils.py`.
-
-Created:
-
-- `build_character_challenge_message()` in `src.character_repository`
-
-Legacy wrapper:
-
-- `message_10_challenge()` now delegates challenge message construction to `build_character_challenge_message()`.
-
-Behavior preserved:
-
-- Valid challenges still produce the legacy challenge message.
-- Cursed-opponent warnings are still included when either character has the `cursed` trait.
-- Self-challenges are still rejected with the legacy message.
-- Challengers with empty feat slots are still rejected.
-- Opponents with empty feat slots are still rejected.
-- Legacy return shapes and challenge state values are preserved.
-- Legacy wrong-channel, active-game, and pending-game error behavior is preserved.
-
-Tests:
-
-- `tests/test_character_repository_challenge.py`
-- `tests/test_legacy_onmsgutils_challenge.py`
-
-Status:
-
-- Complete.
 
 ---
 
@@ -790,6 +831,7 @@ Completed character-related areas include:
 - Character level listing
 - Character who/profile lookup
 - Character player score lookup
+- Character leaderboard message construction
 - Character challenge message construction
 - Character challenge acceptance boundary behavior
 - Character challenge acceptance initiative message construction and token selection
@@ -798,6 +840,8 @@ Completed character-related areas include:
 `botCommand.py` is still not imported directly in pytest because of runtime dependencies.
 
 `original/onPRIUtils.py` still contains the final F-list display formatter for `pri_viewchar()`, along with the remaining potion, armor, shop, and equipment functions.
+
+`original/onMSGUtils.py` still contains combat-facing helpers and economy-facing helpers that should not be mixed into general character lookup cleanup.
 
 ---
 
@@ -813,6 +857,17 @@ These are reasonable future targets, but they need dedicated tests first:
   - Timer handoff behavior remains owned by `botCommand.py`.
   - Full combat-start state integration remains in the legacy runtime path.
   - Any further extraction should be handled carefully with additional legacy tests.
+
+- `message_11_giverenown` in `original/onMSGUtils.py`
+  - Directly mutates two character files.
+  - Transfers renown between characters.
+  - Should be handled in a dedicated economy or renown-transfer chapter.
+  - Needs tests for missing gifter, missing recipient, insufficient renown, successful transfer, and exact legacy messages.
+
+- `status_compile` in `original/onMSGUtils.py`
+  - Parses status room text and mutates character status.
+  - Uses broad exception swallowing.
+  - Should be handled only after a dedicated test harness is written for status parsing edge cases.
 
 ### High Risk
 
@@ -837,8 +892,13 @@ These functions touch inventory, shop data, equipment state, temporary modifiers
 
 Avoid until later:
 
+- `message_8_usefeat`
+- `message_5_pass`
 - `playerone_zero_current_hp.py`
 - `playertwo_zero_current_hp.py`
+- `Roll_true_strike.py`
+- `Roll_not_strike.py`
+- `feat_methods.py`
 - combat win/loss resolution
 - XP and renown payout logic
 - level-up handling
