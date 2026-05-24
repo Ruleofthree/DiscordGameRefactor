@@ -21,7 +21,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `237 passed`
+- `246 passed`
 
 This includes:
 
@@ -34,6 +34,7 @@ This includes:
 - Character creation and deletion tests
 - Character build, stat, trait, feat, ability-point, level-listing, and view-calculation tests
 - Character challenge message and challenge acceptance tests
+- Character renown transfer tests
 - Character leaderboard message tests
 - Legacy wrapper tests for selected `onMSGUtils.py`, `onPRIUtils.py`, and `onMSGAccept.py` command functions
 
@@ -729,6 +730,40 @@ Status:
 
 - Complete.
 
+## Character Renown Transfer Extraction
+
+### Completed Work
+
+The public `!giverenown <amount> <profile name>` command behavior was extracted from `original/onMSGUtils.py`.
+
+Created:
+
+- `transfer_character_renown()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `message_11_giverenown()` now delegates renown transfer behavior to `transfer_character_renown()`.
+
+Behavior preserved:
+
+- Command still only works in the Unspoiled Desire OOC room.
+- Missing gifter character files still use the original missing-character message.
+- Missing recipient character files still use the original missing-character message.
+- Insufficient renown still rejects the transfer with the original message.
+- Successful transfers still subtract renown from the gifter.
+- Successful transfers still add renown to the recipient.
+- Successful transfers still use the original success message shape.
+- Wrong-channel behavior is preserved as `None`.
+
+Tests:
+
+- `tests/test_character_repository_renown_transfer.py`
+- `tests/test_legacy_onmsgutils_giverenown.py`
+
+Status:
+
+- Complete.
+
 ---
 
 ## Character Challenge Message Extraction
@@ -832,6 +867,7 @@ Completed character-related areas include:
 - Character who/profile lookup
 - Character player score lookup
 - Character leaderboard message construction
+- Character renown transfer behavior
 - Character challenge message construction
 - Character challenge acceptance boundary behavior
 - Character challenge acceptance initiative message construction and token selection
@@ -857,12 +893,6 @@ These are reasonable future targets, but they need dedicated tests first:
   - Timer handoff behavior remains owned by `botCommand.py`.
   - Full combat-start state integration remains in the legacy runtime path.
   - Any further extraction should be handled carefully with additional legacy tests.
-
-- `message_11_giverenown` in `original/onMSGUtils.py`
-  - Directly mutates two character files.
-  - Transfers renown between characters.
-  - Should be handled in a dedicated economy or renown-transfer chapter.
-  - Needs tests for missing gifter, missing recipient, insufficient renown, successful transfer, and exact legacy messages.
 
 - `status_compile` in `original/onMSGUtils.py`
   - Parses status room text and mutates character status.

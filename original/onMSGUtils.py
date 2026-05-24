@@ -7,7 +7,8 @@ from src.character_repository import (build_character_challenge_message,
                                       character_exists,
                                       delete_character,
                                       load_character,
-                                      save_character)
+                                      save_character,
+                                      transfer_character_renown)
 import os
 import json
 import random
@@ -330,40 +331,12 @@ def message_8_usefeat(channel, charFolder, message, unspoiledArena, character, g
 # !giverenown <amount> <profile name>
 def message_11_giverenown(character, channel, unspoiledBarOOC, renown, gifted, charFolder):
     if channel == unspoiledBarOOC:
-        try:
-            gifterFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
-            gifterData = json.load(gifterFile)
-            gifterFile.close()
-        # isCharacter = Path(charFolder + character.lower() + ".json")
-        except FileNotFoundError:
-            msg = character + " does not have a character to use this command."
-            return msg
-        try:
-            giftedFile = open(charFolder + gifted.lower() + ".json", "r", encoding="utf-8")
-            giftedData = json.load(giftedFile)
-            giftedFile.close()
-        # isAlsoharacter = Path(charFolder + gifted.lower() + ".json")
-        except FileNotFoundError:
-            msg = gifted + " does not have a character to use this command."
-            return msg
-        # if isCharacter.is_file():
-        #     if isAlsoCharacter.is_file():
-        if renown > gifterData['renown']:
-            msg = "You do not have this much to give."
-        else:
-            gifterData['renown'] -= renown
-            giftedData['renown'] += renown
-            msg = gifterData['name'] + " has given " + giftedData['name'] + "[color=yellow] " + str(renown) +\
-                "[/color] renown"
-
-        file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
-        json.dump(gifterData, file, ensure_ascii=False, indent=2)
-        file.close()
-
-        file = open(charFolder + gifted.lower() + ".json", "w", encoding="utf-8")
-        json.dump(giftedData, file, ensure_ascii=False, indent=2)
-        file.close()
-        return msg
+        return transfer_character_renown(
+            character,
+            gifted,
+            renown,
+            charFolder,
+        )
 
 # Use to not use the evasion feat for an attack
 # !pass

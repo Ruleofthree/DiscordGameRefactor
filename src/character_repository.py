@@ -103,6 +103,42 @@ def save_character(
         json.dump(character_data, file, ensure_ascii=False, indent=2)
 
 
+def transfer_character_renown(
+    gifter: str,
+    recipient: str,
+    amount: int,
+    characters_dir: Path | str = CHARACTERS_DIR,
+) -> str:
+    try:
+        gifter_data = load_character(gifter, characters_dir)
+    except FileNotFoundError:
+        return gifter + " does not have a character to use this command."
+
+    try:
+        recipient_data = load_character(recipient, characters_dir)
+    except FileNotFoundError:
+        return recipient + " does not have a character to use this command."
+
+    if amount > gifter_data["renown"]:
+        msg = "You do not have this much to give."
+    else:
+        gifter_data["renown"] -= amount
+        recipient_data["renown"] += amount
+        msg = (
+            gifter_data["name"]
+            + " has given "
+            + recipient_data["name"]
+            + "[color=yellow] "
+            + str(amount)
+            + "[/color] renown"
+        )
+
+    save_character(gifter, gifter_data, characters_dir)
+    save_character(recipient, recipient_data, characters_dir)
+
+    return msg
+
+
 def create_character(character, name, char_folder):
     character = character.lower()
     char_folder = Path(char_folder)
