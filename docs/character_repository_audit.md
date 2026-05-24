@@ -21,7 +21,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `220 passed`
+- `230 passed`
 
 This includes:
 
@@ -694,6 +694,48 @@ Status:
 
 ## Character Challenge Message Extraction
 
+## Character Challenge Acceptance Boundary
+
+### Completed Work
+
+The public `!accept` challenge acceptance boundary was tested and partially extracted from `original/onMSGAccept.py`.
+
+Created:
+
+- `build_challenge_accept_initiative_result()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `message_accept()` in `original/onMSGAccept.py` now delegates initiative message construction and token selection to `build_challenge_accept_initiative_result()`.
+
+Behavior preserved:
+
+- Successful challenge acceptance still starts the fight state.
+- The accepting player is still loaded from the character folder.
+- Player two is still set from the accepting character profile.
+- Initiative rolls are still generated inside `message_accept()`.
+- Initiative totals are still calculated using each character's initiative modifier.
+- Player one still wins the final tie-breaker when the coin flip result is `1`.
+- Wrong accepting characters are still rejected with the legacy message.
+- Attempts to accept when no challenge is pending are rejected.
+- Attempts to accept outside the arena channel are rejected.
+- Legacy return tuple shape is preserved.
+
+Boundary stabilization:
+
+- `message_accept()` now initializes its return-state values before channel and game-state branching.
+- This prevents invalid acceptance paths from failing with uninitialized local variable errors.
+- The misspelled `new_oppenent` return variable is preserved for compatibility with existing callers.
+
+Tests:
+
+- `tests/test_character_repository_acceptance.py`
+- `tests/test_legacy_onmsgaccept.py`
+
+Status:
+
+- Complete for challenge acceptance boundary and initiative result extraction.
+- 
 ### Completed Work
 
 The public `!challenge <profile name>` message-construction behavior was extracted from `original/onMSGUtils.py`.
@@ -749,6 +791,8 @@ Completed character-related areas include:
 - Character who/profile lookup
 - Character player score lookup
 - Character challenge message construction
+- Character challenge acceptance boundary behavior
+- Character challenge acceptance initiative message construction and token selection
 - Character view calculations and context preparation
 
 `botCommand.py` is still not imported directly in pytest because of runtime dependencies.
@@ -763,11 +807,12 @@ Completed character-related areas include:
 
 These are reasonable future targets, but they need dedicated tests first:
 
-- `message_accept` in `original/onMSGAccept.py`
-  - Loads the accepting player.
-  - Rolls initiative.
-  - Starts combat state.
-  - Should be handled in a dedicated combat-start chapter.
+- Further `message_accept` cleanup in `original/onMSGAccept.py`
+  - Character loading still happens inside the legacy wrapper.
+  - Random initiative roll generation still happens inside the legacy wrapper.
+  - Timer handoff behavior remains owned by `botCommand.py`.
+  - Full combat-start state integration remains in the legacy runtime path.
+  - Any further extraction should be handled carefully with additional legacy tests.
 
 ### High Risk
 
