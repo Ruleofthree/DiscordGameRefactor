@@ -8,7 +8,8 @@ from src.character_repository import (build_character_challenge_message,
                                       delete_character,
                                       load_character,
                                       save_character,
-                                      transfer_character_renown)
+                                      transfer_character_renown,
+                                      update_character_status_from_status_message)
 import os
 import json
 import random
@@ -33,27 +34,9 @@ def message_8_compile(users):
     return masterList
 
 def status_compile(character, statusmsg, masterList):
-    try:
-        if character in masterList:
-            split1 = statusmsg.split("[session=Unspoiled Desire (Command and OoC Room)]")
-            room = "adh-8216a753c1ef08445052[/session]"
-            split2 = split1[1].split("[")
-            if room in split1:
-                split2 = room
-            split3 = split2.split("[/session]")
-            findRoom = split3[0]
-            if findRoom in statusmsg:
-                path = os.getcwd()
-                charFolder = os.path.join(path + "/characters/")
-                pInfo = load_character(character, charFolder)
-                pInfo['status'] = findRoom
-                save_character(character, pInfo, charFolder)
-            else:
-                pInfo = load_character(character, charFolder)
-                pInfo['status'] = ""
-                save_character(character, pInfo, charFolder)
-    except:
-        pass
+    path = os.getcwd()
+    charFolder = os.path.join(path + "/characters/")
+    update_character_status_from_status_message(character, statusmsg, masterList, charFolder)
 
 # depreciated. No longer used.
 def message_7_detect(channel, unspoiledBarOOC, character, message):
