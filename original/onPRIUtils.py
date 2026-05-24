@@ -2,7 +2,8 @@ from src.armor_repository import get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
 from src.character_repository import (assign_character_stats, character_exists, load_character, save_character,
                                       select_character_build, select_character_feat, select_character_trait,
-                                      calculate_character_view_totals, format_character_view_armor_inventory)
+                                      calculate_character_view_totals, format_character_view_armor_inventory,
+                                      format_character_view_potion_inventory)
 import os
 import json
 import random
@@ -270,7 +271,7 @@ def pri_viewchar(character):
         initiative = totals["initiative"]
 
         hasTakenList = ", ".join(hasTaken)
-        potionInventoryList = ", ".join(potionInventory)
+        potionInventoryList = format_character_view_potion_inventory(charData)
 
         msg.append("\n" + name + "'s Character Sheet:\n"
                    "𝙲𝚑𝚊𝚛𝚊𝚌𝚝𝚎𝚛 𝙽𝚊𝚖𝚎:\t\t\t\t\t[color=red]" + name + "[/color]\n"
