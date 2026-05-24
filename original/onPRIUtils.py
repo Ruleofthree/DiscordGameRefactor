@@ -226,17 +226,6 @@ def pri_viewchar(character):
         pstrength = charData["pstrength"]
         pdexterity = charData["pdexterity"]
         pconstitution = charData["pconstitution"]
-        # Armor Bonuses
-        armorhit = charData["armorhit"]
-        armordamage = charData["armordamage"]
-        armorac = charData["armorac"]
-        armorhp = charData["armorhp"]
-        armordr = charData["armordr"]
-        armorstrength = charData["armorstrength"]
-        armordexterity = charData["armordexterity"]
-        armorconstitution = charData["armorconstitution"]
-        armorblur = charData["armorblur"]
-        armorinitiative = charData["armorinitiative"]
         # Trait Bonuses
         nblur = charData['blur']
         traitHit = charData['traithit']
