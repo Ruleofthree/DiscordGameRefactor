@@ -1,16 +1,3 @@
-## Completed Chapter 9 Work
-
-The character repository foundation has been created and tested.
-
-Implemented helpers:
-
-- `normalize_character_name(character_name)`
-- `get_character_path(character_name, characters_dir=CHARACTERS_DIR)`
-- `character_exists(character_name, characters_dir=CHARACTERS_DIR)`
-- `load_character(character_name, characters_dir=CHARACTERS_DIR)`
-- `save_character(character_name, character_data, characters_dir=CHARACTERS_DIR)`
-
-The following legacy functions now route character JSON access through `character_repository`:
 # Character Repository Audit
 
 ## Purpose
@@ -34,7 +21,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `119 passed`
+- `205 passed`
 
 This includes:
 
@@ -44,7 +31,9 @@ This includes:
 - Armor repository tests
 - Potion repository tests
 - Character repository tests
-- Legacy wrapper tests for selected command functions
+- Character creation and deletion tests
+- Character build, stat, trait, feat, ability-point, level-listing, and view-calculation tests
+- Legacy wrapper tests for selected `onMSGUtils.py` and `onPRIUtils.py` command functions
 
 ---
 
@@ -69,19 +58,19 @@ For that reason:
 
 A tested data-loading layer was created first so repository modules could rely on shared JSON-loading behavior.
 
-The data loader provides stable access to JSON files under the project data structure and is covered by pytest.
-
-Completed:
+Created:
 
 - `src/data_loader.py`
-- Tests for loading valid JSON
-- Tests for loading game data files such as traits, feats, armor, and potions
 
 Purpose:
 
 - Reduce repeated raw `open(... json.load(...))` patterns.
 - Give repository modules a consistent file-loading foundation.
 - Keep tests isolated and predictable.
+
+Status:
+
+- Complete.
 
 ---
 
@@ -100,12 +89,6 @@ Legacy behavior preserved:
 - Some legacy code expects both the feat dictionary and a list of feat names.
 - The repository keeps that structure available so existing behavior does not change.
 
-Refactored usage:
-
-- `original/onMSGUtils.py` now imports from `src.feat_repository`.
-- Legacy feat loading in `onMSGUtils.py` was routed through the repository.
-- `botCommand.py` was not imported directly in pytest due to runtime dependency issues.
-
 Tests added:
 
 - Repository tests for feat loading.
@@ -114,7 +97,6 @@ Tests added:
 Status:
 
 - Complete for read-only feat loading.
-- Deeper feat execution logic remains untouched.
 
 Not yet refactored:
 
@@ -140,21 +122,14 @@ The trait repository supports loading trait data and exposing the legacy shape n
 Completed:
 
 - Repository tests for trait loading.
-- Search confirmed that there was no direct `traitDict` function inside `onMSGUtils.py`.
-- Trait-related logic was found elsewhere, especially in private command utilities and character progression code.
+- Trait data loading was separated from trait selection behavior.
 - `botCommand.py` remained excluded from pytest imports.
 
 Status:
 
 - Complete for read-only trait loading.
-- Trait selection and trait application remain separate concerns.
 
-Not yet refactored:
-
-- Trait picking
-- Trait bonuses during character setup
-- Trait progression at level milestones
-- Trait effects inside combat or view calculations
+Trait selection itself was later handled through the character repository work.
 
 ---
 
@@ -207,7 +182,7 @@ Completed:
 - Repository tests for potion loading.
 - Read-only potion loading was isolated from runtime command logic.
 - Selected potion-related helper behavior was reviewed.
-- `givepotion` was discussed as part of the potion lifecycle, but broad potion runtime behavior was not mixed into unrelated chapters.
+- Broad potion runtime behavior was not mixed into unrelated chapters.
 
 Status:
 
@@ -251,7 +226,6 @@ Purpose:
 Status:
 
 - Complete as a broad audit.
-- Remaining medium-risk items were moved into later chapters.
 
 ---
 
@@ -265,17 +239,19 @@ Created and expanded:
 
 The character repository now supports basic character file operations.
 
-Completed functions include:
+Completed helpers include:
 
-- Character existence checks
-- Character loading
-- Character saving
-- Character deletion
-- Character creation
+- `normalize_character_name(character_name)`
+- `get_character_path(character_name, characters_dir=CHARACTERS_DIR)`
+- `character_exists(character_name, characters_dir=CHARACTERS_DIR)`
+- `load_character(character_name, characters_dir=CHARACTERS_DIR)`
+- `save_character(character_name, character_data, characters_dir=CHARACTERS_DIR)`
 
 The repository uses caller-provided character folders during tests, allowing pytest to use temporary directories instead of live character data.
 
-This is a major safety improvement.
+Status:
+
+- Complete.
 
 ---
 
@@ -285,20 +261,24 @@ This is a major safety improvement.
 
 Character deletion was moved into the repository layer.
 
-Completed:
+Created:
 
-- `delete_character()` added to `src.character_repository`.
-- Repository tests were written first.
-- Tests confirmed deletion of the character JSON file.
-- Tests confirmed update of `playerDatabase.json`.
-- Tests confirmed safe behavior when no character exists.
-- `original/onMSGUtils.py` `message_7_erase` was updated to delegate to `character_repository.delete_character`.
+- `delete_character()` in `src.character_repository`
 
-Important behavior preserved:
+Legacy wrapper:
 
-- Existing public erase messages remained compatible with legacy expectations.
-- Character deletion still removes the character file.
+- `original/onMSGUtils.py` `message_7_erase()` now delegates to `delete_character()`.
+
+Behavior preserved:
+
+- Character deletion still removes the character JSON file.
 - Character deletion still removes the player database entry.
+- Missing-character behavior remains compatible with legacy expectations.
+
+Tests added:
+
+- Repository deletion tests
+- Legacy wrapper tests for erase behavior
 
 Status:
 
@@ -316,15 +296,18 @@ Created:
 
 - `create_character()` in `src.character_repository`
 
-Repository tests added:
+Legacy wrapper:
 
-- Character sheet creation using a temporary directory.
-- `levelchart.json` test fixture written inside `tmp_path`.
-- `playerDatabase.json` test fixture written inside `tmp_path`.
-- Verification that the created character file exists.
-- Verification that default character fields match legacy behavior.
-- Verification that `playerDatabase.json` is updated.
-- Verification that an existing character is not overwritten.
+- `original/onMSGUtils.py` `message_5_name()` delegates to `create_character()`.
+
+Behavior preserved:
+
+- Character sheet creation
+- `levelchart.json` dependency
+- `playerDatabase.json` update
+- Existing-character rejection
+- Legacy default character fields
+- Legacy success and instruction messages
 
 Important default fields preserved include:
 
@@ -364,82 +347,353 @@ Important default fields preserved include:
 - `statuscounter`
 - `fight`
 
+Tests added:
+
+- Repository tests for character creation
+- Legacy wrapper tests for `message_5_name()`
+
 Status:
 
-- Repository-level character creation is complete and tested.
+- Complete.
 
 ---
 
-## !name Command Extraction
+## Character Build Command Extraction
 
 ### Completed Work
 
-The `!name` command behavior was extracted away from `botCommand.py`.
+The private `!build` command behavior was extracted from `original/onPRIUtils.py`.
 
-Important finding:
+Created:
 
-- `botCommand.py` no longer contained an active `def message_5_name(...)`.
-- It only contained the call site:
+- `select_character_build()` in `src.character_repository`
 
-```python
-msg = message_5_name(channel, charFolder, message, charFile, character)
-### Read / Load Routes
+Legacy wrapper:
 
-- `message_4_who` in `original/onMSGUtils.py`
-- `message_7_player` in `original/onMSGUtils.py`
-- `message_10_challenge` in `original/onMSGUtils.py`
-- `message_accept` in `original/onMSGAccept.py`
+- `pri_6_build()` now delegates to `select_character_build()`.
 
-### Single-Character Write Routes
+Behavior preserved:
 
-- `pri_6_build` in `original/onPRIUtils.py`
-- `pri_4_add` in `original/onPRIUtils.py`
-- `status_compile` in `original/onMSGUtils.py`
-- `pri_viewchar` in `original/onPRIUtils.py`
-- `pri_6_stats` in `original/onPRIUtils.py`
-- `pri_7_respec` in `original/onPRIUtils.py`
+- Strength, Dexterity, and Constitution builds are still recorded on the character sheet.
+- Strength builds still receive `focus` automatically at the legacy low-level threshold.
+- Existing builds are not overwritten.
+- Legacy success and rejection messages are preserved.
 
-Current test status:
+Tests:
 
-- 108 tests passing
+- `tests/test_character_repository_build.py`
+- `tests/test_legacy_onpriutils_build.py`
+
+Status:
+
+- Complete.
+
+---
+
+## Character Stat Assignment Extraction
+
+### Completed Work
+
+The private `!stats` command behavior was extracted from `original/onPRIUtils.py`.
+
+Created:
+
+- `assign_character_stats()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `pri_6_stats()` now delegates to `assign_character_stats()`.
+
+Behavior preserved:
+
+- Stat totals must match available ability points.
+- Stat caps by level are preserved.
+- Negative stats are rejected.
+- Missing build selection is rejected.
+- Strength, Dexterity, and Constitution build math is preserved.
+- Character JSON is updated through temporary test-safe paths during testing.
+
+Tests:
+
+- `tests/test_character_repository_stats.py`
+- `tests/test_legacy_onpriutils_stats.py`
+
+Status:
+
+- Complete.
+
+---
+
+## Character Respec Extraction
+
+### Completed Work
+
+The private `!respec` command behavior was tested and refactored.
+
+Behavior covered:
+
+- Free reset usage when reset points remain.
+- Renown-cost reset when reset points are exhausted.
+- Rejection when neither reset points nor sufficient renown are available.
+- Legacy field resets for build, stats, traits, feats, derived bonuses, and related character fields.
+
+Tests:
+
+- `tests/test_legacy_onpriutils_respec.py`
+
+Status:
+
+- Complete for current tested behavior.
+
+---
+
+## Character Trait Selection Extraction
+
+### Completed Work
+
+The private `!traitpick` command behavior was extracted from `original/onPRIUtils.py`.
+
+Created:
+
+- `select_character_trait()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `pri_6_trait()` now delegates to `select_character_trait()`.
+
+Behavior preserved:
+
+- Trait selection uses the legacy trait dictionary/list structure.
+- Trait bonuses are applied according to character level.
+- Invalid traits and already-selected traits are rejected.
+- Character JSON is updated through repository-backed logic.
+
+Tests:
+
+- `tests/test_character_repository_traits.py`
+
+Status:
+
+- Complete for current tested behavior.
+
+---
+
+## Character Feat Selection Extraction
+
+### Completed Work
+
+The private `!featpick` command behavior was extracted from `original/onPRIUtils.py`.
+
+Created:
+
+- `select_character_feat()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `pri_10_feat_pick()` now delegates to `select_character_feat()`.
+
+Behavior preserved:
+
+- Feat list validation
+- Build restrictions
+- Level restrictions
+- Prerequisite checks
+- Remaining feat slot handling
+- Hidden feat tracking
+- Legacy automatic and restricted feat behavior
+
+Tests:
+
+- `tests/test_character_repository_feats.py`
+
+Status:
+
+- Complete for current tested behavior.
+
+---
+
+## Character View Calculation Extraction
+
+### Completed Work
+
+The calculation and display-preparation portions of `pri_viewchar()` were extracted into `src.character_repository`.
+
+Created:
+
+- `calculate_character_view_totals()`
+- `format_character_view_armor_inventory()`
+- `format_character_view_potion_inventory()`
+- `build_character_view_context()`
+- `apply_character_view_totals()`
+
+Legacy wrapper:
+
+- `pri_viewchar()` still owns the final F-list display string and save operation.
+- Calculation and context-building logic now lives in repository helpers.
+
+Behavior preserved:
+
+- Strength, Dexterity, and Constitution build math
+- HP, AC, hit, damage, DR, regeneration, blur, and initiative calculations
+- Legacy armor inventory formatting behavior
+- Legacy potion inventory formatting behavior
+- Legacy armor mutation behavior during view formatting
+
+Tests:
+
+- `tests/test_character_repository_view_totals.py`
+- `tests/test_character_repository_view_context.py`
+- `tests/test_character_repository_apply_view_totals.py`
+- `tests/test_legacy_onpriutils_viewchar.py`
+
+Status:
+
+- Complete for calculation/context extraction.
+- Final F-list display formatting remains in `pri_viewchar()`.
+
+---
+
+## Ability Point Add Extraction
+
+### Completed Work
+
+The private `!add` command behavior was extracted from `original/onPRIUtils.py`.
+
+Created:
+
+- `add_ability_point()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `pri_4_add()` now delegates to `add_ability_point()`.
+
+Behavior preserved:
+
+- Accepts `strength` and `str`.
+- Accepts `dexterity` and `dex`.
+- Accepts `constitution` and `con`.
+- Rejects invalid ability names.
+- Requires `apboost` to be available.
+- Adds one point to the selected ability.
+- Sets `apboost` to `False`.
+- Preserves the legacy response messages.
+
+Tests:
+
+- `tests/test_character_repository_add_ability_point.py`
+- `tests/test_legacy_onpriutils_add.py`
+
+Status:
+
+- Complete.
+
+---
+
+## Character Level Listing Extraction
+
+### Completed Work
+
+The private `!wholevel` behavior was extracted from `original/onPRIUtils.py`.
+
+Created:
+
+- `list_characters_by_level()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `pri_9_wholevel()` now delegates the lookup work to `list_characters_by_level()`.
+
+Behavior preserved:
+
+- Reads `playerDatabase.json`.
+- Loads each listed character file.
+- Filters profiles by exact character level.
+- Preserves player database order.
+- Keeps final F-list message formatting in `pri_9_wholevel()`.
+
+Tests:
+
+- `tests/test_legacy_onpriutils_wholevel.py`
+- `tests/test_character_repository_wholevel.py`
+
+Status:
+
+- Complete.
+
+---
 
 ## Current Position
 
-The safest read-only and simple single-character write paths have now been refactored.
+The safest read-only and simple character repository paths have now been refactored and tested.
 
-The project should pause before moving into higher-risk mutable systems. The next targets involve either:
+Completed character-related areas include:
 
-- creating or deleting character files
-- updating `playerDatabase.json`
-- modifying more complex inventory or economy data
-- modifying multiple character files
-- modifying combat result files
+- Character file path helpers
+- Character existence checks
+- Character loading
+- Character saving
+- Character creation
+- Character deletion
+- Build selection
+- Stat assignment
+- Respec behavior
+- Trait selection
+- Feat selection
+- Ability-point adding
+- Character level listing
+- Character view calculations and context preparation
 
-These should be handled with stricter tests before any production code changes.
+`botCommand.py` is still not imported directly in pytest because of runtime dependencies.
+
+`original/onPRIUtils.py` still contains the final F-list display formatter for `pri_viewchar()`, along with the remaining potion, armor, shop, and equipment functions.
+
+---
 
 ## Remaining Refactor Targets
 
 ### Medium Risk
 
-These are probably the next reasonable candidates, but they need dedicated tests first:
+These are reasonable future targets, but they need dedicated tests first:
 
-- `message_5_name` in `original/onMSGUtils.py`
-  - Creates a new character file.
-  - Updates `playerDatabase.json`.
-  - Depends on `levelchart.json`.
+- `message_4_who` in `original/onMSGUtils.py`
+  - Reads `playerDatabase.json`.
+  - Loads a character file.
+  - Displays build, trait, level, wins, losses, forfeits, and ratio.
 
-- `message_7_erase` in `original/onMSGUtils.py`
-  - Deletes a character file.
-  - Updates `playerDatabase.json`.
+- `message_7_player` in `original/onMSGUtils.py`
+  - Deprecated, but still reads character score data.
+  - Should either be tested before removal or left untouched until deprecated-command cleanup.
+
+- `message_10_challenge` in `original/onMSGUtils.py`
+  - Reads two character files.
+  - Performs fight-readiness checks.
+  - Initializes challenge state.
+  - Should be treated carefully because it touches combat-adjacent flow.
+
+- `message_accept` in `original/onMSGAccept.py`
+  - Loads the accepting player.
+  - Rolls initiative.
+  - Starts combat state.
+  - Should be handled in a dedicated combat-start chapter.
 
 ### High Risk
 
-These should wait until creation/deletion and database helpers are better isolated:
+These should wait for dedicated inventory/economy chapters:
 
-- potion buy/use/give/sell commands
-- armor buy/equip/unequip/sell commands
-- renown transfer commands
-- any function that modifies two character files
+- `pri_10_stockpotion`
+- `pri_10_buypotion`
+- `pri_11_sellpotion`
+- `pri_10_usepotion`
+- `pri_11_givepotion`
+- `pri_11_stockarmor`
+- `pri_10_armorshop`
+- `pri_9_buyarmor`
+- `pri_10_sellarmor`
+- `pri_10_namearmor`
+- `pri_6_equip`
+- `pri_8_unequip`
+
+These functions touch inventory, shop data, equipment state, temporary modifiers, permanent modifiers, or combat-adjacent character state.
 
 ### Very High Risk
 
@@ -448,7 +702,8 @@ Avoid until later:
 - `playerone_zero_current_hp.py`
 - `playertwo_zero_current_hp.py`
 - combat win/loss resolution
+- XP and renown payout logic
 - level-up handling
+- combat feat execution
+- rolling resolution
 - direct `botCommand.py` runtime integration
-
-`botCommand.py` should still not be imported directly in pytest because of runtime dependencies.
