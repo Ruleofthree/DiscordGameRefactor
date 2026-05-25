@@ -21,7 +21,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `258 passed`
+- `265 passed`
 
 This includes:
 
@@ -36,7 +36,7 @@ This includes:
 - Character challenge message and challenge acceptance tests
 - Character renown transfer tests
 - Character leaderboard message tests
-- Character status compile boundary and passive status timer tests
+- Character status compile boundary, passive status timer, and active master-list tests
 - Legacy wrapper tests for selected `onMSGUtils.py`, `onPRIUtils.py`, and `onMSGAccept.py` command functions
 
 ---
@@ -832,6 +832,39 @@ Tests:
 Status:
 
 - Complete for passive status timer character-file mutation behavior.
+
+## Active Character Master List Extraction
+
+### Completed Work
+
+The active user-list filtering behavior from `original/onMSGUtils.py` was extracted into the character repository layer.
+
+Created:
+
+- `build_active_character_master_list()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `message_8_compile()` now delegates active master-list construction to `build_active_character_master_list()`.
+
+Behavior preserved:
+
+- The active user list still excludes `Unspoiled Desire`.
+- All other user identities are still included.
+- Input order is still preserved.
+- Empty user lists still return an empty list.
+- Lists containing only `Unspoiled Desire` still return an empty list.
+- No character files are read or written.
+- No combat, timer, inventory, XP, renown payout, or level-up behavior was touched.
+
+Tests:
+
+- `tests/test_character_repository_master_list.py`
+- `tests/test_legacy_onmsgutils_compile.py`
+
+Status:
+
+- Complete.
 
 ## Character Challenge Message Extraction
 

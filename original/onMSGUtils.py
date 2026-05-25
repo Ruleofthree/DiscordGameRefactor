@@ -1,5 +1,6 @@
 from src.feat_repository import get_feat_dictionary_and_names
-from src.character_repository import (build_character_challenge_message,
+from src.character_repository import (build_active_character_master_list,
+                                      build_character_challenge_message,
                                       build_character_leaderboard_messages,
                                       build_character_player_score_message,
                                       build_character_who_messages,
@@ -26,12 +27,7 @@ def featDict():
     return get_feat_dictionary_and_names()
 
 def message_8_compile(users):
-    noNoList = ["Unspoiled Desire"]
-    masterList = []
-    for item in users:
-        if item["identity"] not in noNoList:
-            masterList.append(item["identity"])
-    return masterList
+    return build_active_character_master_list(users)
 
 def status_compile(character, statusmsg, masterList):
     path = os.getcwd()

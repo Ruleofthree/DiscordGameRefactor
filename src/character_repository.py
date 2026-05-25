@@ -43,6 +43,17 @@ def character_exists(
     return get_character_path(character_name, characters_dir).is_file()
 
 
+def build_active_character_master_list(users):
+    no_no_list = ["Unspoiled Desire"]
+    master_list = []
+
+    for item in users:
+        if item["identity"] not in no_no_list:
+            master_list.append(item["identity"])
+
+    return master_list
+
+
 def load_character(
     character_name: str,
     characters_dir: Path | str = CHARACTERS_DIR,
