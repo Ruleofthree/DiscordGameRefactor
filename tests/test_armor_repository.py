@@ -1,6 +1,7 @@
 import pytest
 
 from src.armor_repository import (
+    build_armor_shop_display,
     get_armor_dictionary,
     get_armor_effects,
     get_armor_shop_lists,
@@ -78,3 +79,51 @@ def test_get_armor_effects_returns_multiple_effects_for_valid_armor_key():
 def test_get_armor_effects_raises_key_error_for_invalid_armor_key():
     with pytest.raises(KeyError):
         get_armor_effects("not-real-armor")
+
+
+def test_build_armor_shop_display_formats_single_attribute_armor():
+    result = build_armor_shop_display([
+        ["str1"],
+    ])
+
+    assert result == "Armor1 [color=red]['str1'][/color]: [color=yellow](500 renown)[/color]"
+
+
+def test_build_armor_shop_display_formats_two_attribute_armor():
+    result = build_armor_shop_display([
+        ["dex2", "ac2"],
+    ])
+
+    assert result == "Armor1 [color=red]['dex2', 'ac2'][/color]: [color=yellow](5000 renown)[/color]"
+
+
+def test_build_armor_shop_display_formats_three_attribute_armor():
+    result = build_armor_shop_display([
+        ["con4", "hp15", "hit4"],
+    ])
+
+    assert result == "Armor1 [color=red]['con4', 'hp15', 'hit4'][/color]: [color=yellow](12500 renown)[/color]"
+
+
+def test_build_armor_shop_display_formats_sold_armor():
+    result = build_armor_shop_display([
+        "sold",
+    ])
+
+    assert result == "Armor1 [color=red]sold[/color]: [color=yellow](0 renown)[/color]"
+
+
+def test_build_armor_shop_display_preserves_multiple_line_display():
+    result = build_armor_shop_display([
+        ["str1"],
+        ["dex2", "ac2"],
+        ["con4", "hp15", "hit4"],
+        "sold",
+    ])
+
+    assert result == (
+        "Armor1 [color=red]['str1'][/color]: [color=yellow](500 renown)[/color]\n"
+        "Armor2 [color=red]['dex2', 'ac2'][/color]: [color=yellow](5000 renown)[/color]\n"
+        "Armor3 [color=red]['con4', 'hp15', 'hit4'][/color]: [color=yellow](12500 renown)[/color]\n"
+        "Armor4 [color=red]sold[/color]: [color=yellow](0 renown)[/color]"
+    )
