@@ -46,7 +46,7 @@ Completed inventory/economy areas include:
 - Potion shop restock
 - Potion purchase
 - Armor shop restock
-- 
+
 The potion economy path and read-only/global shop restock paths now have repository-backed helpers for:
 
 - Selling potions
@@ -244,32 +244,10 @@ Current full pytest result:
 Status:
 
 - Complete.
-- 
+
 ## Remaining Function Risk Review
 
 ### Medium-to-High Risk
-
-#### `pri_11_stockarmor`
-
-Classification:
-
-- Armor shop restock mutation
-- Randomized shop generation
-- Global data-file mutation
-
-Reason:
-
-- Mutates `armor.json`.
-- Uses randomness.
-- Does not mutate character files directly.
-- Historically mixes `armorData` and `armorDictionary`, so it needs careful characterization before extraction.
-
-Recommendation:
-
-- Best next candidate if continuing shop restock cleanup.
-- Must use controlled-randomness tests first.
-
----
 
 #### `pri_9_buyarmor`
 
