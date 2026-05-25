@@ -1,5 +1,7 @@
 from src.data_loader import load_armor
 
+import random
+
 
 def get_armor_dictionary():
     """
@@ -132,3 +134,79 @@ def build_armor_shop_display(armor_shop_items, armor_dictionary=None):
     )
 
     return armor_list
+
+
+def stock_armor_shop(
+    armor_dictionary,
+    cat_one_common_list,
+    cat_one_uncommon_list,
+    cat_one_rare_list,
+    cat_two_common_list,
+    cat_two_uncommon_list,
+    cat_two_rare_list,
+    cat_three_common_list,
+    cat_three_uncommon_list,
+    cat_three_rare_list,
+):
+    """
+    Stock the armor shop with 20 armor entries.
+
+    This preserves the legacy pri_11_stockarmor random threshold behavior while
+    keeping armor.json file writing in the legacy wrapper.
+    """
+    for num in range(1, 21):
+        rand = random.randint(1, 100)
+
+        if rand in range(1, 101):
+            category = random.randint(1, 100)
+
+            if category in range(80, 101):
+                item = []
+                random_attribute = random.choice(cat_one_rare_list)
+                item.append(random_attribute)
+
+            if category in range(46, 80):
+                item = []
+                random_attribute = random.choice(cat_one_uncommon_list)
+                item.append(random_attribute)
+
+            if category in range(1, 46):
+                item = []
+                random_attribute = random.choice(cat_one_common_list)
+                item.append(random_attribute)
+
+        if rand in range(1, 41):
+            category = random.randint(1, 100)
+
+            if category in range(86, 101):
+                random_attribute = random.choice(cat_two_rare_list)
+                item.append(random_attribute)
+
+            if category in range(51, 86):
+                random_attribute = random.choice(cat_two_uncommon_list)
+                item.append(random_attribute)
+
+            if category in range(1, 51):
+                random_attribute = random.choice(cat_two_common_list)
+                item.append(random_attribute)
+
+        if rand in range(1, 11):
+            category = random.randint(1, 100)
+
+            if category in range(86, 101):
+                random_attribute = random.choice(cat_three_rare_list)
+                item.append(random_attribute)
+
+            elif category in range(51, 86):
+                random_attribute = random.choice(cat_three_uncommon_list)
+                item.append(random_attribute)
+
+            elif category in range(1, 51):
+                random_attribute = random.choice(cat_three_common_list)
+                item.append(random_attribute)
+
+        armor_dictionary[0]["armorlist"]["armor" + str(num)] = item
+
+    msg = "Armor Shop has been stocked for the week."
+
+    return armor_dictionary, msg

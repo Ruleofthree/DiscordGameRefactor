@@ -1,4 +1,8 @@
-from src.armor_repository import build_armor_shop_display, get_armor_dictionary
+from src.armor_repository import (
+    build_armor_shop_display,
+    get_armor_dictionary,
+    stock_armor_shop,
+)
 from src.potion_repository import (
     buy_character_potion,
     get_potion_effect_info,
@@ -581,70 +585,29 @@ def pri_11_givepotion(character, item, gifted, charFolder):
 
     return msg, gifter, gifted
 
-# DEVELOPER USE ONLY - Stocks the store with 20 new pieces of equipment
 def pri_11_stockarmor(catOneCommonList, catOneUncommonList, catOneRareList, catTwoCommonList, catTwoUncommonList,
                       catTwoRareList, catThreeCommonList, catThreeUncommonList, catThreeRareList):
-    armorData = get_armor_dictionary()
-    num = 1
-    msg = []
-    for num in range(1, 21):
-        rand = random.randint(1, 100)
-        if rand in range(1, 101):
-            category = random.randint(1, 100)
-            # 15% chance
-            if category in range(80, 101):
-                item = []
-                randomAttribute = random.choice(catOneRareList)
-                item.append(randomAttribute)
-            # 35% chance
-            if category in range(46, 80):
-                item = []
-                randomAttribute = random.choice(catOneUncommonList)
-                item.append(randomAttribute)
-            # 50% chance
-            if category in range(1, 46):
-                item = []
-                randomAttribute = random.choice(catOneCommonList)
-                item.append(randomAttribute)
-        if rand in range(1, 41):
-            category = random.randint(1, 100)
-            # 15% chance
-            if category in range(86, 101):
-                randomAttribute = random.choice(catTwoRareList)
-                item.append(randomAttribute)
-            # 35% chance
-            if category in range(51, 86):
-                randomAttribute = random.choice(catTwoUncommonList)
-                item.append(randomAttribute)
-            # 50% chance
-            if category in range(1, 51):
-                randomAttribute = random.choice(catTwoCommonList)
-                item.append(randomAttribute)
-        if rand in range(1, 11):
-            category = random.randint(1, 100)
-            # 15% chance
-            if category in range(86, 101):
-                randomAttribute = random.choice(catThreeRareList)
-                item.append(randomAttribute)
-            # 35% chance
-            elif category in range(51, 86):
-                randomAttribute = random.choice(catThreeUncommonList)
-                item.append(randomAttribute)
-            # 50% chance
-            elif category in range(1, 51):
-                randomAttribute = random.choice(catThreeCommonList)
-                item.append(randomAttribute)
-        armorDictionary[0]["armorlist"]["armor" + str(num)] = item
+    armorDictionary = get_armor_dictionary()
+
+    armorDictionary, msg = stock_armor_shop(
+        armorDictionary,
+        catOneCommonList,
+        catOneUncommonList,
+        catOneRareList,
+        catTwoCommonList,
+        catTwoUncommonList,
+        catTwoRareList,
+        catThreeCommonList,
+        catThreeUncommonList,
+        catThreeRareList,
+    )
+
     armorFile = open("armor.json", "r+", encoding="utf-8")
     armorFile.seek(0)
     armorFile.write(json.dumps(armorDictionary, ensure_ascii=False, indent=2))
     armorFile.truncate()
     armorFile.close()
-    # num = 1
-    # for num in range(1, 21):
-    #     msg.append("Armor" + str(num) + " (" + ", ".join(armorDictionary[0]["armorlist"]["armor" + str(num)]) + ")")
 
-    msg = "Armor Shop has been stocked for the week."
     return msg
 
 # Allows player to view armor shop
