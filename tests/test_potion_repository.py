@@ -1,5 +1,6 @@
 from src.potion_repository import (
     POTION_RARITY_ORDER,
+    buy_character_potion,
     find_potion,
     get_potion_description,
     get_potion_dictionary,
@@ -221,3 +222,100 @@ def test_stock_potion_shop_can_stock_each_rarity_bucket(monkeypatch):
     assert updated_data[0]["shoplist"] == expected_shop
     assert shop_string == ", ".join(expected_shop)
     assert msg == "Shop stocked for the week as follows: \n" + shop_string
+
+
+def make_purchase_potion_data():
+    return [
+        {
+            "shoplist": ["hp5", "damage1"],
+            "common": {
+                "hp5": [150, "increasing hp by 5 for duration of fight", 5],
+            },
+            "uncommon": {
+                "damage1": [300, "increasing damage by 1 for duration of fight", 1],
+            },
+            "rare": {},
+            "vrare": {},
+            "relic": {},
+        }
+    ]
+
+
+def test_buy_character_potion_buys_available_potion_and_updates_character_and_shop():
+    potion_data = make_purchase_potion_data()
+    character_data = {
+        "name": "Test Hero",
+        "renown": 500,
+        "potions": [],
+    }
+
+    updated_character, updated_potion_data, message = buy_character_potion(
+        character_data,
+        potion_data,
+        "hp5",
+    )
+
+    assert message == "Test Hero has puchased a potion of hp5."
+    assert updated_character["renown"] == 350
+    assert updated_character["potions"] == ["hp5"]
+    assert updated_potion_data[0]["shoplist"] == ["damage1"]
+
+
+def test_buy_character_potion_rejects_potion_not_in_shop_without_changes():
+    potion_data = make_purchase_potion_data()
+    character_data = {
+        "name": "Test Hero",
+        "renown": 500,
+        "potions": [],
+    }
+
+    updated_character, updated_potion_data, message = buy_character_potion(
+        character_data,
+        potion_data,
+        "notforsale",
+    )
+
+    assert message == "You can not buy that potion, as it is not being sold right now."
+    assert updated_character["renown"] == 500
+    assert updated_character["potions"] == []
+    assert updated_potion_data[0]["shoplist"] == ["hp5", "damage1"]
+
+
+def test_buy_character_potion_rejects_when_buyer_lacks_renown():
+    potion_data = make_purchase_potion_data()
+    character_data = {
+        "name": "Test Hero",
+        "renown": 100,
+        "potions": [],
+    }
+
+    updated_character, updated_potion_data, message = buy_character_potion(
+        character_data,
+        potion_data,
+        "hp5",
+    )
+
+    assert message == "You do not have enough renown to purchase this."
+    assert updated_character["renown"] == 100
+    assert updated_character["potions"] == []
+    assert updated_potion_data[0]["shoplist"] == ["hp5", "damage1"]
+
+
+def test_buy_character_potion_rejects_when_inventory_is_full():
+    potion_data = make_purchase_potion_data()
+    character_data = {
+        "name": "Test Hero",
+        "renown": 500,
+        "potions": ["p1", "p2", "p3", "p4", "p5"],
+    }
+
+    updated_character, updated_potion_data, message = buy_character_potion(
+        character_data,
+        potion_data,
+        "hp5",
+    )
+
+    assert message == "You do not have enough inventory space to own more potions."
+    assert updated_character["renown"] == 500
+    assert updated_character["potions"] == ["p1", "p2", "p3", "p4", "p5"]
+    assert updated_potion_data[0]["shoplist"] == ["hp5", "damage1"]

@@ -1,5 +1,6 @@
 from src.armor_repository import build_armor_shop_display, get_armor_dictionary
 from src.potion_repository import (
+    buy_character_potion,
     get_potion_effect_info,
     get_potion_sell_value,
     sell_character_potion,
@@ -329,34 +330,14 @@ def pri_10_buypotion(character, potion, charFolder):
     except FileNotFoundError:
         msg = "You don't have a character made to use this function."
 
-    potionList = potionData[0]['shoplist']
-    buyer = charSheet['name']
-    print(potionList)
-    price = 0
+    buyer = charSheet["name"]
+
     if isCharacter.is_file():
-        if potion in potionList:
-            if potion in potionData[0]['common']:
-                price += potionData[0]['common'][potion][0]
-            elif potion in potionData[0]['uncommon']:
-                price += potionData[0]['uncommon'][potion][0]
-            elif potion in potionData[0]['rare']:
-                price += potionData[0]['rare'][potion][0]
-            elif potion in potionData[0]['vrare']:
-                price += potionData[0]['vrare'][potion][0]
-            elif potion in potionData[0]['relic']:
-                price += potionData[0]['relic'][potion][0]
-            if price <= charSheet['renown']:
-                if len(charSheet['potions']) >= 5:
-                    msg = "You do not have enough inventory space to own more potions."
-                else:
-                    charSheet['renown'] -= price
-                    potionData[0]['shoplist'].remove(potion)
-                    charSheet['potions'].append(potion)
-                    msg = charSheet['name'] + " has puchased a potion of " + potion + "."
-            else:
-                msg = "You do not have enough renown to purchase this."
-        else:
-            msg = "You can not buy that potion, as it is not being sold right now."
+        charSheet, potionData, msg = buy_character_potion(
+            charSheet,
+            potionData,
+            potion,
+        )
 
     file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
     json.dump(charSheet, file, ensure_ascii=False, indent=2)

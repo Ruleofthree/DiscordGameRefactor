@@ -165,3 +165,49 @@ def stock_potion_shop(
     msg = "Shop stocked for the week as follows: \n" + shop_string
 
     return potion_dictionary, msg, shop_string
+
+
+def get_potion_price_from_data(potion_data, potion_name):
+    """
+    Return a potion price from caller-provided potion data.
+
+    This preserves the legacy category search order without loading potions.json
+    inside the deterministic purchase helper.
+    """
+    for rarity in POTION_RARITY_ORDER:
+        if potion_name in potion_data[0][rarity]:
+            return potion_data[0][rarity][potion_name][0]
+
+    return None
+
+
+def buy_character_potion(character_data, potion_data, potion_name):
+    """
+    Buy one potion from the current potion shop.
+
+    This preserves pri_10_buypotion state mutation while keeping file loading
+    and saving in the legacy wrapper.
+    """
+    potion_list = potion_data[0]["shoplist"]
+
+    if potion_name not in potion_list:
+        return (
+            character_data,
+            potion_data,
+            "You can not buy that potion, as it is not being sold right now.",
+        )
+
+    price = get_potion_price_from_data(potion_data, potion_name)
+
+    if price <= character_data["renown"]:
+        if len(character_data["potions"]) >= 5:
+            message = "You do not have enough inventory space to own more potions."
+        else:
+            character_data["renown"] -= price
+            potion_data[0]["shoplist"].remove(potion_name)
+            character_data["potions"].append(potion_name)
+            message = character_data["name"] + " has puchased a potion of " + potion_name + "."
+    else:
+        message = "You do not have enough renown to purchase this."
+
+    return character_data, potion_data, message
