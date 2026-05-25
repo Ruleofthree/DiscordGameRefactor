@@ -778,3 +778,103 @@ Reason:
 - It can be covered with temporary character files and isolated tests before extraction.
 
 Do not begin the next implementation until the audit update is committed.
+
+## Potion Sale Extraction
+
+### Completed Work
+
+The single-character potion sale behavior was extracted from `original/onPRIUtils.py` into the potion repository layer.
+
+Created:
+
+- `sell_character_potion()` in `src.potion_repository`
+
+Legacy wrapper:
+
+- `pri_11_sellpotion()` now delegates deterministic potion sale logic to `sell_character_potion()`.
+
+Behavior preserved:
+
+- Owned potions can still be sold for half their listed potion value.
+- The seller's renown is still increased by the half-price value.
+- The sold potion is still removed from the seller's potion inventory.
+- Missing potions still return the legacy rejection message.
+- Potions missing from potion data still return the legacy unknown-potion message.
+- Character file loading and saving remain in `original/onPRIUtils.py`.
+- The legacy missing-character `UnboundLocalError` behavior is intentionally preserved and covered by test.
+- Potion buying, potion use, potion transfer, potion restocking, armor buying, armor selling, armor naming, equipping, unequipping, combat behavior, XP payout, renown payout, and level-up handling were not changed.
+
+Tests added or expanded:
+
+- `tests/test_potion_repository.py`
+- `tests/test_legacy_onpriutils_sellpotion.py`
+
+Current full pytest result:
+
+- `282 passed`
+
+Status:
+
+- Complete for single-character potion sale extraction.
+
+---
+
+## Updated Inventory and Economy Position
+
+Completed inventory/economy extraction targets:
+
+- Read-only armor shop display
+- Single-character potion sale
+
+Remaining targets should now be treated with higher caution.
+
+Possible next targets:
+
+### Medium Risk
+
+- `pri_10_stockpotion`
+- `pri_11_stockarmor`
+
+Reason:
+
+- They mutate global shop data.
+- They use randomness.
+- They do not mutate character files directly.
+- They need controlled randomness tests before extraction.
+
+### Medium-to-High Risk
+
+- `pri_10_buypotion`
+
+Reason:
+
+- Mutates one character file and `potions.json`.
+- Changes renown, potion inventory, and shop stock.
+- Safer than potion use or potion transfer, but riskier than potion sale.
+
+### High Risk
+
+- `pri_9_buyarmor`
+- `pri_10_sellarmor`
+- `pri_10_namearmor`
+- `pri_6_equip`
+- `pri_8_unequip`
+- `pri_10_usepotion`
+- `pri_11_givepotion`
+
+Reason:
+
+- These mutate armor inventory, equipment keys, combat-facing fields, temporary potion effects, permanent character progression, or multiple character files.
+
+Recommended next implementation target:
+
+- `pri_10_stockpotion`
+
+Reason:
+
+- It is a global shop mutation, but it does not touch character files.
+- It can be tested with controlled randomness.
+- It is a better next target than potion buying because it avoids renown and character inventory mutation.
+- It should be handled as a shop-restock extraction, not as potion lifecycle behavior.
+
+Do not begin the next implementation until this audit update is committed.
