@@ -1,3 +1,4 @@
+from src.character_repository import apply_passive_status_timer_tick
 import fchat
 import random
 import discord
@@ -628,31 +629,18 @@ class EchoBot(fchat.FChatClient):
             status_compile(character, statusmsg, self.masterList)
 
     def statusTimer(self):
-        for character in self.masterList:
-            path = os.getcwd()
-            charFolder = os.path.join(path + "/characters/")
-            charSheet = Path(charFolder + character.lower() + ".json")
-            if charSheet.is_file():
-                with open(charFolder + character.lower() + '.json', 'r+') as file:
-                    pInfo = json.load(file)
-                    if self.counter == 24:
-                        pInfo['statuscounter'] = 0
-                        file.seek(0)
-                        file.write(json.dumps(pInfo, ensure_ascii=False, indent=2))
-                        file.truncate()
-                        file.close()
-                    elif pInfo['status'] == "adh-8216a753c1ef08445052" and pInfo['statuscounter'] <= 10:
-                        pInfo['renown'] += 10
-                        pInfo['statuscounter'] += 1
-                        print("Gave " + character.lower() + " 10 renown.")
-                        file.seek(0)
-                        file.write(json.dumps(pInfo, ensure_ascii=False, indent=2))
-                        file.truncate()
-                        file.close()
-        if self.counter < 25:
-            self.counter += 1
-        else:
-            self.counter = 0
+        path = os.getcwd()
+        charFolder = os.path.join(path + "/characters/")
+
+        self.counter, renown_profiles = apply_passive_status_timer_tick(
+            self.masterList,
+            self.counter,
+            charFolder,
+        )
+
+        for character in renown_profiles:
+            print("Gave " + character.lower() + " 10 renown.")
+
         print(self.counter)
         super().PRI("Unspoiled Desire", "!status")
 

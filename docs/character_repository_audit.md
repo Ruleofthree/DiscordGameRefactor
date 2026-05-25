@@ -21,7 +21,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `252 passed`
+- `258 passed`
 
 This includes:
 
@@ -36,7 +36,7 @@ This includes:
 - Character challenge message and challenge acceptance tests
 - Character renown transfer tests
 - Character leaderboard message tests
-- Character status compile boundary tests
+- Character status compile boundary and passive status timer tests
 - Legacy wrapper tests for selected `onMSGUtils.py`, `onPRIUtils.py`, and `onMSGAccept.py` command functions
 
 ---
@@ -797,6 +797,41 @@ Tests:
 Status:
 
 - Complete for current status compile boundary behavior.
+
+## Character Passive Status Timer Boundary
+
+### Completed Work
+
+The passive status timer character-file mutation behavior from `botCommand.py` was extracted into the character repository layer.
+
+Created:
+
+- `apply_passive_status_timer_tick()` in `src.character_repository`
+
+Legacy wrapper:
+
+- `statusTimer()` in `original/botCommand.py` now delegates character statuscounter and passive renown mutation to `apply_passive_status_timer_tick()`.
+
+Behavior preserved:
+
+- Characters in the active master list are checked for an existing character sheet.
+- Missing character files are skipped.
+- When the timer counter is `24`, character `statuscounter` is reset to `0`.
+- Characters whose `status` is the Unspoiled Desire OOC room and whose `statuscounter` is `10` or lower still receive `10` renown.
+- Characters receiving passive renown still have `statuscounter` incremented by `1`.
+- The timer counter still increments while below `25`.
+- The timer counter still wraps back to `0` after reaching `25`.
+- Runtime printing remains in `botCommand.py`.
+- Sending `!status` to `Unspoiled Desire` remains in `botCommand.py`.
+- `botCommand.py` is still not imported directly in pytest.
+
+Tests:
+
+- `tests/test_character_repository_status.py`
+
+Status:
+
+- Complete for passive status timer character-file mutation behavior.
 
 ## Character Challenge Message Extraction
 

@@ -1,6 +1,8 @@
 import json
 
-from src.character_repository import update_character_status_from_status_message
+from src.character_repository import (apply_passive_status_timer_tick,
+                                      update_character_status_from_status_message,
+                                      )
 
 
 ROOM_ID = "adh-8216a753c1ef08445052"
@@ -67,3 +69,153 @@ def test_update_character_status_preserves_broad_exception_behavior_for_malforme
     )
 
     assert read_character(characters_dir, "alice")["status"] == "old-status"
+
+
+def write_timer_character(
+    characters_dir,
+    profile_name,
+    status="",
+    statuscounter=0,
+    renown=0,
+):
+    character_data = {
+        "name": profile_name.title(),
+        "status": status,
+        "statuscounter": statuscounter,
+        "renown": renown,
+    }
+    character_file = characters_dir / f"{profile_name}.json"
+    character_file.write_text(json.dumps(character_data), encoding="utf-8")
+    return character_file
+
+
+def test_apply_passive_status_timer_tick_grants_renown_in_ooc_room(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    write_timer_character(
+        characters_dir,
+        "alice",
+        status=ROOM_ID,
+        statuscounter=0,
+        renown=100,
+    )
+
+    new_counter, updated_profiles = apply_passive_status_timer_tick(
+        ["alice"],
+        counter=0,
+        characters_dir=characters_dir,
+    )
+
+    saved_character = read_character(characters_dir, "alice")
+
+    assert saved_character["renown"] == 110
+    assert saved_character["statuscounter"] == 1
+    assert new_counter == 1
+    assert updated_profiles == ["alice"]
+
+
+def test_apply_passive_status_timer_tick_does_not_grant_renown_outside_ooc_room(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    write_timer_character(
+        characters_dir,
+        "alice",
+        status="adh-other-room",
+        statuscounter=0,
+        renown=100,
+    )
+
+    new_counter, updated_profiles = apply_passive_status_timer_tick(
+        ["alice"],
+        counter=0,
+        characters_dir=characters_dir,
+    )
+
+    saved_character = read_character(characters_dir, "alice")
+
+    assert saved_character["renown"] == 100
+    assert saved_character["statuscounter"] == 0
+    assert new_counter == 1
+    assert updated_profiles == []
+
+
+def test_apply_passive_status_timer_tick_does_not_grant_renown_after_statuscounter_cap(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    write_timer_character(
+        characters_dir,
+        "alice",
+        status=ROOM_ID,
+        statuscounter=11,
+        renown=100,
+    )
+
+    new_counter, updated_profiles = apply_passive_status_timer_tick(
+        ["alice"],
+        counter=0,
+        characters_dir=characters_dir,
+    )
+
+    saved_character = read_character(characters_dir, "alice")
+
+    assert saved_character["renown"] == 100
+    assert saved_character["statuscounter"] == 11
+    assert new_counter == 1
+    assert updated_profiles == []
+
+
+def test_apply_passive_status_timer_tick_resets_statuscounter_when_counter_is_24(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    write_timer_character(
+        characters_dir,
+        "alice",
+        status=ROOM_ID,
+        statuscounter=7,
+        renown=100,
+    )
+
+    new_counter, updated_profiles = apply_passive_status_timer_tick(
+        ["alice"],
+        counter=24,
+        characters_dir=characters_dir,
+    )
+
+    saved_character = read_character(characters_dir, "alice")
+
+    assert saved_character["renown"] == 100
+    assert saved_character["statuscounter"] == 0
+    assert new_counter == 25
+    assert updated_profiles == []
+
+
+def test_apply_passive_status_timer_tick_wraps_counter_after_25(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    new_counter, updated_profiles = apply_passive_status_timer_tick(
+        [],
+        counter=25,
+        characters_dir=characters_dir,
+    )
+
+    assert new_counter == 0
+    assert updated_profiles == []
+
+
+def test_apply_passive_status_timer_tick_skips_missing_character_files(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    new_counter, updated_profiles = apply_passive_status_timer_tick(
+        ["missing"],
+        counter=0,
+        characters_dir=characters_dir,
+    )
+
+    assert new_counter == 1
+    assert updated_profiles == []

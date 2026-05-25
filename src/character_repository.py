@@ -1596,3 +1596,39 @@ def update_character_status_from_status_message(
                 save_character(character, character_data, characters_dir)
     except:
         pass
+
+
+def apply_passive_status_timer_tick(
+    master_list: list[str],
+    counter: int,
+    characters_dir: Path | str = CHARACTERS_DIR,
+) -> tuple[int, list[str]]:
+    renown_profiles = []
+
+    for character in master_list:
+        character_path = get_character_path(character, characters_dir)
+
+        if not character_path.is_file():
+            continue
+
+        character_data = load_character(character, characters_dir)
+
+        if counter == 24:
+            character_data["statuscounter"] = 0
+            save_character(character, character_data, characters_dir)
+
+        elif (
+            character_data["status"] == "adh-8216a753c1ef08445052"
+            and character_data["statuscounter"] <= 10
+        ):
+            character_data["renown"] += 10
+            character_data["statuscounter"] += 1
+            save_character(character, character_data, characters_dir)
+            renown_profiles.append(character)
+
+    if counter < 25:
+        counter += 1
+    else:
+        counter = 0
+
+    return counter, renown_profiles
