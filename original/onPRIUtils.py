@@ -1,5 +1,10 @@
 from src.armor_repository import build_armor_shop_display, get_armor_dictionary
-from src.potion_repository import get_potion_effect_info, get_potion_sell_value, sell_character_potion
+from src.potion_repository import (
+    get_potion_effect_info,
+    get_potion_sell_value,
+    sell_character_potion,
+    stock_potion_shop,
+)
 from src.character_repository import (
     add_ability_point,
     apply_character_view_totals,
@@ -982,3 +987,24 @@ def pri_8_unequip(character, armor, charFolder, game):
     else:
         msg = "A fight is currently taking place...please wait until it is concluded."
     return msg
+
+
+def pri_10_stockpotion(commonList, uncommonList, rareList, vrareList, relicList):
+    potionFile = open("potions.json", "r+", encoding="utf-8")
+    potionDictionary = json.load(potionFile)
+
+    potionDictionary, msg, shopString = stock_potion_shop(
+        potionDictionary,
+        commonList,
+        uncommonList,
+        rareList,
+        vrareList,
+        relicList,
+    )
+
+    potionFile.seek(0)
+    potionFile.write(json.dumps(potionDictionary, ensure_ascii=False, indent=2))
+    potionFile.truncate()
+    potionFile.close()
+
+    return msg, shopString
