@@ -866,6 +866,29 @@ Status:
 
 - Complete.
 
+## Remaining Low-Risk Boundary Audit
+
+### Completed Work
+
+The remaining low-risk boundaries were reviewed after the active master-list extraction.
+
+Findings:
+
+- No additional low-risk character repository extraction target remains.
+- The remaining simple helpers in `original/onMSGUtils.py` are deprecated flavor/message helpers rather than character repository behavior.
+- Further `message_accept` cleanup remains medium-risk because initiative roll generation, coin-flip detection, timer handoff, and combat-start integration still cross runtime boundaries.
+- Further status parsing cleanup remains possible, but the current broad exception behavior is intentionally preserved and should not be changed without a dedicated behavior decision.
+- Combat-facing, inventory-facing, economy-facing, XP payout, renown payout, and level-up paths remain out of scope for this pass.
+
+Decision:
+
+- No additional code extraction should be performed as part of the current character repository cleanup pass.
+- The next implementation chapter should either deliberately target a new non-character helper module, begin a carefully tested `message_accept` stabilization pass, or start a separate inventory/economy audit.
+
+Status:
+
+- Complete as a final low-risk boundary review.
+
 ## Character Challenge Message Extraction
 
 ### Completed Work
@@ -978,6 +1001,8 @@ Completed character-related areas include:
 - Character challenge acceptance initiative message construction and token selection
 - Character view calculations and context preparation
 - Character status compile boundary behavior
+- Active character master-list construction
+- Remaining low-risk boundary audit
 
 `botCommand.py` is still not imported directly in pytest because of runtime dependencies.
 
