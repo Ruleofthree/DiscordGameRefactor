@@ -878,3 +878,226 @@ Reason:
 - It should be handled as a shop-restock extraction, not as potion lifecycle behavior.
 
 Do not begin the next implementation until this audit update is committed.
+
+
+## Potion Shop Restock Extraction
+
+### Completed Work
+
+The potion shop restock behavior was extracted from `original/onPRIUtils.py` into the potion repository layer.
+
+Created:
+
+- `stock_potion_shop()` in `src.potion_repository`
+
+Legacy wrapper:
+
+- `pri_10_stockpotion()` now delegates potion shop restock construction to `stock_potion_shop()` while keeping `potions.json` file writing in `original/onPRIUtils.py`.
+
+Behavior preserved:
+
+- Potion shop restocking still replaces the existing `shoplist`.
+- The shop still receives 20 potion entries.
+- Legacy rarity thresholds are preserved:
+  - `98-100` selects relic potions.
+  - `90-97` selects very rare potions.
+  - `77-89` selects rare potions.
+  - `51-76` selects uncommon potions.
+  - `1-50` selects common potions.
+- Legacy random index selection behavior is preserved.
+- The returned shop string is preserved.
+- The returned restock message is preserved.
+- Character files are not read or written.
+- Potion buying, potion selling, potion use, potion transfer, armor behavior, combat behavior, XP payout, renown payout, and level-up handling were not changed.
+
+Additional cleanup:
+
+- A duplicate earlier `pri_10_stockpotion()` definition was removed from `original/onPRIUtils.py`.
+- The remaining active `pri_10_stockpotion()` definition is the delegated wrapper.
+
+Tests added or expanded:
+
+- `tests/test_potion_repository.py`
+- `tests/test_legacy_onpriutils_stockpotion.py`
+
+Current full pytest result:
+
+- `286 passed`
+
+Status:
+
+- Complete for potion shop restock extraction.
+
+---
+
+## Updated Inventory and Economy Position
+
+Completed inventory/economy extraction targets:
+
+- Read-only armor shop display
+- Single-character potion sale
+- Potion shop restock
+
+Remaining targets are higher risk because they mutate character inventory, global shop state, armor equipment state, combat-facing fields, multiple character files, or permanent progression state.
+
+Possible next targets:
+
+### Medium-to-High Risk
+
+- `pri_10_buypotion`
+
+Reason:
+
+- Mutates one character file and `potions.json`.
+- Changes renown, potion inventory, and shop stock.
+- It is riskier than potion sale and potion shop restock, but still more contained than potion use or potion transfer.
+
+### Medium-to-High Risk
+
+- `pri_11_stockarmor`
+
+Reason:
+
+- Mutates global armor shop data.
+- Uses randomness.
+- Does not mutate character files directly.
+- Needs controlled-randomness tests.
+- Current code should be handled carefully because it historically mixed `armorData` and `armorDictionary`.
+
+### High Risk
+
+- `pri_9_buyarmor`
+- `pri_10_sellarmor`
+- `pri_10_namearmor`
+- `pri_6_equip`
+- `pri_8_unequip`
+- `pri_10_usepotion`
+- `pri_11_givepotion`
+
+Reason:
+
+- These mutate armor inventory, equipment keys, combat-facing fields, temporary potion effects, permanent character progression, or multiple character files.
+
+Recommended next implementation target:
+
+- `pri_10_buypotion`
+
+Reason:
+
+- It is the next smallest potion economy mutation.
+- It is more useful than armor restocking because it continues the potion economy path already started.
+- It can be tested with temporary character files and temporary `potions.json`.
+- It should keep file I/O in the wrapper and move only deterministic purchase-state mutation into `src.potion_repository`.
+
+Do not begin the next implementation until this audit update is committed.
+
+## Potion Shop Restock Extraction
+
+### Completed Work
+
+The potion shop restock behavior was extracted from `original/onPRIUtils.py` into the potion repository layer.
+
+Created:
+
+- `stock_potion_shop()` in `src.potion_repository`
+
+Legacy wrapper:
+
+- `pri_10_stockpotion()` now delegates potion shop restock construction to `stock_potion_shop()` while keeping `potions.json` file writing in `original/onPRIUtils.py`.
+
+Behavior preserved:
+
+- Potion shop restocking still replaces the existing `shoplist`.
+- The shop still receives 20 potion entries.
+- Legacy rarity thresholds are preserved:
+  - `98-100` selects relic potions.
+  - `90-97` selects very rare potions.
+  - `77-89` selects rare potions.
+  - `51-76` selects uncommon potions.
+  - `1-50` selects common potions.
+- Legacy random index selection behavior is preserved.
+- The returned shop string is preserved.
+- The returned restock message is preserved.
+- Character files are not read or written.
+- Potion buying, potion selling, potion use, potion transfer, armor behavior, combat behavior, XP payout, renown payout, and level-up handling were not changed.
+
+Additional cleanup:
+
+- A duplicate earlier `pri_10_stockpotion()` definition was removed from `original/onPRIUtils.py`.
+- The remaining active `pri_10_stockpotion()` definition is the delegated wrapper.
+
+Tests added or expanded:
+
+- `tests/test_potion_repository.py`
+- `tests/test_legacy_onpriutils_stockpotion.py`
+
+Current full pytest result:
+
+- `286 passed`
+
+Status:
+
+- Complete for potion shop restock extraction.
+
+---
+
+## Updated Inventory and Economy Position
+
+Completed inventory/economy extraction targets:
+
+- Read-only armor shop display
+- Single-character potion sale
+- Potion shop restock
+
+Remaining targets are higher risk because they mutate character inventory, global shop state, armor equipment state, combat-facing fields, multiple character files, or permanent progression state.
+
+Possible next targets:
+
+### Medium-to-High Risk
+
+- `pri_10_buypotion`
+
+Reason:
+
+- Mutates one character file and `potions.json`.
+- Changes renown, potion inventory, and shop stock.
+- It is riskier than potion sale and potion shop restock, but still more contained than potion use or potion transfer.
+
+### Medium-to-High Risk
+
+- `pri_11_stockarmor`
+
+Reason:
+
+- Mutates global armor shop data.
+- Uses randomness.
+- Does not mutate character files directly.
+- Needs controlled-randomness tests.
+- Current code should be handled carefully because it historically mixed `armorData` and `armorDictionary`.
+
+### High Risk
+
+- `pri_9_buyarmor`
+- `pri_10_sellarmor`
+- `pri_10_namearmor`
+- `pri_6_equip`
+- `pri_8_unequip`
+- `pri_10_usepotion`
+- `pri_11_givepotion`
+
+Reason:
+
+- These mutate armor inventory, equipment keys, combat-facing fields, temporary potion effects, permanent character progression, or multiple character files.
+
+Recommended next implementation target:
+
+- `pri_10_buypotion`
+
+Reason:
+
+- It is the next smallest potion economy mutation.
+- It is more useful than armor restocking because it continues the potion economy path already started.
+- It can be tested with temporary character files and temporary `potions.json`.
+- It should keep file I/O in the wrapper and move only deterministic purchase-state mutation into `src.potion_repository`.
+
+Do not begin the next implementation until this audit update is committed.
