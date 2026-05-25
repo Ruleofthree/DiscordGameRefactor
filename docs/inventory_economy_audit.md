@@ -1101,3 +1101,101 @@ Reason:
 - It should keep file I/O in the wrapper and move only deterministic purchase-state mutation into `src.potion_repository`.
 
 Do not begin the next implementation until this audit update is committed.
+
+## Potion Purchase Extraction
+
+### Completed Work
+
+The potion purchase behavior was extracted from `original/onPRIUtils.py` into the potion repository layer.
+
+Created:
+
+- `get_potion_price_from_data()` in `src.potion_repository`
+- `buy_character_potion()` in `src.potion_repository`
+
+Legacy wrapper:
+
+- `pri_10_buypotion()` now delegates deterministic potion purchase-state mutation to `buy_character_potion()` while keeping file loading and saving in `original/onPRIUtils.py`.
+
+Behavior preserved:
+
+- Available potions can still be purchased from the current potion shop.
+- The buyer's renown is still reduced by the potion price.
+- Purchased potions are still added to the buyer's potion inventory.
+- Purchased potions are still removed from `potions.json` shop stock.
+- Potions not currently for sale still return the legacy rejection message.
+- Buyers without enough renown still receive the legacy insufficient-renown message.
+- Buyers with full potion inventories still receive the legacy inventory-space message.
+- The legacy misspelling `puchased` is intentionally preserved.
+- Character file loading and saving remain in `original/onPRIUtils.py`.
+- `potions.json` loading and saving remain in `original/onPRIUtils.py`.
+- Potion use, potion transfer, potion restocking, armor behavior, combat behavior, XP payout, renown payout, and level-up handling were not changed.
+
+Tests added or expanded:
+
+- `tests/test_potion_repository.py`
+- `tests/test_legacy_onpriutils_buypotion.py`
+
+Current full pytest result:
+
+- `294 passed`
+
+Status:
+
+- Complete for potion purchase extraction.
+
+---
+
+## Updated Inventory and Economy Position
+
+Completed inventory/economy extraction targets:
+
+- Read-only armor shop display
+- Single-character potion sale
+- Potion shop restock
+- Potion purchase
+
+The main potion economy path now has repository-backed helpers for sale, restock, and purchase behavior.
+
+Remaining targets are higher risk.
+
+Possible next targets:
+
+### Medium-to-High Risk
+
+- `pri_11_stockarmor`
+
+Reason:
+
+- Mutates global armor shop data.
+- Uses randomness.
+- Does not mutate character files directly.
+- Needs controlled-randomness tests.
+- Current code should be handled carefully because it historically mixed `armorData` and `armorDictionary`.
+
+### High Risk
+
+- `pri_9_buyarmor`
+- `pri_10_sellarmor`
+- `pri_10_namearmor`
+- `pri_6_equip`
+- `pri_8_unequip`
+- `pri_10_usepotion`
+- `pri_11_givepotion`
+
+Reason:
+
+- These mutate armor inventory, equipment keys, combat-facing fields, temporary potion effects, permanent character progression, or multiple character files.
+
+Recommended next implementation target:
+
+- `pri_11_stockarmor`
+
+Reason:
+
+- It is the closest armor-side equivalent to the completed potion shop restock extraction.
+- It mutates only global shop data, not character files.
+- It can be tested with controlled randomness.
+- It should be handled before armor buying, selling, naming, equipping, or unequipping.
+
+Do not begin the next implementation until this audit update is committed.
