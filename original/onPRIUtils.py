@@ -314,52 +314,6 @@ def pri_10_feat_pick(character, message, featList, featDictionary):
         feat_dictionary=featDictionary,
     )
 
-# DEVELOPER USE ONLY - Stocks the store with 20 new potions. Potions can stack
-def pri_10_stockpotion(commonList, uncommonList, rareList, vrareList, relicList):
-    potionFile = open("potions.json", "r+", encoding="utf-8")
-    potionDictionary = json.load(potionFile)
-    potionDictionary[0]['shoplist'] = []
-    for num in range(1, 21):
-        number = random.randint(1, 100)
-        # 98-100 (3% chance)
-        if number in range(98, 101):
-            relicPotion = len(relicList)
-            index = random.randint(1, (relicPotion - 1))
-            chosenPotion = relicList[index]
-            potionDictionary[0]['shoplist'].append(chosenPotion)
-        # 90-97 (8% chance)
-        elif number in range(90, 98):
-            vrarePotion = len(vrareList)
-            index = random.randint(1, (vrarePotion - 1))
-            chosenPotion = vrareList[index]
-            potionDictionary[0]['shoplist'].append(chosenPotion)
-        # 77-89 (13% chance)
-        elif number in range(77, 90):
-            rarePotion = len(rareList)
-            index = random.randint(1, (rarePotion - 1))
-            chosenPotion = rareList[index]
-            potionDictionary[0]['shoplist'].append(chosenPotion)
-        # 51-76 (26% chance)
-        elif number in range(51, 77):
-            uncommonPotion = len(uncommonList)
-            index = random.randint(1, (uncommonPotion - 1))
-            chosenPotion = uncommonList[index]
-            potionDictionary[0]['shoplist'].append(chosenPotion)
-        # 1-50 (50% chance)
-        elif number in range(1, 51):
-            commonPotion = len(commonList)
-            index = random.randint(1, (commonPotion - 1))
-            chosenPotion = commonList[index]
-            potionDictionary[0]['shoplist'].append(chosenPotion)
-    shopString = ", ".join(potionDictionary[0]['shoplist'])
-    potionFile.seek(0)
-    potionFile.write(json.dumps(potionDictionary, ensure_ascii=False, indent=2))
-    potionFile.truncate()
-    potionFile.close()
-
-    msg = "Shop stocked for the week as follows: \n" + shopString
-    return msg, shopString
-
 # Use to buy a potion
 # !buypotion <potion name>
 def pri_10_buypotion(character, potion, charFolder):
