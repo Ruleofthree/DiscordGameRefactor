@@ -677,3 +677,104 @@ Status:
 
 - Initial inventory/economy boundary review complete.
 - First recommended implementation target: armor shop display only.
+
+## Armor Shop Display Extraction
+
+### Completed Work
+
+The read-only armor shop display behavior was extracted from `original/onPRIUtils.py` into the armor repository layer.
+
+Created:
+
+- `calculate_armor_effect_price()` in `src.armor_repository`
+- `calculate_armor_item_price()` in `src.armor_repository`
+- `build_armor_shop_display()` in `src.armor_repository`
+
+Legacy wrapper:
+
+- `pri_10_armorshop()` now delegates armor shop display construction to `build_armor_shop_display()`.
+
+Behavior preserved:
+
+- Single-attribute armor display is preserved.
+- Two-attribute armor display is preserved.
+- Three-attribute armor display is preserved.
+- Sold armor still displays with `0` renown.
+- Multiple armor entries still display in the same newline-separated format.
+- Legacy F-list color tags and output formatting are preserved.
+- No character files are read or written.
+- `armor.json` is not mutated by armor shop display.
+- Buying, selling, naming, equipping, unequipping, and armor restocking behavior were not changed.
+
+Tests added or expanded:
+
+- `tests/test_armor_repository.py`
+- `tests/test_legacy_onpriutils_armorshop.py`
+
+Current full pytest result:
+
+- `275 passed`
+
+Status:
+
+- Complete for read-only armor shop display extraction.
+
+---
+
+## Updated Inventory and Economy Position
+
+The first safe inventory/economy extraction target is complete.
+
+Remaining inventory/economy targets are no longer read-only display-only behavior. The next safest area should be selected carefully.
+
+Possible next targets:
+
+### Lower-to-Medium Risk
+
+- `pri_11_sellpotion`
+
+Reason:
+
+- Mutates only one character file.
+- Does not mutate `potions.json`.
+- Already uses `get_potion_sell_value()` from `src.potion_repository`.
+- Still changes renown and potion inventory, so it needs tests first.
+
+### Medium-to-High Risk
+
+- `pri_10_stockpotion`
+- `pri_11_stockarmor`
+
+Reason:
+
+- Mutate global shop data.
+- Use randomness.
+- Need controlled randomness before extraction.
+
+### High Risk
+
+- `pri_10_buypotion`
+- `pri_9_buyarmor`
+- `pri_10_sellarmor`
+- `pri_10_namearmor`
+- `pri_6_equip`
+- `pri_8_unequip`
+- `pri_10_usepotion`
+- `pri_11_givepotion`
+
+Reason:
+
+- Mutate persistent character state, global shop state, equipment state, combat-facing fields, or multiple character files.
+
+Recommended next implementation target:
+
+- `pri_11_sellpotion`
+
+Reason:
+
+- It is the smallest single-character economy mutation left.
+- It already partially depends on `src.potion_repository`.
+- It does not touch global shop stock.
+- It can be covered with temporary character files and isolated tests before extraction.
+
+Do not begin the next implementation until the audit update is committed.
