@@ -1,4 +1,4 @@
-from src.armor_repository import get_armor_dictionary
+from src.armor_repository import build_armor_shop_display, get_armor_dictionary
 from src.potion_repository import get_potion_effect_info, get_potion_sell_value
 from src.character_repository import (
     add_ability_point,
