@@ -1,5 +1,5 @@
 from src.armor_repository import build_armor_shop_display, get_armor_dictionary
-from src.potion_repository import get_potion_effect_info, get_potion_sell_value
+from src.potion_repository import get_potion_effect_info, get_potion_sell_value, sell_character_potion
 from src.character_repository import (
     add_ability_point,
     apply_character_view_totals,
@@ -421,18 +421,7 @@ def pri_11_sellpotion(character, potion, charFolder):
     except FileNotFoundError:
         msg = "You do not have a character to use this command."
 
-    if potion in sellerData['potions']:
-        halfPrice = get_potion_sell_value(potion)
-
-        if halfPrice is not None:
-            sellerData['renown'] += halfPrice
-            sellerData['potions'].remove(potion)
-            msg = sellerData['name'] + " has sold a [color=red]" + potion + "[/color] for [color=yellow]" + \
-                  str(halfPrice) + " renown[/color]."
-        else:
-            msg = "That potion does not exist in the potion data."
-    else:
-        msg = "You do not have that potion to sell."
+    sellerData, msg = sell_character_potion(sellerData, potion)
 
     file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
     json.dump(sellerData, file, ensure_ascii=False, indent=2)

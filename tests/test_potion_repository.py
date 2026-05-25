@@ -8,6 +8,7 @@ from src.potion_repository import (
     get_potion_price,
     get_potion_sell_value,
     get_potion_shop_lists,
+    sell_character_potion,
 )
 
 def test_find_potion_returns_rarity_and_data_for_common_potion():
@@ -73,3 +74,45 @@ def test_get_potion_effect_info_returns_effect_and_description():
 
 def test_get_potion_effect_info_returns_none_for_unknown_potion():
     assert get_potion_effect_info("fake potion") is None
+
+
+def test_sell_character_potion_sells_owned_potion_and_adds_half_value():
+    character_data = {
+        "name": "Test Hero",
+        "renown": 100,
+        "potions": ["hp5"],
+    }
+
+    updated_character, message = sell_character_potion(character_data, "hp5")
+
+    assert message == "Test Hero has sold a [color=red]hp5[/color] for [color=yellow]75 renown[/color]."
+    assert updated_character["renown"] == 175
+    assert updated_character["potions"] == []
+
+
+def test_sell_character_potion_rejects_missing_potion_without_changing_character():
+    character_data = {
+        "name": "Test Hero",
+        "renown": 100,
+        "potions": ["hp5"],
+    }
+
+    updated_character, message = sell_character_potion(character_data, "damage1")
+
+    assert message == "You do not have that potion to sell."
+    assert updated_character["renown"] == 100
+    assert updated_character["potions"] == ["hp5"]
+
+
+def test_sell_character_potion_rejects_unknown_potion_data_without_changing_character():
+    character_data = {
+        "name": "Test Hero",
+        "renown": 100,
+        "potions": ["fake potion"],
+    }
+
+    updated_character, message = sell_character_potion(character_data, "fake potion")
+
+    assert message == "That potion does not exist in the potion data."
+    assert updated_character["renown"] == 100
+    assert updated_character["potions"] == ["fake potion"]

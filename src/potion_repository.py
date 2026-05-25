@@ -78,3 +78,33 @@ def get_potion_effect_info(potion_name):
 
     _, potion_info = result
     return potion_info[2], potion_info[1]
+
+
+def sell_character_potion(character_data, potion_name):
+    """
+    Sell one potion from a character inventory.
+
+    This preserves the legacy pri_11_sellpotion message behavior while keeping
+    file loading and saving in the legacy wrapper for now.
+    """
+    if potion_name not in character_data["potions"]:
+        return character_data, "You do not have that potion to sell."
+
+    half_price = get_potion_sell_value(potion_name)
+
+    if half_price is None:
+        return character_data, "That potion does not exist in the potion data."
+
+    character_data["renown"] += half_price
+    character_data["potions"].remove(potion_name)
+
+    message = (
+        character_data["name"]
+        + " has sold a [color=red]"
+        + potion_name
+        + "[/color] for [color=yellow]"
+        + str(half_price)
+        + " renown[/color]."
+    )
+
+    return character_data, message
