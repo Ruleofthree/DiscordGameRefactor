@@ -22,7 +22,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `294 passed`
+- `298 passed`
 
 This includes:
 
@@ -45,12 +45,14 @@ Completed inventory/economy areas include:
 - Single-character potion sale
 - Potion shop restock
 - Potion purchase
-
-The main potion economy path now has repository-backed helpers for:
+- Armor shop restock
+- 
+The potion economy path and read-only/global shop restock paths now have repository-backed helpers for:
 
 - Selling potions
 - Restocking the potion shop
 - Buying potions
+- Restocking the armor shop
 
 Remaining targets are higher risk because they touch armor inventory, equipment state, combat-facing fields, multiple character files, permanent potion progression, or potion lifecycle behavior.
 
@@ -203,6 +205,46 @@ Status:
 
 ---
 
+### Armor Shop Restock Extraction
+
+Completed helper:
+
+- `stock_armor_shop()` in `src.armor_repository`
+
+Legacy wrapper:
+
+- `pri_11_stockarmor()` now delegates armor shop restock construction to `stock_armor_shop()` while keeping `armor.json` file writing in `original/onPRIUtils.py`.
+
+Behavior preserved:
+
+- Armor shop restocking still creates 20 armor entries.
+- Category-one armor attributes are still always selected.
+- Category-two armor attributes are still only added when the legacy `rand` threshold allows it.
+- Category-three armor attributes are still only added when the legacy `rand` threshold allows it.
+- Legacy category rarity thresholds are preserved.
+- Legacy random choice behavior is preserved.
+- The returned message is preserved.
+- Character files are not read or written.
+- Armor buying, armor selling, armor naming, equipping, unequipping, potion use, potion transfer, combat behavior, XP payout, renown payout, and level-up handling were not changed.
+
+Additional cleanup:
+
+- The legacy wrapper no longer depends on an undefined module-level `armorDictionary`.
+- `armor.json` writing remains in `original/onPRIUtils.py`.
+
+Tests added or expanded:
+
+- `tests/test_armor_repository.py`
+- `tests/test_legacy_onpriutils_stockarmor.py`
+
+Current full pytest result:
+
+- `298 passed`
+
+Status:
+
+- Complete.
+- 
 ## Remaining Function Risk Review
 
 ### Medium-to-High Risk
@@ -405,26 +447,33 @@ The following remain out of scope for this audit pass unless deliberately select
 
 ## Recommended Next Target
 
-Recommended next implementation target:
+Recommended next step:
 
-- `pri_11_stockarmor`
+- Audit before choosing the next implementation target.
 
 Reason:
 
-- It is the armor-side equivalent of the completed potion shop restock extraction.
-- It mutates global shop data, but not character files.
-- It can be tested with controlled randomness.
-- It should be handled before armor buying, armor selling, armor naming, equipping, or unequipping.
+- The remaining targets are no longer simple read-only display or isolated global restock behavior.
+- `pri_9_buyarmor` is the likely next economy target, but it is more complex than potion purchase because it mutates character armor inventory, stored armor price data, renown, and global armor shop stock.
+- Armor sale, armor naming, equip, and unequip all depend on the armor inventory shape created by armor buying.
+- Potion use and potion transfer should remain deferred because they touch combat-adjacent state, permanent progression, or multiple character files.
+
+Likely next implementation target after audit:
+
+- `pri_9_buyarmor`
 
 Test requirements:
 
 - Add legacy wrapper tests first.
+- Use temporary character files.
 - Use temporary `armor.json`.
-- Use controlled random output.
-- Preserve existing shop stock shape.
-- Preserve legacy category and rarity behavior.
-- Do not touch armor buying, selling, naming, equipping, unequipping, potion use, potion transfer, combat, XP, renown payout, or level-up behavior.
+- Preserve purchase price storage inside the character armor entry.
+- Preserve sold-shop behavior.
+- Preserve inventory-slot behavior.
+- Preserve insufficient-renown and full-inventory rejection behavior.
+- Do not touch armor selling, armor naming, equipping, unequipping, potion use, potion transfer, combat, XP, renown payout, or level-up behavior.
 
 Status:
 
-- Ready for `pri_11_stockarmor` test-first extraction.
+- Armor shop restock extraction complete.
+- Next step should be a focused armor purchase boundary audit before implementation.
