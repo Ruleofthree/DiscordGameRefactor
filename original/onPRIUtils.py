@@ -721,78 +721,7 @@ def pri_11_stockarmor(catOneCommonList, catOneUncommonList, catOneRareList, catT
 # Allows player to view armor shop
 # !armorshop
 def pri_10_armorshop(myList):
-    armorData = get_armor_dictionary()
-    armorPrice = []
-    num = 0
-    for item in myList:
-        if item == "sold":
-            price = 0
-            armorPrice.append(price)
-        if len(item) == 1:
-            stat = " ".join(item)
-            if stat in armorDictionary[0]["cat1"]["common"]:
-                price = armorDictionary[0]["cat1"]["common"][stat][0]
-            elif stat in armorDictionary[0]["cat1"]["uncommon"]:
-                price = armorDictionary[0]["cat1"]["uncommon"][stat][0]
-            elif stat in armorDictionary[0]["cat1"]["rare"]:
-                price = armorDictionary[0]["cat1"]["rare"][stat][0]
-            armorPrice.append(price)
-        if len(item) == 2:
-            wordOne = item[0]
-            wordTwo = item[1]
-            if wordOne in armorDictionary[0]["cat1"]["common"]:
-                priceOne = armorDictionary[0]["cat1"]["common"][wordOne][0]
-            elif wordOne in armorDictionary[0]["cat1"]["uncommon"]:
-                priceOne = armorDictionary[0]["cat1"]["uncommon"][wordOne][0]
-            elif wordOne in armorDictionary[0]["cat1"]["rare"]:
-                priceOne = armorDictionary[0]["cat1"]["rare"][wordOne][0]
-            if wordTwo in armorDictionary[0]["cat2"]["common"]:
-                priceTwo = armorDictionary[0]["cat2"]["common"][wordTwo][0]
-            elif wordTwo in armorDictionary[0]["cat2"]["uncommon"]:
-                priceTwo = armorDictionary[0]["cat2"]["uncommon"][wordTwo][0]
-            elif wordTwo in armorDictionary[0]["cat2"]["rare"]:
-                priceTwo = armorDictionary[0]["cat2"]["rare"][wordTwo][0]
-            price = priceOne + priceTwo
-            armorPrice.append(price)
-        if len(item) == 3:
-            wordOne = item[0]
-            wordTwo = item[1]
-            wordThree = item[2]
-            if wordOne in armorDictionary[0]["cat1"]["common"]:
-                priceOne = armorDictionary[0]["cat1"]["common"][wordOne][0]
-            elif wordOne in armorDictionary[0]["cat1"]["uncommon"]:
-                priceOne = armorDictionary[0]["cat1"]["uncommon"][wordOne][0]
-            elif wordOne in armorDictionary[0]["cat1"]["rare"]:
-                priceOne = armorDictionary[0]["cat1"]["rare"][wordOne][0]
-            if wordTwo in armorDictionary[0]["cat2"]["common"]:
-                priceTwo = armorDictionary[0]["cat2"]["common"][wordTwo][0]
-            elif wordTwo in armorDictionary[0]["cat2"]["uncommon"]:
-                priceTwo = armorDictionary[0]["cat2"]["uncommon"][wordTwo][0]
-            elif wordTwo in armorDictionary[0]["cat2"]["rare"]:
-                priceTwo = armorDictionary[0]["cat2"]["rare"][wordTwo][0]
-            if wordThree in armorDictionary[0]["cat3"]["common"]:
-                priceThree = armorDictionary[0]["cat3"]["common"][wordThree][0]
-            elif wordThree in armorDictionary[0]["cat3"]["uncommon"]:
-                priceThree = armorDictionary[0]["cat3"]["uncommon"][wordThree][0]
-            elif wordThree in armorDictionary[0]["cat3"]["rare"]:
-                priceThree = armorDictionary[0]["cat3"]["rare"][wordThree][0]
-            price = priceOne + priceTwo + priceThree
-            armorPrice.append(price)
-        num += 1
-    shopList = {}
-    num = 1
-    for item in myList:
-        shopList["Armor" + str(num)] = item
-        num += 1
-    item = []
-    for key in shopList:
-        item.append(key)
-        item.append(shopList[key])
-    print(item)
-    print(armorPrice)
-    armorList = "\n".join("{} [color=red]{}[/color]: [color=yellow]({} renown)[/color]".format(*i)
-                          for i in zip(item[0::2], item[1::2], armorPrice[0:]))
-    return armorList
+    return build_armor_shop_display(myList)
 
 # Use to buy a piece of equipment from the shop
 # !buyarmor <armor name>
