@@ -2,6 +2,7 @@ import pytest
 
 from src.armor_repository import (
     build_armor_shop_display,
+    buy_character_armor,
     get_armor_dictionary,
     get_armor_effects,
     get_armor_shop_lists,
@@ -192,3 +193,283 @@ def test_stock_armor_shop_can_stock_three_attribute_items(monkeypatch):
 
     assert updated_armor[0]["armorlist"] == expected_armor_list
     assert message == "Armor Shop has been stocked for the week."
+
+
+def test_buy_character_armor_purchases_available_armor():
+    armor_data = [
+        {
+            "cat1": {
+                "common": {"str1": [500, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat2": {
+                "common": {"ac1": [2000, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat3": {
+                "common": {},
+                "uncommon": {},
+                "rare": {},
+            },
+            "armorlist": {
+                "armor1": ["str1", "ac1"],
+            },
+        }
+    ]
+
+    char_sheet = {
+        "name": "Test Character",
+        "renown": 3000,
+        "armor": {
+            "armor1": "n/a",
+            "armor2": "n/a",
+            "armor3": "n/a",
+        },
+    }
+
+    updated_char, updated_armor, msg = buy_character_armor(
+        char_sheet,
+        armor_data,
+        "armor1",
+    )
+
+    assert updated_char["renown"] == 500
+    assert updated_char["armor"]["armor1"] == ["str1", "ac1", 2500]
+    assert updated_armor[0]["armorlist"]["armor1"] == "sold"
+    assert msg == "Test Character has purchased an armor of [color=red]str1, ac1[/color]."
+
+
+def test_buy_character_armor_rejects_invalid_armor_key():
+    armor_data = [
+        {
+            "cat1": {
+                "common": {"str1": [500, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat2": {
+                "common": {},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat3": {
+                "common": {},
+                "uncommon": {},
+                "rare": {},
+            },
+            "armorlist": {
+                "armor1": ["str1"],
+            },
+        }
+    ]
+
+    char_sheet = {
+        "name": "Test Character",
+        "renown": 3000,
+        "armor": {
+            "armor1": "n/a",
+            "armor2": "n/a",
+            "armor3": "n/a",
+        },
+    }
+
+    updated_char, updated_armor, msg = buy_character_armor(
+        char_sheet,
+        armor_data,
+        "not-real-armor",
+    )
+
+    assert updated_char == char_sheet
+    assert updated_armor == armor_data
+    assert msg == "You seemed to have not typed in your desired choice correctly."
+
+
+def test_buy_character_armor_rejects_sold_armor():
+    armor_data = [
+        {
+            "cat1": {
+                "common": {"str1": [500, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat2": {
+                "common": {},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat3": {
+                "common": {},
+                "uncommon": {},
+                "rare": {},
+            },
+            "armorlist": {
+                "armor1": "sold",
+            },
+        }
+    ]
+
+    char_sheet = {
+        "name": "Test Character",
+        "renown": 3000,
+        "armor": {
+            "armor1": "n/a",
+            "armor2": "n/a",
+            "armor3": "n/a",
+        },
+    }
+
+    updated_char, updated_armor, msg = buy_character_armor(
+        char_sheet,
+        armor_data,
+        "armor1",
+    )
+
+    assert updated_char == char_sheet
+    assert updated_armor == armor_data
+    assert msg == "This armor has already been sold."
+
+
+def test_buy_character_armor_rejects_insufficient_renown():
+    armor_data = [
+        {
+            "cat1": {
+                "common": {"str1": [500, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat2": {
+                "common": {"ac1": [2000, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat3": {
+                "common": {},
+                "uncommon": {},
+                "rare": {},
+            },
+            "armorlist": {
+                "armor1": ["str1", "ac1"],
+            },
+        }
+    ]
+
+    char_sheet = {
+        "name": "Test Character",
+        "renown": 100,
+        "armor": {
+            "armor1": "n/a",
+            "armor2": "n/a",
+            "armor3": "n/a",
+        },
+    }
+
+    updated_char, updated_armor, msg = buy_character_armor(
+        char_sheet,
+        armor_data,
+        "armor1",
+    )
+
+    assert updated_char["renown"] == 100
+    assert updated_char["armor"]["armor1"] == "n/a"
+    assert updated_armor[0]["armorlist"]["armor1"] == ["str1", "ac1"]
+    assert msg == "You do not have enough renown to purchase this."
+
+
+def test_buy_character_armor_rejects_full_inventory():
+    armor_data = [
+        {
+            "cat1": {
+                "common": {"str1": [500, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat2": {
+                "common": {"ac1": [2000, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat3": {
+                "common": {},
+                "uncommon": {},
+                "rare": {},
+            },
+            "armorlist": {
+                "armor1": ["str1", "ac1"],
+            },
+        }
+    ]
+
+    char_sheet = {
+        "name": "Test Character",
+        "renown": 3000,
+        "armor": {
+            "armor1": ["old1", 100],
+            "armor2": ["old2", 200],
+            "armor3": ["old3", 300],
+        },
+    }
+
+    updated_char, updated_armor, msg = buy_character_armor(
+        char_sheet,
+        armor_data,
+        "armor1",
+    )
+
+    assert updated_char["renown"] == 3000
+    assert updated_char["armor"]["armor1"] == ["old1", 100]
+    assert updated_char["armor"]["armor2"] == ["old2", 200]
+    assert updated_char["armor"]["armor3"] == ["old3", 300]
+    assert updated_armor[0]["armorlist"]["armor1"] == ["str1", "ac1"]
+    assert msg == "You do not have enough inventory space to own more armor."
+
+
+def test_buy_character_armor_uses_first_available_inventory_slot():
+    armor_data = [
+        {
+            "cat1": {
+                "common": {"str1": [500, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat2": {
+                "common": {"ac1": [2000, 1]},
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat3": {
+                "common": {},
+                "uncommon": {},
+                "rare": {},
+            },
+            "armorlist": {
+                "armor1": ["str1", "ac1"],
+            },
+        }
+    ]
+
+    char_sheet = {
+        "name": "Test Character",
+        "renown": 3000,
+        "armor": {
+            "armor1": ["old1", 100],
+            "armor2": "n/a",
+            "armor3": "n/a",
+        },
+    }
+
+    updated_char, updated_armor, msg = buy_character_armor(
+        char_sheet,
+        armor_data,
+        "armor1",
+    )
+
+    assert updated_char["renown"] == 500
+    assert updated_char["armor"]["armor1"] == ["old1", 100]
+    assert updated_char["armor"]["armor2"] == ["str1", "ac1", 2500]
+    assert updated_char["armor"]["armor3"] == "n/a"
+    assert updated_armor[0]["armorlist"]["armor1"] == "sold"
+    assert msg == "Test Character has purchased an armor of [color=red]str1, ac1[/color]."
+
+

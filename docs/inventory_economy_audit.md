@@ -245,29 +245,64 @@ Status:
 
 - Complete.
 
+---
+
+### Armor Purchase Extraction
+
+Completed helper:
+
+- `buy_character_armor()` in `src.armor_repository`
+
+Legacy wrapper:
+
+- `pri_9_buyarmor()` now delegates deterministic armor purchase-state mutation to `buy_character_armor()` while keeping file loading and saving in `original/onPRIUtils.py`.
+
+Behavior preserved:
+
+- Available armor can still be purchased from the current armor shop.
+- The buyer's renown is still reduced by the calculated armor price.
+- Purchased armor is still added to the first available armor inventory slot.
+- The purchase price is still appended to the stored armor entry.
+- Purchased armor is still marked as `sold` in `armor.json`.
+- Invalid armor keys still return the legacy rejection message.
+- Already sold armor still returns the legacy sold message.
+- Buyers without enough renown still receive the legacy insufficient-renown message.
+- Buyers with full armor inventories still receive the legacy inventory-space message.
+- Character file loading and saving remain in `original/onPRIUtils.py`.
+- `armor.json` loading and saving remain in `original/onPRIUtils.py`.
+- Armor selling, armor naming, equipping, unequipping, potion use, potion transfer, combat behavior, XP payout, renown payout, and level-up handling were not changed.
+
+Tests added or expanded:
+
+- `tests/test_armor_repository.py`
+- `tests/test_legacy_onpriutils_buyarmor.py`
+
+Current full pytest result:
+
+- `305 passed`
+
+Status:
+
+- Complete.
+
 ## Remaining Function Risk Review
 
 ### Medium-to-High Risk
 
 #### `pri_9_buyarmor`
 
-Classification:
+Status:
 
-- Purchase economy mutation
-- Armor inventory mutation
-- Global shop mutation
-- Character-file mutation
+- Extracted.
 
-Reason:
+Completed helper:
 
-- Mutates one character file and `armor.json`.
-- Changes renown, armor inventory, and armor shop stock.
-- Stores purchase price inside the character armor entry.
-- More complex than potion purchase because armor entries are multi-part lists and later interact with equip, sell, rename, view, and combat-facing fields.
+- `buy_character_armor()` in `src.armor_repository`
 
-Recommendation:
+Notes:
 
-- Do not touch until armor shop restock is handled or deliberately skipped.
+- File loading and saving remain in the legacy wrapper.
+- Armor selling, armor naming, equipping, unequipping, potion use, potion transfer, combat behavior, XP payout, renown payout, and level-up handling were not changed.
 
 ---
 

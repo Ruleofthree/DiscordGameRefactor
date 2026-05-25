@@ -1,5 +1,6 @@
 from src.armor_repository import (
     build_armor_shop_display,
+    buy_character_armor,
     get_armor_dictionary,
     stock_armor_shop,
 )
@@ -628,63 +629,12 @@ def pri_9_buyarmor(character, armor, charFolder):
         msg = "You don't have a character made to use this function."
         return msg
 
-    if armor not in armorData[0]['armorlist']:
-        msg = "You seemed to have not typed in your desired choice correctly."
-    else:
-        choice = armorData[0]['armorlist'][armor]
-        if choice == "sold":
-            msg = "This armor has already been sold."
-            return msg
-        armorString = ", ".join(choice)
-        price = 0
-        if isCharacter.is_file():
-            for word in choice:
-                if word in armorData[0]["cat1"]["common"]:
-                    price += armorData[0]["cat1"]["common"][word][0]
-                elif word in armorData[0]["cat1"]['uncommon']:
-                    price += armorData[0]["cat1"]['uncommon'][word][0]
-                elif word in armorData[0]["cat1"]['rare']:
-                    price += armorData[0]["cat1"]['rare'][word][0]
-                if word in armorData[0]["cat2"]["common"]:
-                    price += armorData[0]["cat2"]["common"][word][0]
-                elif word in armorData[0]["cat2"]["uncommon"]:
-                    price += armorData[0]["cat2"]["uncommon"][word][0]
-                elif word in armorData[0]["cat2"]["rare"]:
-                    price += armorData[0]["cat2"]["rare"][word][0]
-                if word in armorData[0]["cat3"]["common"]:
-                    price += armorData[0]["cat3"]["common"][word][0]
-                elif word in armorData[0]["cat3"]["uncommon"]:
-                    price += armorData[0]["cat3"]["uncommon"][word][0]
-                elif word in armorData[0]["cat3"]["rare"]:
-                    price += armorData[0]["cat3"]["common"][word][0]
-                else:
-                    msg = "You have not selected an armor that is listed (Example: !buyarmor armor4)"
-        invList = []
-        for keys in charSheet['armor']:
-            invList.append(keys)
-        armor1 = invList[0]
-        armor2 = invList[1]
-        armor3 = invList[2]
-        if price <= charSheet['renown']:
-            if charSheet['armor'][armor1] != "n/a" \
-                    and charSheet['armor'][armor2] != "n/a"\
-                    and charSheet['armor'][armor3] != "n/a":
-                msg = "You do not have enough inventory space to own more armor."
-            else:
-                charSheet['renown'] -= price
-                armorData[0]["armorlist"][armor] = "sold"
-                if charSheet['armor'][armor1] == "n/a":
-                    charSheet['armor'][armor1] = choice
-                    charSheet['armor'][armor1].append(price)
-                elif charSheet['armor'][armor2] == "n/a":
-                    charSheet['armor'][armor2] = choice
-                    charSheet['armor'][armor2].append(price)
-                elif charSheet['armor'][armor3] == "n/a":
-                    charSheet['armor'][armor3] = choice
-                    charSheet['armor'][armor3].append(price)
-                msg = charSheet['name'] + " has purchased an armor of [color=red]" + armorString + "[/color]."
-        else:
-            msg = "You do not have enough renown to purchase this."
+    if isCharacter.is_file():
+        charSheet, armorData, msg = buy_character_armor(
+            charSheet,
+            armorData,
+            armor,
+        )
 
         file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
         json.dump(charSheet, file, ensure_ascii=False, indent=2)
@@ -693,6 +643,7 @@ def pri_9_buyarmor(character, armor, charFolder):
         file = open("armor.json", "w", encoding="utf-8")
         json.dump(armorData, file, ensure_ascii=False, indent=2)
         file.close()
+
     return msg
 
 # Use to sell a piece of equipment

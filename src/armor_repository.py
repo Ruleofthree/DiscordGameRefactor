@@ -103,6 +103,58 @@ def calculate_armor_item_price(armor_item, armor_dictionary=None):
     return price
 
 
+def buy_character_armor(char_sheet, armor_data, armor):
+    if armor not in armor_data[0]["armorlist"]:
+        msg = "You seemed to have not typed in your desired choice correctly."
+        return char_sheet, armor_data, msg
+
+    choice = armor_data[0]["armorlist"][armor]
+
+    if choice == "sold":
+        msg = "This armor has already been sold."
+        return char_sheet, armor_data, msg
+
+    armor_string = ", ".join(choice)
+    price = calculate_armor_item_price(choice, armor_data)
+
+    inventory_slots = list(char_sheet["armor"].keys())
+    armor1 = inventory_slots[0]
+    armor2 = inventory_slots[1]
+    armor3 = inventory_slots[2]
+
+    if price <= char_sheet["renown"]:
+        if (
+            char_sheet["armor"][armor1] != "n/a"
+            and char_sheet["armor"][armor2] != "n/a"
+            and char_sheet["armor"][armor3] != "n/a"
+        ):
+            msg = "You do not have enough inventory space to own more armor."
+        else:
+            char_sheet["renown"] -= price
+            armor_data[0]["armorlist"][armor] = "sold"
+
+            purchased_armor = list(choice)
+            purchased_armor.append(price)
+
+            if char_sheet["armor"][armor1] == "n/a":
+                char_sheet["armor"][armor1] = purchased_armor
+            elif char_sheet["armor"][armor2] == "n/a":
+                char_sheet["armor"][armor2] = purchased_armor
+            elif char_sheet["armor"][armor3] == "n/a":
+                char_sheet["armor"][armor3] = purchased_armor
+
+            msg = (
+                char_sheet["name"]
+                + " has purchased an armor of [color=red]"
+                + armor_string
+                + "[/color]."
+            )
+    else:
+        msg = "You do not have enough renown to purchase this."
+
+    return char_sheet, armor_data, msg
+
+
 def build_armor_shop_display(armor_shop_items, armor_dictionary=None):
     """
     Build the legacy armor shop display string.
