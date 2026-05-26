@@ -635,3 +635,71 @@ def test_use_character_potion_valid_potion_missing_from_inventory_raises_value_e
         pass
     else:
         raise AssertionError("Expected ValueError when valid potion is missing from inventory.")
+
+
+def test_use_character_potion_applies_strength_progression():
+    character_data = make_use_potion_character(
+        potions=["str1"],
+        pstrength=0,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "str1",
+        [1, "permanently increases strength by 1"],
+    )
+
+    assert message == "Tester drank a str1 potion, obtaining a permanent [color=red] +1 to strength[/color]"
+    assert updated_character["pstrength"] == 1
+    assert "str1" not in updated_character["potions"]
+
+
+def test_use_character_potion_rejects_strength_progression_if_previous_tier_missing():
+    character_data = make_use_potion_character(
+        potions=["str2"],
+        pstrength=0,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "str2",
+        [2, "permanently increases strength by 1"],
+    )
+
+    assert message == "You can not drink this potion, as it is either too powerful or too weak to use right now."
+    assert updated_character["pstrength"] == 0
+    assert "str2" in updated_character["potions"]
+
+
+def test_use_character_potion_applies_dexterity_progression():
+    character_data = make_use_potion_character(
+        potions=["dex3"],
+        pdexterity=2,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "dex3",
+        [3, "permanently increases dexterity by 1"],
+    )
+
+    assert message == "Tester drank a dex3 potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
+    assert updated_character["pdexterity"] == 3
+    assert "dex3" not in updated_character["potions"]
+
+
+def test_use_character_potion_applies_constitution_progression():
+    character_data = make_use_potion_character(
+        potions=["con5"],
+        pconstitution=4,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "con5",
+        [5, "permanently increases constitution by 1"],
+    )
+
+    assert message == "Tester drank a con5 potion, obtaining a permanent [color=red] +1 to constitution[/color]"
+    assert updated_character["pconstitution"] == 5
+    assert "con5" not in updated_character["potions"]
