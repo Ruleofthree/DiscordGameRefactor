@@ -631,7 +631,6 @@ Possible next implementation target:
 
 Recommendation:
 
-* If transfer extraction begins, write repository tests first for both sender and recipient mutation.
 * If potion lifecycle work begins, audit `pri_10_usepotion()` before extracting helper logic.
 * Keep file loading and saving in `original/onPRIUtils.py` unless a file-boundary change is explicitly planned.
 * Do not import `original/botCommand.py` in pytest.
