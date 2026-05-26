@@ -1,5 +1,5 @@
 from pathlib import Path
-from onPRIUtils import pri_10_namearmor, pri_6_equip
+from onPRIUtils import pri_10_namearmor, pri_6_equip, pri_8_unequip
 
 import json
 import sys
@@ -392,6 +392,155 @@ def test_pri_6_equip_applies_multi_stat_armor_bonus(tmp_path, monkeypatch):
     assert updated["armorhit"] == 4
     assert updated["armordamage"] == 0
     assert updated["armorac"] == 0
+    assert updated["armordr"] == 0
+    assert updated["armorinitiative"] == 0
+    assert updated["armordexterity"] == 0
+    assert updated["armorconstitution"] == 0
+    assert updated["armorblur"] == 0
+
+
+def test_pri_8_unequip_rejects_missing_character(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    msg = pri_8_unequip(
+        "missingplayer",
+        "armor1",
+        str(characters_dir) + "/",
+        0,
+    )
+
+    assert msg == "You don't have a character made to use this command."
+
+
+def test_pri_8_unequip_rejects_unequipping_during_fight_and_preserves_existing_bonuses(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    write_character(
+        characters_dir,
+        "playerone",
+        make_character(
+            equip="armor1",
+            armorstrength=5,
+            armorhit=4,
+            armordamage=3,
+            armorac=2,
+            armorhp=10,
+            armordr=1,
+            armorinitiative=6,
+            armordexterity=7,
+            armorconstitution=8,
+            armorblur=9,
+        ),
+    )
+
+    msg = pri_8_unequip(
+        "playerone",
+        "armor1",
+        str(characters_dir) + "/",
+        1,
+    )
+
+    assert msg == "A fight is currently taking place...please wait until it is concluded."
+
+    updated = json.loads((characters_dir / "playerone.json").read_text(encoding="utf-8"))
+    assert updated["equip"] == "armor1"
+    assert updated["armorstrength"] == 5
+    assert updated["armorhit"] == 4
+    assert updated["armordamage"] == 3
+    assert updated["armorac"] == 2
+    assert updated["armorhp"] == 10
+    assert updated["armordr"] == 1
+    assert updated["armorinitiative"] == 6
+    assert updated["armordexterity"] == 7
+    assert updated["armorconstitution"] == 8
+    assert updated["armorblur"] == 9
+
+
+def test_pri_8_unequip_clears_equipped_armor_and_all_armor_bonuses(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    write_character(
+        characters_dir,
+        "playerone",
+        make_character(
+            equip="armor1",
+            armorstrength=5,
+            armorhit=4,
+            armordamage=3,
+            armorac=2,
+            armorhp=10,
+            armordr=1,
+            armorinitiative=6,
+            armordexterity=7,
+            armorconstitution=8,
+            armorblur=9,
+        ),
+    )
+
+    msg = pri_8_unequip(
+        "playerone",
+        "armor1",
+        str(characters_dir) + "/",
+        0,
+    )
+
+    assert msg == "Test Hero has unequipped armor1"
+
+    updated = json.loads((characters_dir / "playerone.json").read_text(encoding="utf-8"))
+    assert updated["equip"] == ""
+    assert updated["armorstrength"] == 0
+    assert updated["armorhit"] == 0
+    assert updated["armordamage"] == 0
+    assert updated["armorac"] == 0
+    assert updated["armorhp"] == 0
+    assert updated["armordr"] == 0
+    assert updated["armorinitiative"] == 0
+    assert updated["armordexterity"] == 0
+    assert updated["armorconstitution"] == 0
+    assert updated["armorblur"] == 0
+
+
+def test_pri_8_unequip_does_not_require_named_armor_to_exist(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    write_character(
+        characters_dir,
+        "playerone",
+        make_character(
+            equip="armor1",
+            armorstrength=5,
+            armorhit=4,
+            armordamage=3,
+            armorac=2,
+            armorhp=10,
+            armordr=1,
+            armorinitiative=6,
+            armordexterity=7,
+            armorconstitution=8,
+            armorblur=9,
+        ),
+    )
+
+    msg = pri_8_unequip(
+        "playerone",
+        "not owned",
+        str(characters_dir) + "/",
+        0,
+    )
+
+    assert msg == "Test Hero has unequipped not owned"
+
+    updated = json.loads((characters_dir / "playerone.json").read_text(encoding="utf-8"))
+    assert updated["equip"] == ""
+    assert updated["armorstrength"] == 0
+    assert updated["armorhit"] == 0
+    assert updated["armordamage"] == 0
+    assert updated["armorac"] == 0
+    assert updated["armorhp"] == 0
     assert updated["armordr"] == 0
     assert updated["armorinitiative"] == 0
     assert updated["armordexterity"] == 0
