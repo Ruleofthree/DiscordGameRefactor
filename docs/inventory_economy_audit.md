@@ -683,7 +683,6 @@ Reason:
 
 Possible next audit targets:
 
-* `!createpotion` command-runtime inventory mutation audit, if admin potion grant behavior needs to be isolated.
 * Shop display routing audit for `!armorshop` and `!potionshop`, if display construction should be moved out of `botCommand.py`.
 * Combat-adjacent potion effect cleanup, only after a dedicated test plan is written.
 
@@ -697,6 +696,20 @@ Read-only routing audit result:
 * `!createpotion` remains direct command-runtime inventory mutation inside `botCommand.py`.
 * `botCommand.py` should still not be imported directly in pytest because of runtime dependencies.
 * No extraction target is selected from `botCommand.py` yet.
+
+Read-only `!createpotion` audit result:
+
+* `!createpotion` exists only in `original/botCommand.py`.
+* The command is moderator-only through the `character in myModerators` check.
+* The command parses input with `message[14:].split(" - ")`.
+* The command opens `potions.json` directly from the runtime working directory.
+* The command opens and writes the target character file directly.
+* The command appends the requested potion directly to the target character's `potions` list when the potion name exists in one of the potion rarity dictionaries.
+* The command does not currently delegate to `original/onPRIUtils.py` or `src.potion_repository`.
+* Missing target character handling appears fragile because the code calls `super.PRI(...)` instead of `super().PRI(...)`, then may continue without a loaded `charSheet`.
+* Bad command formatting may raise `IndexError` rather than the currently handled `ValueError`.
+* Unknown potion names may still produce success-style notification messages without appending a potion.
+* No extraction target is selected yet.
 
 Recommendation:
 
