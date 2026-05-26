@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `309 passed`
+* `323 passed`
 
 
 
@@ -46,7 +46,7 @@ The character repository cleanup pass is complete.
 
 The inventory and economy pass has completed several smaller, testable extraction targets. The completed work now
 covers read-only display behavior, shop restocking behavior, single-character potion economy behavior, armor purchase
-behavior, and armor sale behavior.
+behavior, armor sale behavior, and armor equipment lifecycle boundary behavior.
 
 Completed inventory/economy areas include:
 
@@ -57,6 +57,7 @@ Completed inventory/economy areas include:
 * Armor shop restock
 * Armor purchase
 * Armor sale
+* Armor equipment lifecycle boundary audit
 
 Repository-backed helpers now exist for:
 
@@ -338,6 +339,40 @@ Status:
 
 ---
 
+### Armor Equipment Lifecycle Boundary Audit
+
+Completed test coverage:
+
+* `pri_10_namearmor()` legacy armor naming behavior
+* `pri_6_equip()` legacy armor equip behavior
+* `pri_8_unequip()` legacy armor unequip behavior
+
+Behavior documented and preserved:
+
+* Missing-character rejection is covered for armor naming, equipping, and unequipping.
+* Armor naming still rejects missing armor inventory keys.
+* Armor naming still rejects duplicate destination names.
+* Armor naming still rejects currently equipped armor.
+* Valid armor naming still renames the armor dictionary key while preserving the stored armor value.
+* Equipping armor is still blocked while a fight is active.
+* Valid armor equip still clears previous armor bonus fields, sets `equip`, and applies armor bonuses from `armor.json`.
+* Invalid armor equip still clears existing armor bonus fields before returning the legacy missing-armor message.
+* Unequipping armor is still blocked while a fight is active.
+* Valid armor unequip still clears `equip` and all armor bonus fields.
+* Legacy unequip behavior still does not require the named armor to exist before clearing equipped armor and armor bonuses.
+* The `pri_6_equip()` `armorDictionary` variable mismatch was corrected so the delegated armor dictionary loader is usable by the existing legacy equip logic.
+
+Tests added or expanded:
+
+* `tests/test_legacy_onpriutils_armor_lifecycle.py`
+
+Status:
+
+* Audit and legacy behavior coverage complete.
+* No equipment lifecycle extraction has been performed yet.
+
+---
+
 ## Remaining Function Risk Review
 
 ### Extracted Inventory and Economy Boundaries
@@ -400,7 +435,8 @@ Reason:
 
 Recommendation:
 
-* Defer to a dedicated armor equipment lifecycle boundary audit.
+* Covered by armor equipment lifecycle legacy tests.
+* Safe extraction candidate only if moved together with the other armor lifecycle helpers or after a dedicated repository helper plan is written.
 
 ---
 
@@ -445,7 +481,9 @@ Reason:
 
 Recommendation:
 
-* Avoid until a dedicated armor equipment lifecycle pass.
+* Covered by armor equipment lifecycle legacy tests.
+* High risk due to combat-facing stat fields.
+* Extract only after the repository helper boundary is planned carefully.
 
 ---
 
@@ -466,7 +504,9 @@ Reason:
 
 Recommendation:
 
-* Do not extract separately unless a deliberate armor equipment lifecycle plan is started.
+* Covered by armor equipment lifecycle legacy tests.
+* Lower risk than equip, but still tied to the same equipment lifecycle boundary.
+* Extract only after the repository helper boundary is planned carefully.
 
 ---
 
@@ -520,40 +560,39 @@ The following remain out of scope for this audit pass unless deliberately select
 
 ## Recommended Next Target
 
+## Recommended Next Target
+
 Recommended next step:
 
-* Pause and audit before choosing the next implementation target.
+* Decide whether to extract armor equipment lifecycle helpers into `src.armor_repository`.
 
 Reason:
 
-* Armor purchase and armor sale are now both extracted and tested.
-* The remaining armor targets are no longer simple economy mutations.
-* `pri_10_namearmor` mutates armor inventory keys and can affect sell, equip, unequip, and view behavior.
-* `pri_6_equip` mutates combat-facing armor bonus fields and should be handled only in a dedicated armor equipment lifecycle pass.
-* `pri_8_unequip` is simpler than equip but logically tied to equipment lifecycle behavior.
-* `pri_10_usepotion` touches permanent potion progression and temporary combat-adjacent potion effects.
-* `pri_11_givepotion` mutates two character files and should be handled separately from single-character inventory behavior.
+* Armor purchase and armor sale are already extracted and tested.
+* Armor naming, equipping, and unequipping now have legacy behavior coverage.
+* The remaining armor lifecycle functions are still in `original/onPRIUtils.py`.
+* `pri_10_namearmor` mutates armor inventory keys.
+* `pri_6_equip` mutates combat-facing armor bonus fields.
+* `pri_8_unequip` clears equipped armor and all armor bonus fields.
+* Equipment lifecycle extraction should be handled deliberately and should preserve the documented legacy side effects.
 
-Likely next audit target:
+Possible next implementation targets:
 
-* Armor equipment lifecycle boundary audit.
-
-Possible targets to review during that audit:
-
-* `pri_10_namearmor`
-* `pri_6_equip`
-* `pri_8_unequip`
+* `rename_character_armor()`
+* `equip_character_armor()`
+* `unequip_character_armor()`
 
 Recommendation:
 
-* Do not begin another extraction until the armor naming, equip, and unequip boundary is reviewed as one connected lifecycle.
+* If extraction begins, write repository tests first.
+* Keep file loading and saving in `original/onPRIUtils.py`.
+* Do not import `original/botCommand.py` in pytest.
 * Do not touch potion use, potion transfer, combat behavior, rolling, XP payout, renown payout, or level-up handling.
 
 Status:
 
-* Armor purchase extraction complete.
-* Armor sale extraction complete.
-* Next step should be a focused armor equipment lifecycle boundary audit before implementation.
+* Armor equipment lifecycle boundary audit complete.
+* Next step may be a focused armor lifecycle extraction plan.
 
 ---
 
