@@ -22,11 +22,11 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 ## Current Test Status
 
+## Current Test Status
+
 Current full pytest result:
 
-* `366 passed`
-
-
+* `370 passed`
 
 This test result includes:
 
@@ -46,8 +46,8 @@ The character repository cleanup pass is complete.
 
 The inventory and economy pass has completed several smaller, testable extraction targets. The completed work now
 covers read-only display behavior, shop restocking behavior, single-character potion economy behavior, potion transfer
-behavior, potion use lifecycle behavior, armor purchase behavior, armor sale behavior, armor equipment lifecycle
-boundary behavior, and armor equipment lifecycle extraction.
+behavior, potion use lifecycle behavior, potion use cleanup review, armor purchase behavior, armor sale behavior,
+armor equipment lifecycle boundary behavior, and armor equipment lifecycle extraction.
 
 Completed inventory/economy areas include:
 
@@ -57,6 +57,7 @@ Completed inventory/economy areas include:
 * Potion purchase
 * Potion transfer
 * Potion use lifecycle extraction
+* Potion use cleanup review
 * Armor shop restock
 * Armor purchase
 * Armor sale
@@ -71,6 +72,7 @@ Repository-backed helpers now exist for:
 * Buying potions
 * Giving potions between characters
 * Using potions
+* Applying permanent stat potion progression
 * Restocking the armor shop
 * Buying armor
 * Selling armor
@@ -78,7 +80,8 @@ Repository-backed helpers now exist for:
 * Equipping armor
 * Unequipping armor
 
-Remaining targets are higher risk because they touch unreworked armor lifecycle edge cases, combat-adjacent state, or broader command/runtime behavior.
+Remaining targets are higher risk because they may touch combat-adjacent state, broader command/runtime behavior,
+or behavior that has not yet been isolated behind repository helpers.
 
 ---
 
@@ -270,9 +273,10 @@ Status:
 
 ### Potion Use Lifecycle Extraction
 
-Completed helper:
+Completed helpers:
 
 * `use_character_potion()` in `src.potion_repository`
+* `_apply_permanent_stat_potion()` in `src.potion_repository`
 
 Legacy wrapper:
 
@@ -281,6 +285,8 @@ Legacy wrapper:
 Behavior preserved:
 
 * Permanent progression potions are preserved: `str1` through `str5`, `dex1` through `dex5`, and `con1` through `con5` still mutate `pstrength`, `pdexterity`, or `pconstitution` only when the existing progression field is exactly one tier lower.
+* Permanent stat potion progression has been consolidated into `_apply_permanent_stat_potion()`.
+* `_apply_permanent_stat_potion()` preserves the legacy success message, inventory removal behavior, and invalid-progression rejection message.
 * `respec` still increments `reset`.
 * `stimulant` still increments both `remaining feats` and `total feats`.
 * Temporary next-match potions still set the matching potion bonus field and usually set `potioneffect`.
@@ -291,6 +297,12 @@ Behavior preserved:
 * Regeneration potions still set `potionregen` and `potioneffect`, but the successful branch still does not remove the potion from inventory.
 * The regeneration eligibility condition still uses `traitdr == 0 or armordr == 0 or regeneration == 0`, which means the potion is blocked only when all three fields are nonzero.
 * Existing messages, typos, spacing, field names, and questionable conditionals remain preserved.
+
+Cleanup review result:
+
+* The permanent stat potion progression block was the only safe cleanup boundary selected after extraction.
+* Temporary potion behavior was intentionally left inside `use_character_potion()` because it contains fragile legacy behavior and combat-adjacent state setup.
+* No behavior changes were made during the cleanup review.
 
 Tests added or expanded:
 
@@ -601,7 +613,38 @@ changed by the unequip extraction.
 
 ---
 
+#### `pri_10_usepotion`
+
+Status:
+
+* Extracted.
+
+Completed helpers:
+
+* `use_character_potion()` in `src.potion_repository`
+* `_apply_permanent_stat_potion()` in `src.potion_repository`
+
+Notes:
+
+* File loading and saving remain in the legacy wrapper.
+* Permanent stat potion progression is consolidated behind `_apply_permanent_stat_potion()`.
+* Permanent stat potion success, invalid progression rejection, and inventory removal behavior are preserved.
+* `respec` and `stimulant` behavior are preserved.
+* Temporary potion behavior remains inside `use_character_potion()` and has not been split further.
+* The regeneration potion inventory-removal bug is intentionally preserved.
+* Valid potion names missing from character inventory can still raise `ValueError`.
+* Unknown potion names still return the legacy unknown-potion message.
+* Combat behavior, rolling, XP payout, renown payout, and level-up handling were not changed by the potion use extraction or cleanup review.
+
+---
+
 ### High Risk Remaining Targets
+
+No additional inventory or economy extraction target is currently selected.
+
+The previous high-risk potion use target has been extracted and cleaned up. Any future potion cleanup should
+begin with a dedicated audit before code changes, especially if it involves temporary potion behavior, regeneration
+behavior, combat-adjacent potion fields, or inventory-removal quirks.
 
 #### `pri_10_usepotion`
 
@@ -654,30 +697,35 @@ The following remain out of scope for this audit pass unless deliberately select
 
 Recommended next step:
 
-* Begin a dedicated potion lifecycle audit for `pri_10_usepotion()`.
+* Pause additional inventory and economy extraction until the next target is deliberately selected.
 
 Reason:
 
 * Armor purchase, armor sale, armor naming, armor equip, and armor unequip are now extracted and tested.
-* Potion purchase, potion sale, potion shop restocking, and potion transfer are already extracted and tested.
-* The remaining potion-related risk is higher impact than the completed transfer and armor lifecycle helpers.
-* `pri_10_usepotion` mutates temporary potion fields, permanent potion progression, inventory state, and combat-adjacent values.
+* Potion purchase, potion sale, potion shop restocking, potion transfer, and potion use are now extracted and tested.
+* Permanent stat potion progression cleanup is complete and tested.
+* Remaining work is more likely to touch combat-adjacent behavior, broader command/runtime behavior, or fragile legacy quirks.
 
-Possible next implementation target:
+Possible next audit targets:
 
-* Dedicated potion lifecycle audit for `pri_10_usepotion`
+* Temporary potion behavior review, if more potion cleanup is desired.
+* Remaining command-runtime inventory routing in `botCommand.py`, if direct runtime behavior needs to be mapped.
+* Combat-adjacent potion effect cleanup, only after a dedicated test plan is written.
 
 Recommendation:
 
-* If potion lifecycle work begins, audit `pri_10_usepotion()` before extracting helper logic.
+* Do not split temporary potion behavior further without a focused audit.
 * Keep file loading and saving in `original/onPRIUtils.py` unless a file-boundary change is explicitly planned.
 * Do not import `original/botCommand.py` in pytest.
 * Do not touch combat behavior, rolling, XP payout, renown payout, or level-up handling.
 
 Status:
 
-* Potion transfer extraction complete.
-* Next step should be a potion lifecycle audit.
+* Potion use lifecycle extraction complete.
+* Potion use cleanup review complete.
+* Full pytest passes with 370 tests.
+
+---
 
 ## Update Procedure for Future Work
 
