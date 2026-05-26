@@ -22,8 +22,6 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 ## Current Test Status
 
-## Current Test Status
-
 Current full pytest result:
 
 * `370 passed`
@@ -646,29 +644,6 @@ The previous high-risk potion use target has been extracted and cleaned up. Any 
 begin with a dedicated audit before code changes, especially if it involves temporary potion behavior, regeneration
 behavior, combat-adjacent potion fields, or inventory-removal quirks.
 
-#### `pri_10_usepotion`
-
-Classification:
-
-* Potion lifecycle mutation
-* Temporary combat modifier setup
-* Permanent character progression mutation
-* Character-file mutation
-* Combat-adjacent behavior
-
-Reason:
-
-* Applies permanent stat potion progression.
-* Applies respec and stimulant potion behavior.
-* Applies temporary next-match potion effects.
-* Mutates potion effect fields used by later view and combat logic.
-* Removes consumed potions from inventory.
-
-Recommendation:
-
-* Defer to a dedicated potion lifecycle pass.
-
----
 
 ## Explicitly Out of Scope
 
