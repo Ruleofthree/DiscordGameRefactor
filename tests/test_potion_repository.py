@@ -319,3 +319,128 @@ def test_buy_character_potion_rejects_when_inventory_is_full():
     assert updated_character["renown"] == 500
     assert updated_character["potions"] == ["p1", "p2", "p3", "p4", "p5"]
     assert updated_potion_data[0]["shoplist"] == ["hp5", "damage1"]
+
+
+def test_give_character_potion_transfers_potion_to_recipient():
+    from src.potion_repository import give_character_potion
+
+    gifter_data = {
+        "name": "Alice",
+        "potions": ["hp5", "hit1"],
+    }
+    gifted_data = {
+        "name": "Bob",
+        "potions": ["damage1"],
+    }
+
+    msg, gifter, gifted = give_character_potion(
+        gifter_data,
+        gifted_data,
+        "hp5",
+    )
+
+    assert msg == "Alice has given Bob a potion of hp5"
+    assert gifter == "Alice"
+    assert gifted == "Bob"
+    assert gifter_data["potions"] == ["hit1"]
+    assert gifted_data["potions"] == ["damage1", "hp5"]
+
+
+def test_give_character_potion_lowercases_item_before_transfer():
+    from src.potion_repository import give_character_potion
+
+    gifter_data = {
+        "name": "Alice",
+        "potions": ["hp5"],
+    }
+    gifted_data = {
+        "name": "Bob",
+        "potions": [],
+    }
+
+    msg, gifter, gifted = give_character_potion(
+        gifter_data,
+        gifted_data,
+        "HP5",
+    )
+
+    assert msg == "Alice has given Bob a potion of hp5"
+    assert gifter == "Alice"
+    assert gifted == "Bob"
+    assert gifter_data["potions"] == []
+    assert gifted_data["potions"] == ["hp5"]
+
+
+def test_give_character_potion_fails_when_sender_does_not_have_item():
+    from src.potion_repository import give_character_potion
+
+    gifter_data = {
+        "name": "Alice",
+        "potions": ["hit1"],
+    }
+    gifted_data = {
+        "name": "Bob",
+        "potions": ["damage1"],
+    }
+
+    msg, gifter, gifted = give_character_potion(
+        gifter_data,
+        gifted_data,
+        "hp5",
+    )
+
+    assert msg == "You do not have this item to give."
+    assert gifter == "Alice"
+    assert gifted == "Bob"
+    assert gifter_data["potions"] == ["hit1"]
+    assert gifted_data["potions"] == ["damage1"]
+
+
+def test_give_character_potion_fails_when_recipient_inventory_has_four_potions():
+    from src.potion_repository import give_character_potion
+
+    gifter_data = {
+        "name": "Alice",
+        "potions": ["hp5", "hit1"],
+    }
+    gifted_data = {
+        "name": "Bob",
+        "potions": ["damage1", "damage2", "ac1", "tstr1"],
+    }
+
+    msg, gifter, gifted = give_character_potion(
+        gifter_data,
+        gifted_data,
+        "hp5",
+    )
+
+    assert msg == "You can not give Bob anything, as they have no space in their inventory to take this item."
+    assert gifter == "Alice"
+    assert gifted == "Bob"
+    assert gifter_data["potions"] == ["hp5", "hit1"]
+    assert gifted_data["potions"] == ["damage1", "damage2", "ac1", "tstr1"]
+
+
+def test_give_character_potion_allows_transfer_when_recipient_inventory_has_three_potions():
+    from src.potion_repository import give_character_potion
+
+    gifter_data = {
+        "name": "Alice",
+        "potions": ["hp5"],
+    }
+    gifted_data = {
+        "name": "Bob",
+        "potions": ["damage1", "damage2", "ac1"],
+    }
+
+    msg, gifter, gifted = give_character_potion(
+        gifter_data,
+        gifted_data,
+        "hp5",
+    )
+
+    assert msg == "Alice has given Bob a potion of hp5"
+    assert gifter == "Alice"
+    assert gifted == "Bob"
+    assert gifter_data["potions"] == []
+    assert gifted_data["potions"] == ["damage1", "damage2", "ac1", "hp5"]

@@ -211,3 +211,21 @@ def buy_character_potion(character_data, potion_data, potion_name):
         message = "You do not have enough renown to purchase this."
 
     return character_data, potion_data, message
+
+
+def give_character_potion(gifter_data, gifted_data, item):
+    item = item.lower()
+
+    gifter = gifter_data["name"]
+    gifted = gifted_data["name"]
+
+    if item not in gifter_data["potions"]:
+        msg = "You do not have this item to give."
+    elif item in gifter_data["potions"] and len(gifted_data["potions"]) <= 3:
+        gifter_data["potions"].remove(item)
+        gifted_data["potions"].append(item)
+        msg = gifter + " has given " + gifted + " a potion of " + item
+    else:
+        msg = "You can not give " + gifted + " anything, as they have no space in their inventory to take this item."
+
+    return msg, gifter, gifted

@@ -12,6 +12,7 @@ from src.potion_repository import (
     buy_character_potion,
     get_potion_effect_info,
     get_potion_sell_value,
+    give_character_potion,
     sell_character_potion,
     stock_potion_shop,
 )
@@ -570,16 +571,9 @@ def pri_11_givepotion(character, item, gifted, charFolder):
     except FileNotFoundError:
         msg = "You can not give this posiont, as " + gifted + " does not have a character."
         return msg
-    gifter = gifterData['name']
-    gifted = giftedData['name']
-    if item.lower() not in gifterData['potions']:
-        msg = "You do not have this item to give."
-    elif item.lower() in gifterData['potions'] and len(giftedData['potions']) <= 3:
-        gifterData['potions'].remove(item.lower())
-        giftedData['potions'].append(item.lower())
-        msg = gifter + " has given " + gifted + " a potion of " + item.lower()
-    else:
-        msg = "You can not give " + gifted + " anything, as they have no space in their inventory to take this item."
+
+    msg, gifter, gifted = give_character_potion(gifterData, giftedData, item)
+
     file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
     json.dump(gifterData, file, ensure_ascii=False, indent=2)
     file.close()
