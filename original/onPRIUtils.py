@@ -1,11 +1,12 @@
 from src.armor_repository import (
     build_armor_shop_display,
     buy_character_armor,
+    equip_character_armor,
     get_armor_dictionary,
     rename_character_armor,
     sell_character_armor,
     stock_armor_shop,
-    unequip_character_armor
+    unequip_character_armor,
 )
 from src.potion_repository import (
     buy_character_potion,
@@ -697,85 +698,16 @@ def pri_6_equip(character, armor, charFolder, game):
         charFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
         charSheet = json.load(charFile)
         charFile.close()
-        isCharacter = Path(charFolder + character.lower() + ".json")
     except FileNotFoundError:
         msg = "You don't have a character made to use this command."
         return msg
 
-    armorDictionary = get_armor_dictionary()
+    armorFile = open("armor.json", "r", encoding="utf-8")
+    armorDictionary = json.load(armorFile)
+    armorFile.close()
 
     if game != 1:
-        charSheet["armorhit"] = 0
-        charSheet["armordamage"] = 0
-        charSheet["armorac"] = 0
-        charSheet["armorhp"] = 0
-        charSheet["armordr"] = 0
-        charSheet["armorinitiative"] = 0
-        charSheet["armorstrength"] = 0
-        charSheet["armordexterity"] = 0
-        charSheet["armorconstitution"] = 0
-        charSheet["armorblur"] = 0
-        if armor in charSheet['armor']:
-            charSheet['equip'] = armor
-            msg = charSheet['name'] + " has equipped " + armor
-            if len(charSheet['armor'][armor]) == 2:
-                statOne = charSheet['armor'][armor][0]
-                statTwo = ""
-                statThree = ""
-            elif len(charSheet['armor'][armor]) == 3:
-                statOne = charSheet['armor'][armor][0]
-                statTwo = charSheet['armor'][armor][1]
-                statThree = ""
-            elif len(charSheet['armor'][armor]) == 4:
-                statOne = charSheet['armor'][armor][0]
-                statTwo = charSheet['armor'][armor][1]
-                statThree = charSheet['armor'][armor][2]
-            if statOne != "":
-                if statOne in armorDictionary[0]["cat1"]["common"]:
-                    statOneValue = armorDictionary[0]["cat1"]["common"][statOne][1]
-                elif statOne in armorDictionary[0]["cat1"]["uncommon"]:
-                    statOneValue = armorDictionary[0]["cat1"]["uncommon"][statOne][1]
-                elif statOne in armorDictionary[0]["cat1"]["rare"]:
-                    statOneValue = armorDictionary[0]["cat1"]["rare"][statOne][1]
-            if statTwo != "":
-                if statTwo in armorDictionary[0]["cat2"]["common"]:
-                    statTwoValue = armorDictionary[0]["cat2"]["common"][statTwo][1]
-                elif statTwo in armorDictionary[0]["cat2"]["uncommon"]:
-                    statTwoValue = armorDictionary[0]["cat2"]["uncommon"][statTwo][1]
-                elif statTwo in armorDictionary[0]["cat2"]["rare"]:
-                    statTwoValue = armorDictionary[0]["cat2"]["rare"][statTwo][1]
-            if statThree != "":
-                if statThree in armorDictionary[0]["cat3"]["common"]:
-                    statThreeValue = armorDictionary[0]["cat3"]["common"][statThree][1]
-                elif statThree in armorDictionary[0]["cat3"]["uncommon"]:
-                    statThreeValue = armorDictionary[0]["cat3"]["uncommon"][statThree][1]
-                elif statThree in armorDictionary[0]["cat3"]["rare"]:
-                    statThreeValue = armorDictionary[0]["cat3"]["rare"][statThree][1]
-            if statOne[:2] == "st":
-                charSheet["armorstrength"] = statOneValue
-            elif statOne[:2] == "de":
-                charSheet["armordexterity"] = statOneValue
-            elif statOne[:2] == "co":
-                charSheet["armorconstitution"] = statOneValue
-            if statTwo[:2] == "ac":
-                charSheet["armorac"] = statTwoValue
-            elif statTwo[:2] == "dr":
-                if charSheet["traitdr"] == 0 and charSheet["regeneration"] == 0:
-                    charSheet["armordr"] = statTwoValue
-            elif statTwo[:2] == "in":
-                charSheet["armorinitiative"] = statTwoValue
-                charSheet["initiative"] = statTwoValue
-            elif statTwo[:2] == "hp":
-                charSheet["armorhp"] += statTwoValue
-            if statThree[:2] == "hi":
-                charSheet["armorhit"] = statThreeValue
-            elif statThree[:2] == "da":
-                charSheet["armordamage"] = statThreeValue
-            elif statThree[:2] == "bl":
-                charSheet["armorblur"] += statThreeValue
-        else:
-            msg = armor + " doesn't exist in your inventory. Make sure you are typing the armor name correctly when using" \
-                          " this command"
+        msg = equip_character_armor(charSheet, armor, armorDictionary)
     else:
         msg = "A fight is currently taking place...please wait until it is concluded."
 

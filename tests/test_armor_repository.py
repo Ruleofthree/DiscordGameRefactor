@@ -218,6 +218,196 @@ def test_unequip_character_armor_does_not_validate_armor_name():
     assert character_data["armorblur"] == 0
 
 
+def make_equip_armor_character():
+    return {
+        "name": "Test Character",
+        "equip": "old armor",
+        "armor": {
+            "old armor": ["str1", 500],
+            "new armor": ["str2", "hp10", "damage3", 500],
+            "defense armor": ["dex2", "ac2", "hit4", 500],
+            "dr armor": ["con1", "dr2", 500],
+            "initiative armor": ["dex1", "init2", "blur1", 500],
+        },
+        "armorhit": 9,
+        "armordamage": 9,
+        "armorac": 9,
+        "armorhp": 9,
+        "armordr": 9,
+        "armorinitiative": 9,
+        "armorstrength": 9,
+        "armordexterity": 9,
+        "armorconstitution": 9,
+        "armorblur": 9,
+        "initiative": 0,
+        "traitdr": 0,
+        "regeneration": 0,
+    }
+
+
+def make_test_armor_dictionary():
+    return [
+        {
+            "cat1": {
+                "common": {
+                    "str1": [500, 1],
+                    "str2": [1000, 2],
+                    "dex1": [500, 1],
+                    "dex2": [1000, 2],
+                    "con1": [500, 1],
+                },
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat2": {
+                "common": {
+                    "hp10": [1000, 10],
+                    "ac2": [4000, 2],
+                    "dr2": [5000, 2],
+                    "init2": [750, 2],
+                },
+                "uncommon": {},
+                "rare": {},
+            },
+            "cat3": {
+                "common": {
+                    "blur1": [5000, 1],
+                },
+                "uncommon": {
+                    "damage3": [4500, 3],
+                    "hit4": [6000, 4],
+                },
+                "rare": {},
+            },
+        }
+    ]
+
+
+def test_equip_character_armor_equips_owned_armor_and_applies_bonuses():
+    from src.armor_repository import equip_character_armor
+
+    character_data = make_equip_armor_character()
+    armor_dictionary = make_test_armor_dictionary()
+
+    msg = equip_character_armor(character_data, "new armor", armor_dictionary)
+
+    assert msg == "Test Character has equipped new armor"
+    assert character_data["equip"] == "new armor"
+    assert character_data["armorstrength"] == 2
+    assert character_data["armorhp"] == 10
+    assert character_data["armordamage"] == 3
+
+    assert character_data["armorhit"] == 0
+    assert character_data["armorac"] == 0
+    assert character_data["armordr"] == 0
+    assert character_data["armorinitiative"] == 0
+    assert character_data["armordexterity"] == 0
+    assert character_data["armorconstitution"] == 0
+    assert character_data["armorblur"] == 0
+
+
+def test_equip_character_armor_applies_dex_ac_and_hit_bonuses():
+    from src.armor_repository import equip_character_armor
+
+    character_data = make_equip_armor_character()
+    armor_dictionary = make_test_armor_dictionary()
+
+    msg = equip_character_armor(character_data, "defense armor", armor_dictionary)
+
+    assert msg == "Test Character has equipped defense armor"
+    assert character_data["equip"] == "defense armor"
+    assert character_data["armordexterity"] == 2
+    assert character_data["armorac"] == 2
+    assert character_data["armorhit"] == 4
+
+
+def test_equip_character_armor_applies_dr_when_no_traitdr_or_regeneration():
+    from src.armor_repository import equip_character_armor
+
+    character_data = make_equip_armor_character()
+    armor_dictionary = make_test_armor_dictionary()
+
+    msg = equip_character_armor(character_data, "dr armor", armor_dictionary)
+
+    assert msg == "Test Character has equipped dr armor"
+    assert character_data["equip"] == "dr armor"
+    assert character_data["armorconstitution"] == 1
+    assert character_data["armordr"] == 2
+
+
+def test_equip_character_armor_does_not_apply_dr_when_traitdr_exists():
+    from src.armor_repository import equip_character_armor
+
+    character_data = make_equip_armor_character()
+    character_data["traitdr"] = 1
+    armor_dictionary = make_test_armor_dictionary()
+
+    msg = equip_character_armor(character_data, "dr armor", armor_dictionary)
+
+    assert msg == "Test Character has equipped dr armor"
+    assert character_data["equip"] == "dr armor"
+    assert character_data["armorconstitution"] == 1
+    assert character_data["armordr"] == 0
+
+
+def test_equip_character_armor_does_not_apply_dr_when_regeneration_exists():
+    from src.armor_repository import equip_character_armor
+
+    character_data = make_equip_armor_character()
+    character_data["regeneration"] = 1
+    armor_dictionary = make_test_armor_dictionary()
+
+    msg = equip_character_armor(character_data, "dr armor", armor_dictionary)
+
+    assert msg == "Test Character has equipped dr armor"
+    assert character_data["equip"] == "dr armor"
+    assert character_data["armorconstitution"] == 1
+    assert character_data["armordr"] == 0
+
+
+def test_equip_character_armor_applies_initiative_to_both_fields_and_blur():
+    from src.armor_repository import equip_character_armor
+
+    character_data = make_equip_armor_character()
+    armor_dictionary = make_test_armor_dictionary()
+
+    msg = equip_character_armor(character_data, "initiative armor", armor_dictionary)
+
+    assert msg == "Test Character has equipped initiative armor"
+    assert character_data["equip"] == "initiative armor"
+    assert character_data["armordexterity"] == 1
+    assert character_data["armorinitiative"] == 2
+    assert character_data["initiative"] == 2
+    assert character_data["armorblur"] == 1
+
+
+def test_equip_character_armor_invalid_name_still_clears_armor_bonuses():
+    from src.armor_repository import equip_character_armor
+
+    character_data = make_equip_armor_character()
+    armor_dictionary = make_test_armor_dictionary()
+
+    msg = equip_character_armor(character_data, "missing armor", armor_dictionary)
+
+    assert msg == (
+        "missing armor doesn't exist in your inventory. Make sure you are typing the armor name correctly when using"
+        " this command"
+    )
+
+    # Legacy behavior: invalid equip still clears previous armor bonuses.
+    assert character_data["equip"] == "old armor"
+    assert character_data["armorhit"] == 0
+    assert character_data["armordamage"] == 0
+    assert character_data["armorac"] == 0
+    assert character_data["armorhp"] == 0
+    assert character_data["armordr"] == 0
+    assert character_data["armorinitiative"] == 0
+    assert character_data["armorstrength"] == 0
+    assert character_data["armordexterity"] == 0
+    assert character_data["armorconstitution"] == 0
+    assert character_data["armorblur"] == 0
+
+
 def test_get_armor_shop_lists_returns_cat_three_rare_items():
     cat_three_rare = get_armor_shop_lists()[8]
 

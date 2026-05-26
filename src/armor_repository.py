@@ -222,6 +222,99 @@ def unequip_character_armor(character_data, armor):
     return msg
 
 
+def _clear_character_armor_bonuses(character_data):
+    character_data["armorhit"] = 0
+    character_data["armordamage"] = 0
+    character_data["armorac"] = 0
+    character_data["armorhp"] = 0
+    character_data["armordr"] = 0
+    character_data["armorinitiative"] = 0
+    character_data["armorstrength"] = 0
+    character_data["armordexterity"] = 0
+    character_data["armorconstitution"] = 0
+    character_data["armorblur"] = 0
+
+
+def _get_armor_stat_value(armor_dictionary, category_name, stat_name):
+    if stat_name in armor_dictionary[0][category_name]["common"]:
+        return armor_dictionary[0][category_name]["common"][stat_name][1]
+    if stat_name in armor_dictionary[0][category_name]["uncommon"]:
+        return armor_dictionary[0][category_name]["uncommon"][stat_name][1]
+    if stat_name in armor_dictionary[0][category_name]["rare"]:
+        return armor_dictionary[0][category_name]["rare"][stat_name][1]
+    return 0
+
+
+def equip_character_armor(character_data, armor, armor_dictionary):
+    _clear_character_armor_bonuses(character_data)
+
+    if armor in character_data["armor"]:
+        character_data["equip"] = armor
+        msg = character_data["name"] + " has equipped " + armor
+
+        stat_one = ""
+        stat_two = ""
+        stat_three = ""
+
+        if len(character_data["armor"][armor]) == 2:
+            stat_one = character_data["armor"][armor][0]
+        elif len(character_data["armor"][armor]) == 3:
+            stat_one = character_data["armor"][armor][0]
+            stat_two = character_data["armor"][armor][1]
+        elif len(character_data["armor"][armor]) == 4:
+            stat_one = character_data["armor"][armor][0]
+            stat_two = character_data["armor"][armor][1]
+            stat_three = character_data["armor"][armor][2]
+
+        if stat_one != "":
+            stat_one_value = _get_armor_stat_value(armor_dictionary, "cat1", stat_one)
+        else:
+            stat_one_value = 0
+
+        if stat_two != "":
+            stat_two_value = _get_armor_stat_value(armor_dictionary, "cat2", stat_two)
+        else:
+            stat_two_value = 0
+
+        if stat_three != "":
+            stat_three_value = _get_armor_stat_value(armor_dictionary, "cat3", stat_three)
+        else:
+            stat_three_value = 0
+
+        if stat_one[:2] == "st":
+            character_data["armorstrength"] = stat_one_value
+        elif stat_one[:2] == "de":
+            character_data["armordexterity"] = stat_one_value
+        elif stat_one[:2] == "co":
+            character_data["armorconstitution"] = stat_one_value
+
+        if stat_two[:2] == "ac":
+            character_data["armorac"] = stat_two_value
+        elif stat_two[:2] == "dr":
+            if character_data["traitdr"] == 0 and character_data["regeneration"] == 0:
+                character_data["armordr"] = stat_two_value
+        elif stat_two[:2] == "in":
+            character_data["armorinitiative"] = stat_two_value
+            character_data["initiative"] = stat_two_value
+        elif stat_two[:2] == "hp":
+            character_data["armorhp"] += stat_two_value
+
+        if stat_three[:2] == "hi":
+            character_data["armorhit"] = stat_three_value
+        elif stat_three[:2] == "da":
+            character_data["armordamage"] = stat_three_value
+        elif stat_three[:2] == "bl":
+            character_data["armorblur"] += stat_three_value
+    else:
+        msg = (
+            armor
+            + " doesn't exist in your inventory. Make sure you are typing the armor name correctly when using"
+            + " this command"
+        )
+
+    return msg
+
+
 def build_armor_shop_display(armor_shop_items, armor_dictionary=None):
     """
     Build the legacy armor shop display string.
