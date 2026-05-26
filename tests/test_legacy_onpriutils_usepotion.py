@@ -497,6 +497,31 @@ def test_pri_10_usepotion_regen_sets_effect_but_preserves_legacy_inventory_bug(t
     assert updated["potions"] == ["regen1"]
 
 
+def test_pri_10_usepotion_regen_returns_no_benefit_when_all_blocking_fields_are_nonzero(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_potions_file(tmp_path)
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_character(
+        characters_dir,
+        "tester",
+        base_character(
+            potions=["regen1"],
+            traitdr=1,
+            armordr=1,
+            regeneration=1,
+        ),
+    )
+
+    msg = call_usepotion("tester", "regen1", characters_dir)
+
+    assert msg == "Tester gains no benefit from this potion."
+    updated = read_character(characters_dir, "tester")
+    assert updated["potionregen"] == 0
+    assert updated["potioneffect"] == ""
+    assert updated["potions"] == ["regen1"]
+
+
 def test_pri_10_usepotion_valid_potion_missing_from_inventory_raises_value_error(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     write_potions_file(tmp_path)

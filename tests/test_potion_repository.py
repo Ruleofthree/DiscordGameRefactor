@@ -751,6 +751,40 @@ def test_use_character_potion_regen_preserves_legacy_inventory_bug():
     assert updated_character["potions"] == ["regen1"]
 
 
+def test_use_character_potion_regen_returns_no_benefit_when_all_blocking_fields_are_nonzero():
+    character_data = make_use_potion_character(
+        potions=["regen1"],
+        traitdr=1,
+        armordr=1,
+        regeneration=1,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "regen1",
+        (1, "grants +1 regeneration for duration of fight"),
+    )
+
+    assert message == "Tester gains no benefit from this potion."
+    assert updated_character["potionregen"] == 0
+    assert updated_character["potioneffect"] == ""
+    assert updated_character["potions"] == ["regen1"]
+
+
+def test_use_character_potion_rejects_valid_known_potion_with_unhandled_prefix():
+    character_data = make_use_potion_character(potions=["weird1"])
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "weird1",
+        (1, "does something the legacy use logic does not handle"),
+    )
+
+    assert message == "You can not drink this potion, as it is either too powerful or too weak to use right now."
+    assert updated_character["potioneffect"] == ""
+    assert updated_character["potions"] == ["weird1"]
+
+
 def test_use_character_potion_valid_potion_missing_from_inventory_raises_value_error():
     character_data = make_use_potion_character(potions=[])
 
