@@ -265,6 +265,28 @@ Status:
 
 ---
 
+## Potion Use Lifecycle Audit
+
+`pri_10_usepotion` remains in `original/onPRIUtils.py` and has not yet been extracted. The function still owns direct loading of `potions.json`, direct character JSON loading, potion effect mutation, inventory removal, and character JSON saving.
+
+The function supports three broad potion lifecycles:
+
+- Permanent progression potions: `str1` through `str5`, `dex1` through `dex5`, and `con1` through `con5`. These mutate `pstrength`, `pdexterity`, or `pconstitution` only when the existing progression field is exactly one tier lower.
+- Special permanent utility potions: `respec` increments `reset`, while `stimulant` increments both `remaining feats` and `total feats`.
+- Temporary next-match potions: hit, damage, AC, temporary Strength, temporary Dexterity, temporary Constitution, HP, blur, and regeneration potions set one potion bonus field and usually set `potioneffect`.
+
+Important legacy behavior to preserve during extraction:
+
+- Valid potion names are checked against the supplied rarity lists, not against the character inventory before use. A valid potion name missing from inventory can raise `ValueError` when removal is attempted.
+- Unknown potion names return `You do not have a potion of <potion>`.
+- A character with an existing `potioneffect` cannot drink another temporary potion.
+- Permanent stat potions, `respec`, and `stimulant` are handled before the temporary potion lock.
+- Regeneration potions currently set `potionregen` and `potioneffect`, but the successful branch does not remove the potion from inventory.
+- The regeneration eligibility condition uses `traitdr == 0 or armordr == 0 or regeneration == 0`, which means the potion is blocked only when all three fields are nonzero.
+- Existing messages, typos, spacing, field names, and questionable conditionals should remain unchanged unless a deliberate behavior change is separately tested.
+
+---
+
 ### Armor Shop Restock Extraction
 
 Completed helper:
