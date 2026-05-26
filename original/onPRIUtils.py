@@ -711,7 +711,7 @@ def pri_6_equip(character, armor, charFolder, game):
         msg = "You don't have a character made to use this command."
         return msg
 
-    armorData = get_armor_dictionary()
+    armorDictionary = get_armor_dictionary()
 
     if game != 1:
         charSheet["armorhit"] = 0

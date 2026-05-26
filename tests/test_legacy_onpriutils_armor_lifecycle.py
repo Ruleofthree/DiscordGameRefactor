@@ -1,6 +1,8 @@
+from pathlib import Path
+from onPRIUtils import pri_10_namearmor, pri_6_equip
+
 import json
 import sys
-from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ORIGINAL_DIR = PROJECT_ROOT / "original"
@@ -29,6 +31,19 @@ def make_character(**overrides):
             "armor3": "n/a",
         },
         "equip": "",
+        "armorhit": 0,
+        "armordamage": 0,
+        "armorac": 0,
+        "armorhp": 0,
+        "armordr": 0,
+        "armorinitiative": 0,
+        "armorstrength": 0,
+        "armordexterity": 0,
+        "armorconstitution": 0,
+        "armorblur": 0,
+        "traitdr": 0,
+        "regeneration": 0,
+        "initiative": 0,
     }
     data.update(overrides)
     return data
@@ -132,3 +147,253 @@ def test_pri_10_namearmor_renames_unequipped_armor_and_preserves_value(tmp_path)
     assert updated["armor"]["renamed armor"] == ["str1", 500]
     assert updated["armor"]["armor2"] == "n/a"
     assert updated["armor"]["armor3"] == "n/a"
+
+
+def write_armor_file(tmp_path):
+    armor_data = [
+        {
+            "cat1": {
+                "common": {
+                    "str1": [500, 1],
+                    "dex1": [500, 1],
+                    "con1": [500, 1],
+                },
+                "uncommon": {
+                    "str3": [3000, 3],
+                    "dex3": [3000, 3],
+                    "con3": [3000, 3],
+                },
+                "rare": {
+                    "str5": [7000, 5],
+                    "dex5": [7000, 5],
+                    "con5": [7000, 5],
+                },
+            },
+            "cat2": {
+                "common": {
+                    "ac1": [2000, 1],
+                    "hp10": [1000, 10],
+                    "dr2": [5000, 2],
+                    "init2": [750, 2],
+                },
+                "uncommon": {
+                    "ac3": [6000, 3],
+                    "hp15": [1500, 15],
+                    "dr3": [7500, 3],
+                    "init4": [3000, 4],
+                },
+                "rare": {
+                    "ac5": [10000, 5],
+                    "hp25": [2500, 25],
+                    "init5": [4500, 5],
+                },
+            },
+            "cat3": {
+                "common": {
+                    "hit2": [3000, 2],
+                    "damage2": [3000, 2],
+                    "blur1": [5000, 1],
+                },
+                "uncommon": {
+                    "hit4": [6000, 4],
+                    "damage4": [6000, 4],
+                    "blur3": [12500, 3],
+                },
+                "rare": {
+                    "hit5": [7500, 5],
+                    "damage5": [7500, 5],
+                    "blur5": [25000, 5],
+                },
+            },
+            "armorlist": {},
+        }
+    ]
+
+    armor_file = tmp_path / "armor.json"
+    armor_file.write_text(json.dumps(armor_data), encoding="utf-8")
+    return armor_file
+
+
+def test_pri_6_equip_rejects_missing_character(tmp_path, monkeypatch):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_armor_file(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    msg = pri_6_equip(
+        "missingplayer",
+        "armor1",
+        str(characters_dir) + "/",
+        0,
+    )
+
+    assert msg == "You don't have a character made to use this command."
+
+
+def test_pri_6_equip_rejects_equipping_during_fight_and_preserves_existing_bonuses(tmp_path, monkeypatch):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_armor_file(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    write_character(
+        characters_dir,
+        "playerone",
+        make_character(
+            equip="armor1",
+            armorstrength=5,
+            armorhit=4,
+            armordamage=3,
+            armorac=2,
+            armorhp=10,
+            armordr=1,
+            armorinitiative=6,
+            armordexterity=7,
+            armorconstitution=8,
+            armorblur=9,
+        ),
+    )
+
+    msg = pri_6_equip(
+        "playerone",
+        "armor2",
+        str(characters_dir) + "/",
+        1,
+    )
+
+    assert msg == "A fight is currently taking place...please wait until it is concluded."
+
+    updated = json.loads((characters_dir / "playerone.json").read_text(encoding="utf-8"))
+    assert updated["equip"] == "armor1"
+    assert updated["armorstrength"] == 5
+    assert updated["armorhit"] == 4
+    assert updated["armordamage"] == 3
+    assert updated["armorac"] == 2
+    assert updated["armorhp"] == 10
+    assert updated["armordr"] == 1
+    assert updated["armorinitiative"] == 6
+    assert updated["armordexterity"] == 7
+    assert updated["armorconstitution"] == 8
+    assert updated["armorblur"] == 9
+
+
+def test_pri_6_equip_invalid_armor_name_clears_existing_armor_bonuses(tmp_path, monkeypatch):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_armor_file(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    write_character(
+        characters_dir,
+        "playerone",
+        make_character(
+            equip="armor1",
+            armorstrength=5,
+            armorhit=4,
+            armordamage=3,
+            armorac=2,
+            armorhp=10,
+            armordr=1,
+            armorinitiative=6,
+            armordexterity=7,
+            armorconstitution=8,
+            armorblur=9,
+        ),
+    )
+
+    msg = pri_6_equip(
+        "playerone",
+        "not owned",
+        str(characters_dir) + "/",
+        0,
+    )
+
+    assert msg == (
+        "not owned doesn't exist in your inventory. Make sure you are typing "
+        "the armor name correctly when using this command"
+    )
+
+    updated = json.loads((characters_dir / "playerone.json").read_text(encoding="utf-8"))
+    assert updated["equip"] == "armor1"
+    assert updated["armorstrength"] == 0
+    assert updated["armorhit"] == 0
+    assert updated["armordamage"] == 0
+    assert updated["armorac"] == 0
+    assert updated["armorhp"] == 0
+    assert updated["armordr"] == 0
+    assert updated["armorinitiative"] == 0
+    assert updated["armordexterity"] == 0
+    assert updated["armorconstitution"] == 0
+    assert updated["armorblur"] == 0
+
+
+def test_pri_6_equip_applies_single_stat_armor_bonus(tmp_path, monkeypatch):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_armor_file(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    write_character(characters_dir, "playerone", make_character())
+
+    msg = pri_6_equip(
+        "playerone",
+        "armor1",
+        str(characters_dir) + "/",
+        0,
+    )
+
+    assert msg == "Test Hero has equipped armor1"
+
+    updated = json.loads((characters_dir / "playerone.json").read_text(encoding="utf-8"))
+    assert updated["equip"] == "armor1"
+    assert updated["armorstrength"] == 1
+    assert updated["armorhit"] == 0
+    assert updated["armordamage"] == 0
+    assert updated["armorac"] == 0
+    assert updated["armorhp"] == 0
+    assert updated["armordr"] == 0
+    assert updated["armorinitiative"] == 0
+    assert updated["armordexterity"] == 0
+    assert updated["armorconstitution"] == 0
+    assert updated["armorblur"] == 0
+
+
+def test_pri_6_equip_applies_multi_stat_armor_bonus(tmp_path, monkeypatch):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_armor_file(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    write_character(
+        characters_dir,
+        "playerone",
+        make_character(
+            armor={
+                "armor1": ["str3", "hp15", "hit4", 12000],
+                "armor2": "n/a",
+                "armor3": "n/a",
+            }
+        ),
+    )
+
+    msg = pri_6_equip(
+        "playerone",
+        "armor1",
+        str(characters_dir) + "/",
+        0,
+    )
+
+    assert msg == "Test Hero has equipped armor1"
+
+    updated = json.loads((characters_dir / "playerone.json").read_text(encoding="utf-8"))
+    assert updated["equip"] == "armor1"
+    assert updated["armorstrength"] == 3
+    assert updated["armorhp"] == 15
+    assert updated["armorhit"] == 4
+    assert updated["armordamage"] == 0
+    assert updated["armorac"] == 0
+    assert updated["armordr"] == 0
+    assert updated["armorinitiative"] == 0
+    assert updated["armordexterity"] == 0
+    assert updated["armorconstitution"] == 0
+    assert updated["armorblur"] == 0
