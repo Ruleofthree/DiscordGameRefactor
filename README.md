@@ -1,6 +1,6 @@
 # Discord Game Refactor
 
-This project is for learning Python refactoring and improving the structure of an older Discord/F-Chat game bot.
+This project is for learning Python refactoring and improving the structure of an older Discord game bot.
 
 ## Folder Layout
 
