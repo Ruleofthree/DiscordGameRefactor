@@ -57,6 +57,105 @@ def test_get_armor_shop_lists_returns_cat_two_common_items():
     ]
 
 
+def make_armor_character():
+    return {
+        "name": "Test Character",
+        "equip": "",
+        "armor": {
+            "armor1": "n/a",
+            "old armor": ["str1", 500],
+            "existing armor": ["dex1", 500],
+        },
+    }
+
+
+def test_rename_character_armor_renames_owned_armor():
+    from src.armor_repository import rename_character_armor
+
+    character_data = make_armor_character()
+
+    msg = rename_character_armor(
+        character_data,
+        armor_name="new armor",
+        armor_remove="old armor",
+    )
+
+    assert msg == "Test Character renamed old armor to new armor."
+    assert "old armor" not in character_data["armor"]
+    assert character_data["armor"]["new armor"] == ["str1", 500]
+
+
+def test_rename_character_armor_rejects_missing_inventory_key():
+    from src.armor_repository import rename_character_armor
+
+    character_data = make_armor_character()
+    original_armor = character_data["armor"].copy()
+
+    msg = rename_character_armor(
+        character_data,
+        armor_name="new armor",
+        armor_remove="missing armor",
+    )
+
+    assert msg == (
+        "missing armor is not within your inventory to rename. Please check you are typing armor name correctly,"
+        " then try this command again"
+    )
+    assert character_data["armor"] == original_armor
+
+
+def test_rename_character_armor_rejects_duplicate_new_name():
+    from src.armor_repository import rename_character_armor
+
+    character_data = make_armor_character()
+    original_armor = character_data["armor"].copy()
+
+    msg = rename_character_armor(
+        character_data,
+        armor_name="existing armor",
+        armor_remove="old armor",
+    )
+
+    assert msg == (
+        "You already have a piece of armor named existing armor. Please use a new name, and try this command "
+        "again"
+    )
+    assert character_data["armor"] == original_armor
+
+
+def test_rename_character_armor_rejects_equipped_armor():
+    from src.armor_repository import rename_character_armor
+
+    character_data = make_armor_character()
+    character_data["equip"] = "old armor"
+    original_armor = character_data["armor"].copy()
+
+    msg = rename_character_armor(
+        character_data,
+        armor_name="new armor",
+        armor_remove="old armor",
+    )
+
+    assert msg == "You need to unequip the armor first, before using this command."
+    assert character_data["armor"] == original_armor
+
+
+def test_rename_character_armor_rejects_empty_armor_slot():
+    from src.armor_repository import rename_character_armor
+
+    character_data = make_armor_character()
+    original_armor = character_data["armor"].copy()
+
+    msg = rename_character_armor(
+        character_data,
+        armor_name="new armor",
+        armor_remove="armor1",
+    )
+
+    assert msg == "There is no armor in that slot to rename. Please double check inventory, then use this command again."
+    assert character_data["armor"] == original_armor
+
+
 def test_get_armor_shop_lists_returns_cat_three_rare_items():
     cat_three_rare = get_armor_shop_lists()[8]
 

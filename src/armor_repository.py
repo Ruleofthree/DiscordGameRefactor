@@ -178,6 +178,32 @@ def sell_character_armor(char_sheet, armor_key, character):
     return char_sheet, msg
 
 
+def rename_character_armor(character_data, armor_name, armor_remove):
+    if armor_remove not in character_data["armor"].keys():
+        return (
+            armor_remove
+            + " is not within your inventory to rename. Please check you are typing armor name correctly,"
+            + " then try this command again"
+        )
+
+    if armor_name in character_data["armor"].keys():
+        return (
+            "You already have a piece of armor named "
+            + armor_name
+            + ". Please use a new name, and try this command "
+            + "again"
+        )
+
+    if armor_remove == character_data["equip"]:
+        return "You need to unequip the armor first, before using this command."
+
+    if character_data["armor"][armor_remove] != "n/a":
+        character_data["armor"][armor_name] = character_data["armor"].pop(armor_remove)
+        return character_data["name"] + " renamed " + armor_remove + " to " + armor_name + "."
+
+    return "There is no armor in that slot to rename. Please double check inventory, then use this command again."
+
+
 def build_armor_shop_display(armor_shop_items, armor_dictionary=None):
     """
     Build the legacy armor shop display string.

@@ -2,6 +2,7 @@ from src.armor_repository import (
     build_armor_shop_display,
     buy_character_armor,
     get_armor_dictionary,
+    rename_character_armor,
     sell_character_armor,
     stock_armor_shop,
 )
@@ -681,19 +682,8 @@ def pri_10_namearmor(character, armorName, armorRemove, charFolder):
         msg = "You don't have a character made to use this command."
         return msg
 
-    if armorRemove not in charSheet['armor'].keys():
-        msg = armorRemove + " is not within your inventory to rename. Please check you are typing armor name correctly," \
-              " then try this command again"
-    elif armorName in charSheet['armor'].keys():
-        msg = "You already have a piece of armor named " + armorName + ". Please use a new name, and try this command " \
-              "again"
-    elif armorRemove == charSheet['equip']:
-        msg = "You need to unequip the armor first, before using this command."
-    elif charSheet['armor'][armorRemove]  != "n/a":
-        charSheet['armor'][armorName] = charSheet['armor'].pop(armorRemove)
-        msg = charSheet['name'] + " renamed " + armorRemove + " to " + armorName + "."
-    else:
-        msg = "There is no armor in that slot to rename. Please double check inventory, then use this command again."
+    msg = rename_character_armor(charSheet, armorName, armorRemove)
+
     file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
     json.dump(charSheet, file, ensure_ascii=False, indent=2)
     file.close()
