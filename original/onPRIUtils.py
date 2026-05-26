@@ -649,6 +649,7 @@ def pri_9_buyarmor(character, armor, charFolder):
 
 # Use to sell a piece of equipment
 # !sellarmor <armor name>
+# !sellarmor <armor name>
 def pri_10_sellarmor(character, armor, charFolder):
     try:
         sellerFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
