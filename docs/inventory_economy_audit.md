@@ -560,8 +560,6 @@ The following remain out of scope for this audit pass unless deliberately select
 
 ## Recommended Next Target
 
-## Recommended Next Target
-
 Recommended next step:
 
 * Decide whether to extract armor equipment lifecycle helpers into `src.armor_repository`.
