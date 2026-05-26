@@ -155,6 +155,29 @@ def buy_character_armor(char_sheet, armor_data, armor):
     return char_sheet, armor_data, msg
 
 
+def sell_character_armor(char_sheet, armor_key, character):
+    if armor_key in char_sheet["armor"]:
+        if armor_key in char_sheet["equip"]:
+            msg = "You can't sell armor that is currently equipped."
+        else:
+            price = int(char_sheet["armor"][armor_key][-1] / 2)
+            char_sheet["renown"] += price
+            char_sheet["armor"][armor_key] = "n/a"
+
+            if "armor1" not in char_sheet["armor"]:
+                char_sheet["armor"]["armor1"] = char_sheet["armor"].pop(armor_key)
+            elif "armor2" not in char_sheet["armor"]:
+                char_sheet["armor"]["armor2"] = char_sheet["armor"].pop(armor_key)
+            elif "armor3" not in char_sheet["armor"]:
+                char_sheet["armor"]["armor3"] = char_sheet["armor"].pop(armor_key)
+
+            msg = character + " sold some armor for [color=yellow] " + str(price) + " renown[/color]"
+    else:
+        msg = "You do not have that armor to sell."
+
+    return char_sheet, msg
+
+
 def build_armor_shop_display(armor_shop_items, armor_dictionary=None):
     """
     Build the legacy armor shop display string.

@@ -22,7 +22,7 @@ The guiding rules for this refactor are:
 
 Current full pytest result:
 
-- `298 passed`
+- `305 passed`
 
 This includes:
 
@@ -323,7 +323,13 @@ Reason:
 
 Recommendation:
 
-- Defer until armor purchase behavior is tested and understood.
+- Proceed next, with tests first.
+- Keep file loading and saving in `original/onPRIUtils.py`.
+- Extract only deterministic armor sale mutation into `src.armor_repository.sell_character_armor()`.
+- Preserve the equipped-armor rejection behavior.
+- Preserve the half-price refund based on the stored purchase price appended during armor purchase.
+- Preserve legacy armor inventory key-normalization behavior.
+- Do not touch armor naming, equipping, unequipping, potion use, potion transfer, combat behavior, XP payout, renown payout, or level-up handling.
 
 ---
 

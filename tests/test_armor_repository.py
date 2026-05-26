@@ -6,6 +6,7 @@ from src.armor_repository import (
     get_armor_dictionary,
     get_armor_effects,
     get_armor_shop_lists,
+    sell_character_armor,
     stock_armor_shop,
 )
 
@@ -471,5 +472,72 @@ def test_buy_character_armor_uses_first_available_inventory_slot():
     assert updated_char["armor"]["armor3"] == "n/a"
     assert updated_armor[0]["armorlist"]["armor1"] == "sold"
     assert msg == "Test Character has purchased an armor of [color=red]str1, ac1[/color]."
+
+
+def test_sell_character_armor_sells_owned_armor_for_half_stored_price():
+    char_sheet = {
+        "name": "Test Character",
+        "renown": 100,
+        "equip": "",
+        "armor": {
+            "armor1": ["str1", "ac1", 2500],
+            "armor2": "n/a",
+            "armor3": "n/a",
+        },
+    }
+
+    updated_char, msg = sell_character_armor(
+        char_sheet,
+        "armor1",
+        "tester",
+    )
+
+    assert updated_char["renown"] == 1350
+    assert updated_char["armor"]["armor1"] == "n/a"
+    assert msg == "tester sold some armor for [color=yellow] 1250 renown[/color]"
+
+
+def test_sell_character_armor_rejects_equipped_armor():
+    char_sheet = {
+        "name": "Test Character",
+        "renown": 100,
+        "equip": "armor1",
+        "armor": {
+            "armor1": ["str1", "ac1", 2500],
+            "armor2": "n/a",
+            "armor3": "n/a",
+        },
+    }
+
+    updated_char, msg = sell_character_armor(
+        char_sheet,
+        "armor1",
+        "tester",
+    )
+
+    assert updated_char == char_sheet
+    assert msg == "You can't sell armor that is currently equipped."
+
+
+def test_sell_character_armor_rejects_missing_armor_key():
+    char_sheet = {
+        "name": "Test Character",
+        "renown": 100,
+        "equip": "",
+        "armor": {
+            "armor1": ["str1", "ac1", 2500],
+            "armor2": "n/a",
+            "armor3": "n/a",
+        },
+    }
+
+    updated_char, msg = sell_character_armor(
+        char_sheet,
+        "not-real-armor",
+        "tester",
+    )
+
+    assert updated_char == char_sheet
+    assert msg == "You do not have that armor to sell."
 
 
