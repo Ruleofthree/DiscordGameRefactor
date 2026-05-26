@@ -11,6 +11,7 @@ from src.potion_repository import (
     get_potion_shop_lists,
     sell_character_potion,
     stock_potion_shop,
+    use_character_potion,
 )
 
 def test_find_potion_returns_rarity_and_data_for_common_potion():
@@ -444,3 +445,193 @@ def test_give_character_potion_allows_transfer_when_recipient_inventory_has_thre
     assert gifted == "Bob"
     assert gifter_data["potions"] == []
     assert gifted_data["potions"] == ["damage1", "damage2", "ac1", "hp5"]
+
+
+def make_use_potion_character(**overrides):
+    character_data = {
+        "name": "Tester",
+        "potions": [],
+        "potioneffect": "",
+        "potionhit": 0,
+        "potiondamage": 0,
+        "potionac": 0,
+        "potionhp": 0,
+        "potionblur": 0,
+        "potionstr": 0,
+        "potiondex": 0,
+        "potioncon": 0,
+        "potionregen": 0,
+        "pstrength": 0,
+        "pdexterity": 0,
+        "pconstitution": 0,
+        "reset": 3,
+        "remaining feats": 2,
+        "total feats": 2,
+        "traitdr": 0,
+        "armordr": 0,
+        "regeneration": 0,
+    }
+    character_data.update(overrides)
+    return character_data
+
+
+def test_use_character_potion_returns_unknown_potion_message_without_changes():
+    character_data = make_use_potion_character(potions=["hit1"])
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "notapotion",
+        None,
+    )
+
+    assert message == "You do not have a potion of notapotion"
+    assert updated_character["potions"] == ["hit1"]
+
+
+def test_use_character_potion_applies_temporary_hit_potion():
+    character_data = make_use_potion_character(potions=["hit1"])
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "hit1",
+        (1, "increasing hit chance by 1 for duration of fight"),
+    )
+
+    assert (
+        message
+        == "Tester drank a hit1 potion, [color=red]increasing hit chance by 1 for duration of fight[/color] for next match."
+    )
+    assert updated_character["potionhit"] == 1
+    assert updated_character["potioneffect"] == "increasing hit chance by 1 for duration of fight"
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_blocks_temporary_potion_when_effect_is_active():
+    character_data = make_use_potion_character(
+        potions=["hit1"],
+        potioneffect="existing effect",
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "hit1",
+        (1, "increasing hit chance by 1 for duration of fight"),
+    )
+
+    assert message == "You already have a potion in effect."
+    assert updated_character["potionhit"] == 0
+    assert updated_character["potioneffect"] == "existing effect"
+    assert updated_character["potions"] == ["hit1"]
+
+
+def test_use_character_potion_applies_valid_permanent_strength_progression():
+    character_data = make_use_potion_character(
+        potions=["str1"],
+        pstrength=0,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "str1",
+        (1, "permanently increases strength by 1"),
+    )
+
+    assert message == "Tester drank a str1 potion, obtaining a permanent [color=red] +1 to strength[/color]"
+    assert updated_character["pstrength"] == 1
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_rejects_invalid_permanent_strength_progression():
+    character_data = make_use_potion_character(
+        potions=["str2"],
+        pstrength=0,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "str2",
+        (2, "permanently increases strength by 1"),
+    )
+
+    assert message == "You can not drink this potion, as it is either too powerful or too weak to use right now."
+    assert updated_character["pstrength"] == 0
+    assert updated_character["potions"] == ["str2"]
+
+
+def test_use_character_potion_respec_increments_reset_and_removes_potion():
+    character_data = make_use_potion_character(
+        potions=["respec"],
+        reset=3,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "respec",
+        (1, "allows to respec character"),
+    )
+
+    assert (
+        message
+        == "Tester drank a respec potion. Allowing them a chance to change their feats, traits, and stat points."
+    )
+    assert updated_character["reset"] == 4
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_stimulant_adds_feat_slots_and_removes_potion():
+    character_data = make_use_potion_character(
+        potions=["stimulant"],
+        **{
+            "remaining feats": 2,
+            "total feats": 2,
+        },
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "stimulant",
+        (1, "Allows one to learn a new feat they meet requirements for"),
+    )
+
+    assert message == "Tester drank a stimulant potion. Allowing them to learn a new feat they qualify for."
+    assert updated_character["remaining feats"] == 3
+    assert updated_character["total feats"] == 3
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_regen_preserves_legacy_inventory_bug():
+    character_data = make_use_potion_character(
+        potions=["regen1"],
+        traitdr=0,
+        armordr=0,
+        regeneration=0,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "regen1",
+        (1, "grants +1 regeneration for duration of fight"),
+    )
+
+    assert (
+        message
+        == "Tester drank a regen1 potion, [color=red]grants +1 regeneration for duration of fight for next match."
+    )
+    assert updated_character["potionregen"] == 1
+    assert updated_character["potioneffect"] == "grants +1 regeneration for duration of fight"
+    assert updated_character["potions"] == ["regen1"]
+
+
+def test_use_character_potion_valid_potion_missing_from_inventory_raises_value_error():
+    character_data = make_use_potion_character(potions=[])
+
+    try:
+        use_character_potion(
+            character_data,
+            "hit1",
+            (1, "increasing hit chance by 1 for duration of fight"),
+        )
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Expected ValueError when valid potion is missing from inventory.")

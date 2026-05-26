@@ -229,3 +229,287 @@ def give_character_potion(gifter_data, gifted_data, item):
         msg = "You can not give " + gifted + " anything, as they have no space in their inventory to take this item."
 
     return msg, gifter, gifted
+
+
+def use_character_potion(character_data, potion_name, potion_info):
+    if potion_info is not None:
+        potion_effect, potion_description = potion_info
+
+        if potion_name == "str1" and character_data["pstrength"] == 0:
+            character_data["pstrength"] = 1
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to strength[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "dex1" and character_data["pdexterity"] == 0:
+            character_data["pdexterity"] = 1
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "con1" and character_data["pconstitution"] == 0:
+            character_data["pconstitution"] = 1
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "str2" and character_data["pstrength"] == 1:
+            character_data["pstrength"] = 2
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to strength[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "dex2" and character_data["pdexterity"] == 1:
+            character_data["pdexterity"] = 2
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "con2" and character_data["pconstitution"] == 1:
+            character_data["pconstitution"] = 2
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "str3" and character_data["pstrength"] == 2:
+            character_data["pstrength"] = 3
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to strength[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "dex3" and character_data["pdexterity"] == 2:
+            character_data["pdexterity"] = 3
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "con3" and character_data["pconstitution"] == 2:
+            character_data["pconstitution"] = 3
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "str4" and character_data["pstrength"] == 3:
+            character_data["pstrength"] = 4
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to strength[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "dex4" and character_data["pdexterity"] == 3:
+            character_data["pdexterity"] = 4
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "con4" and character_data["pconstitution"] == 3:
+            character_data["pconstitution"] = 4
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "str5" and character_data["pstrength"] == 4:
+            character_data["pstrength"] = 5
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to strength[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "dex5" and character_data["pdexterity"] == 4:
+            character_data["pdexterity"] = 5
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "con5" and character_data["pconstitution"] == 4:
+            character_data["pconstitution"] = 5
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
+            )
+            character_data["potions"].remove(potion_name)
+        else:
+            msg = "You can not drink this potion, as it is either too powerful or too weak to use right now."
+
+        if potion_name == "respec":
+            character_data["reset"] += 1
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion. Allowing them a chance to change their feats, traits, and stat points."
+            )
+            character_data["potions"].remove(potion_name)
+        elif potion_name == "stimulant":
+            character_data["remaining feats"] += 1
+            character_data["total feats"] += 1
+            msg = (
+                character_data["name"]
+                + " drank a "
+                + potion_name
+                + " potion. Allowing them to learn a new feat they qualify for."
+            )
+            character_data["potions"].remove(potion_name)
+        elif character_data["potioneffect"] == "":
+            if potion_name[:3] == "hit":
+                character_data["potionhit"] = potion_effect
+                character_data["potioneffect"] = potion_description
+                msg = (
+                    character_data["name"]
+                    + " drank a "
+                    + potion_name
+                    + " potion, [color=red]"
+                    + potion_description
+                    + "[/color] for next match."
+                )
+                character_data["potions"].remove(potion_name)
+            elif potion_name[:6] == "damage":
+                character_data["potiondamage"] = potion_effect
+                character_data["potioneffect"] = potion_description
+                msg = (
+                    character_data["name"]
+                    + "drank a "
+                    + potion_name
+                    + " potion, [color=red]"
+                    + potion_description
+                    + "[/color] for next match."
+                )
+                character_data["potions"].remove(potion_name)
+            elif potion_name[:2] == "ac":
+                character_data["potionac"] = potion_effect
+                character_data["potioneffect"] = potion_description
+                msg = (
+                    character_data["name"]
+                    + " drank a "
+                    + potion_name
+                    + " potion, [color=red]"
+                    + potion_description
+                    + "[/color] for next match."
+                )
+                character_data["potions"].remove(potion_name)
+            elif potion_name[:4] == "tstr":
+                character_data["potionstr"] = potion_effect
+                character_data["potioneffect"] = potion_description
+                msg = (
+                    character_data["name"]
+                    + " drank a "
+                    + potion_name
+                    + " potion, [color=red]"
+                    + potion_description
+                    + "[/color] for next match."
+                )
+                character_data["potions"].remove(potion_name)
+            elif potion_name[:4] == "tdex":
+                character_data["potiondex"] = potion_effect
+                character_data["potioneffect"] = potion_description
+                msg = (
+                    character_data["name"]
+                    + " drank a "
+                    + potion_name
+                    + " potion, [color=red]"
+                    + potion_description
+                    + "[/color] for next match."
+                )
+                character_data["potions"].remove(potion_name)
+            elif potion_name[:4] == "tcon":
+                character_data["potioncon"] = potion_effect
+                character_data["potioneffect"] = potion_description
+                msg = (
+                    character_data["name"]
+                    + " drank a "
+                    + potion_name
+                    + " potion, [color=red]"
+                    + potion_description
+                    + "[/color] for next match."
+                )
+                character_data["potions"].remove(potion_name)
+            elif potion_name[:2] == "hp":
+                character_data["potionhp"] = potion_effect
+                character_data["potioneffect"] = potion_description
+                msg = (
+                    character_data["name"]
+                    + " drank a "
+                    + potion_name
+                    + " potion, [color=red]"
+                    + potion_description
+                    + "[/color] for next match."
+                )
+                character_data["potions"].remove(potion_name)
+            elif potion_name[:2] == "bl":
+                character_data["potionblur"] += potion_effect
+                character_data["potioneffect"] = potion_description
+                msg = (
+                    character_data["name"]
+                    + " drank a "
+                    + potion_name
+                    + " potion, [color=red]"
+                    + potion_description
+                    + " for next match."
+                )
+                character_data["potions"].remove(potion_name)
+            elif potion_name[:2] == "re":
+                if (
+                    character_data["traitdr"] == 0
+                    or character_data["armordr"] == 0
+                    or character_data["regeneration"] == 0
+                ):
+                    character_data["potionregen"] += potion_effect
+                    character_data["potioneffect"] = potion_description
+                    msg = (
+                        character_data["name"]
+                        + " drank a "
+                        + potion_name
+                        + " potion, [color=red]"
+                        + potion_description
+                        + " for next match."
+                    )
+                else:
+                    msg = character_data["name"] + " gains no benefit from this potion."
+        else:
+            msg = "You already have a potion in effect."
+    else:
+        msg = "You do not have a potion of " + potion_name
+
+    return character_data, msg

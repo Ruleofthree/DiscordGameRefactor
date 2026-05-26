@@ -15,6 +15,7 @@ from src.potion_repository import (
     give_character_potion,
     sell_character_potion,
     stock_potion_shop,
+    use_character_potion,
 )
 from src.character_repository import (
     add_ability_point,
@@ -380,8 +381,7 @@ def pri_11_sellpotion(character, potion, charFolder):
 
 # use to use a potion
 # !usepotion <potion name>
-def pri_10_usepotion(character, potion, commonList, uncommonList, rareList,
-                         vrareList, relicList, charFolder):
+def pri_10_usepotion(character, potion, commonList, uncommonList, rareList, vrareList, relicList, charFolder):
     try:
         charFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
         charSheet = json.load(charFile)
@@ -390,163 +390,17 @@ def pri_10_usepotion(character, potion, commonList, uncommonList, rareList,
     except FileNotFoundError:
         msg = "You don't have a character made to use these potions."
         return msg
+
     print("in potion method")
     potionList = commonList + uncommonList + rareList + vrareList + relicList
     print("in potion method")
     potionInfo = get_potion_effect_info(potion)
 
-    if potionInfo is not None:
-        potionEffect, potionDescription = potionInfo
-
-        if potion == "str1" and charSheet['pstrength'] == 0:
-            charSheet['pstrength'] = 1
-            msg = charSheet['name'] + " drank a " + potion + \
-                " potion, obtaining a permanent [color=red] +1 to strength[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "dex1" and charSheet['pdexterity'] == 0:
-            charSheet['pdexterity'] = 1
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "con1" and charSheet['pconstitution'] == 0:
-            charSheet['pconstitution'] = 1
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "str2" and charSheet['pstrength'] == 1:
-            charSheet['pstrength'] = 2
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to strength[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "dex2" and charSheet['pdexterity'] == 1:
-            charSheet['pdexterity'] = 2
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "con2" and charSheet['pconstitution'] == 1:
-            charSheet['pconstitution'] = 2
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "str3" and charSheet['pstrength'] == 2:
-            charSheet['pstrength'] = 3
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to strength[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "dex3" and charSheet['pdexterity'] == 2:
-            charSheet['pdexterity'] = 3
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "con3" and charSheet['pconstitution'] == 2:
-            charSheet['pconstitution'] = 3
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "str4" and charSheet['pstrength'] == 3:
-            charSheet['pstrength'] = 4
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to strength[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "dex4" and charSheet['pdexterity'] == 3:
-            charSheet['pdexterity'] = 4
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "con4" and charSheet['pconstitution'] == 3:
-            charSheet['pconstitution'] = 4
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "str5" and charSheet['pstrength'] == 4:
-            charSheet['pstrength'] = 5
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to strength[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "dex5" and charSheet['pdexterity'] == 4:
-            charSheet['pdexterity'] = 5
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to dexterity[/color]"
-            charSheet['potions'].remove(potion)
-        elif potion == "con5" and charSheet['pconstitution'] == 4:
-            charSheet['pconstitution'] = 5
-            msg = charSheet['name'] + " drank a " + potion +\
-                " potion, obtaining a permanent [color=red] +1 to constitution[/color]"
-            charSheet['potions'].remove(potion)
-        else:
-            msg = "You can not drink this potion, as it is either too powerful or too weak to use right now."
-        if potion == "respec":
-            charSheet['reset'] += 1
-            msg = charSheet['name'] + " drank a " + potion + " potion. Allowing them a chance to change their " \
-                "feats, traits, and stat points."
-            charSheet['potions'].remove(potion)
-        elif potion == "stimulant":
-            charSheet['remaining feats'] += 1
-            charSheet['total feats'] += 1
-            msg = charSheet['name'] + " drank a " + potion + " potion. Allowing them to learn a new feat they " \
-                "qualify for."
-            charSheet['potions'].remove(potion)
-        elif charSheet['potioneffect'] == "":
-            if potion[:3] == "hit":
-                charSheet['potionhit'] = potionEffect
-                charSheet['potioneffect'] = potionDescription
-                msg = charSheet['name'] + " drank a " + potion + " potion, [color=red]" +\
-                    potionDescription + "[/color] for next match."
-                charSheet['potions'].remove(potion)
-            elif potion[:6] == "damage":
-                charSheet['potiondamage'] = potionEffect
-                charSheet['potioneffect'] = potionDescription
-                msg = charSheet['name'] + "drank a " + potion + " potion, [color=red]" + potionDescription +\
-                    "[/color] for next match."
-                charSheet['potions'].remove(potion)
-            elif potion[:2] == "ac":
-                charSheet['potionac'] = potionEffect
-                charSheet['potioneffect'] = potionDescription
-                msg = charSheet['name'] + " drank a " + potion + " potion, [color=red]" + potionDescription +\
-                    "[/color] for next match."
-                charSheet['potions'].remove(potion)
-            elif potion[:4] == "tstr":
-                charSheet['potionstr'] = potionEffect
-                charSheet['potioneffect'] = potionDescription
-                msg = charSheet['name'] + " drank a " + potion + " potion, [color=red]" +\
-                    potionDescription + "[/color] for next match."
-                charSheet['potions'].remove(potion)
-            elif potion[:4] == "tdex":
-                charSheet['potiondex'] = potionEffect
-                charSheet['potioneffect'] = potionDescription
-                msg = charSheet['name'] + " drank a " + potion + " potion, [color=red]" +\
-                    potionDescription + "[/color] for next match."
-                charSheet['potions'].remove(potion)
-            elif potion[:4] == "tcon":
-                charSheet['potioncon'] = potionEffect
-                charSheet['potioneffect'] = potionDescription
-                msg = charSheet['name'] + " drank a " + potion + " potion, [color=red]" +\
-                    potionDescription + "[/color] for next match."
-                charSheet['potions'].remove(potion)
-            elif potion[:2] == "hp":
-                charSheet['potionhp'] = potionEffect
-                charSheet['potioneffect'] = potionDescription
-                msg = charSheet['name'] + " drank a " + potion + " potion, [color=red]" +\
-                    potionDescription + "[/color] for next match."
-                charSheet['potions'].remove(potion)
-            elif potion[:2] == "bl":
-                charSheet['potionblur'] += potionEffect
-                charSheet['potioneffect'] = potionDescription
-                msg = charSheet['name'] + " drank a " + potion + " potion, [color=red]" + \
-                      potionDescription + " for next match."
-                charSheet['potions'].remove(potion)
-            elif potion[:2] == "re":
-                if charSheet['traitdr'] == 0 or charSheet['armordr'] == 0 or charSheet['regeneration'] == 0:
-                    charSheet['potionregen'] += potionEffect
-                    charSheet['potioneffect'] = potionDescription
-                    msg = charSheet['name'] + " drank a " + potion + " potion, [color=red]" + \
-                          potionDescription + " for next match."
-                else:
-                    msg = charSheet['name'] + " gains no benefit from this potion."
-        else:
-            msg = "You already have a potion in effect."
-    else:
-        msg = "You do not have a potion of " + potion
+    charSheet, msg = use_character_potion(
+        charSheet,
+        potion,
+        potionInfo,
+    )
 
     file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
     json.dump(charSheet, file, ensure_ascii=False, indent=2)
