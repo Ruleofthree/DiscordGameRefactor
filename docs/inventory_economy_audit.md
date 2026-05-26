@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `323 passed`
+* `337 passed`
 
 
 
@@ -46,7 +46,7 @@ The character repository cleanup pass is complete.
 
 The inventory and economy pass has completed several smaller, testable extraction targets. The completed work now
 covers read-only display behavior, shop restocking behavior, single-character potion economy behavior, armor purchase
-behavior, armor sale behavior, and armor equipment lifecycle boundary behavior.
+behavior, armor sale behavior, armor equipment lifecycle boundary behavior, and armor equipment lifecycle extraction.
 
 Completed inventory/economy areas include:
 
@@ -58,6 +58,7 @@ Completed inventory/economy areas include:
 * Armor purchase
 * Armor sale
 * Armor equipment lifecycle boundary audit
+* Armor equipment lifecycle extraction
 
 Repository-backed helpers now exist for:
 
@@ -68,9 +69,12 @@ Repository-backed helpers now exist for:
 * Restocking the armor shop
 * Buying armor
 * Selling armor
+* Renaming armor
+* Equipping armor
+* Unequipping armor
 
-Remaining targets are higher risk because they touch armor inventory keys, equipment state, combat-facing fields,
-multiple character files, permanent potion progression, or potion lifecycle behavior.
+Remaining targets are higher risk because they touch multiple character files, permanent potion progression, potion
+lifecycle behavior, combat-adjacent temporary potion fields, or transfer behavior.
 
 ---
 
@@ -369,9 +373,52 @@ Tests added or expanded:
 Status:
 
 * Audit and legacy behavior coverage complete.
-* No equipment lifecycle extraction has been performed yet.
+* Equipment lifecycle extraction has been completed and is covered by repository and legacy wrapper tests.
 
 ---
+
+### Armor Equipment Lifecycle Extraction
+
+Completed helpers:
+
+* `rename_character_armor()` in `src.armor_repository`
+* `unequip_character_armor()` in `src.armor_repository`
+* `equip_character_armor()` in `src.armor_repository`
+
+Legacy wrappers:
+
+* `pri_10_namearmor()` now delegates deterministic armor rename logic to `rename_character_armor()`.
+* `pri_8_unequip()` now delegates deterministic armor unequip logic to `unequip_character_armor()`.
+* `pri_6_equip()` now delegates deterministic armor equip logic to `equip_character_armor()`.
+
+Behavior preserved:
+
+* Armor naming still rejects missing armor inventory keys.
+* Armor naming still rejects duplicate destination names.
+* Armor naming still rejects currently equipped armor.
+* Valid armor naming still renames the armor dictionary key while preserving the stored armor value.
+* Missing-character rejection remains handled in the legacy wrappers.
+* Equipping armor is still blocked while a fight is active.
+* Valid armor equip still clears previous armor bonus fields, sets `equip`, and applies armor bonuses from `armor.json`.
+* Invalid armor equip still clears existing armor bonus fields before returning the legacy missing-armor message.
+* Armor equip still applies Strength, Dexterity, Constitution, HP, AC, hit, damage, blur, initiative, and DR armor bonuses using the legacy stat-code behavior.
+* Armor DR still only applies when both `traitdr` and `regeneration` are `0`.
+* Armor initiative still writes both `armorinitiative` and `initiative`.
+* Unequipping armor is still blocked while a fight is active.
+* Valid armor unequip still clears `equip` and all armor bonus fields.
+* Legacy unequip behavior still does not require the named armor to exist before clearing equipped armor and armor bonuses.
+* Character file loading and saving remain in `original/onPRIUtils.py`.
+* `armor.json` loading remains in `original/onPRIUtils.py` for equip behavior.
+* Potion use, potion transfer, combat behavior, rolling, XP payout, renown payout, and level-up handling were not changed by this extraction.
+
+Tests added or expanded:
+
+* `tests/test_armor_repository.py`
+* `tests/test_legacy_onpriutils_armor_lifecycle.py`
+
+Status:
+
+* Complete.
 
 ## Remaining Function Risk Review
 
@@ -417,28 +464,72 @@ level-up handling were not changed by the sale extraction.
 
 ---
 
-### Medium-to-High Risk Remaining Targets
-
 #### `pri_10_namearmor`
 
-Classification:
+Status:
 
-* Equipment inventory key mutation
-* Character-file mutation
+* Extracted.
 
-Reason:
+Completed helper:
 
-* Renames keys inside the armor inventory dictionary.
-* Can affect sell, equip, unequip, and view behavior.
-* Rejects renaming currently equipped armor.
-* Should be reviewed together with equip and unequip behavior before extraction.
+* `rename_character_armor()` in `src.armor_repository`
 
-Recommendation:
+Notes:
 
-* Covered by armor equipment lifecycle legacy tests.
-* Safe extraction candidate only if moved together with the other armor lifecycle helpers or after a dedicated repository helper plan is written.
+* File loading and saving remain in the legacy wrapper.
+* Armor rename still rejects missing armor inventory keys.
+* Armor rename still rejects duplicate destination names.
+* Armor rename still rejects currently equipped armor.
+* Valid armor rename still preserves the stored armor value while changing the inventory key.
+* Armor buying, armor selling, equipping, unequipping, potion use, potion transfer, combat behavior, XP payout,
+renown payout, and level-up handling were not changed by the rename extraction.
 
 ---
+
+#### `pri_6_equip`
+
+Status:
+
+* Extracted.
+
+Completed helper:
+
+* `equip_character_armor()` in `src.armor_repository`
+
+Notes:
+
+* File loading and saving remain in the legacy wrapper.
+* `armor.json` loading remains in the legacy wrapper.
+* Valid armor equip still clears prior armor bonuses, sets `equip`, and applies armor stat bonuses.
+* Invalid armor equip still clears armor bonus fields before returning the legacy missing-armor message.
+* Armor DR still only applies when both `traitdr` and `regeneration` are `0`.
+* Armor initiative still updates both `armorinitiative` and `initiative`.
+* Potion use, potion transfer, combat behavior, rolling, XP payout, renown payout, and level-up handling were not
+changed by the equip extraction.
+
+---
+
+#### `pri_8_unequip`
+
+Status:
+
+* Extracted.
+
+Completed helper:
+
+* `unequip_character_armor()` in `src.armor_repository`
+
+Notes:
+
+* File loading and saving remain in the legacy wrapper.
+* Unequip still clears `equip` and all armor bonus fields.
+* Legacy unequip behavior still does not validate that the named armor exists.
+* Potion use, potion transfer, combat behavior, rolling, XP payout, renown payout, and level-up handling were not
+changed by the unequip extraction.
+
+---
+
+### Medium-to-High Risk Remaining Targets
 
 #### `pri_11_givepotion`
 
@@ -462,53 +553,6 @@ Recommendation:
 ---
 
 ### High Risk Remaining Targets
-
-#### `pri_6_equip`
-
-Classification:
-
-* Equipment state mutation
-* Combat-adjacent stat mutation
-* Character-file mutation
-
-Reason:
-
-* Mutates combat-facing armor bonus fields.
-* Sets equipped armor.
-* Resets and reapplies armor bonuses.
-* Interacts with initiative, HP, AC, damage, hit, DR, blur, Strength, Dexterity, and Constitution fields.
-* Depends on armor inventory key behavior and should not be separated from a broader equipment lifecycle review.
-
-Recommendation:
-
-* Covered by armor equipment lifecycle legacy tests.
-* High risk due to combat-facing stat fields.
-* Extract only after the repository helper boundary is planned carefully.
-
----
-
-#### `pri_8_unequip`
-
-Classification:
-
-* Equipment state mutation
-* Combat-adjacent stat mutation
-* Character-file mutation
-
-Reason:
-
-* Clears equipped armor.
-* Resets armor bonus fields.
-* Simpler than equip, but logically tied to equip behavior.
-* Should be reviewed with equip rather than extracted in isolation.
-
-Recommendation:
-
-* Covered by armor equipment lifecycle legacy tests.
-* Lower risk than equip, but still tied to the same equipment lifecycle boundary.
-* Extract only after the repository helper boundary is planned carefully.
-
----
 
 #### `pri_10_usepotion`
 
@@ -553,7 +597,6 @@ The following remain out of scope for this audit pass unless deliberately select
 * Rolling resolution
 * Combat feat execution
 * Full potion lifecycle changes
-* Full armor lifecycle changes
 * Equipment behavior changes
 
 ---
@@ -562,37 +605,33 @@ The following remain out of scope for this audit pass unless deliberately select
 
 Recommended next step:
 
-* Decide whether to extract armor equipment lifecycle helpers into `src.armor_repository`.
+* Decide whether to extract potion transfer behavior or begin a dedicated potion lifecycle pass.
 
 Reason:
 
-* Armor purchase and armor sale are already extracted and tested.
-* Armor naming, equipping, and unequipping now have legacy behavior coverage.
-* The remaining armor lifecycle functions are still in `original/onPRIUtils.py`.
-* `pri_10_namearmor` mutates armor inventory keys.
-* `pri_6_equip` mutates combat-facing armor bonus fields.
-* `pri_8_unequip` clears equipped armor and all armor bonus fields.
-* Equipment lifecycle extraction should be handled deliberately and should preserve the documented legacy side effects.
+* Armor purchase, armor sale, armor naming, armor equip, and armor unequip are now extracted and tested.
+* Potion purchase, potion sale, and potion shop restocking are already extracted and tested.
+* The remaining potion-related risks are higher impact than the completed armor lifecycle helpers.
+* `pri_11_givepotion` mutates two character files and should be handled with a dedicated transfer test plan.
+* `pri_10_usepotion` mutates temporary potion fields, permanent potion progression, inventory state, and combat-adjacent values.
 
 Possible next implementation targets:
 
-* `rename_character_armor()`
-* `equip_character_armor()`
-* `unequip_character_armor()`
+* `give_character_potion()`
+* Dedicated potion lifecycle audit for `pri_10_usepotion`
 
 Recommendation:
 
-* If extraction begins, write repository tests first.
-* Keep file loading and saving in `original/onPRIUtils.py`.
+* If transfer extraction begins, write repository tests first for both sender and recipient mutation.
+* If potion lifecycle work begins, audit `pri_10_usepotion()` before extracting helper logic.
+* Keep file loading and saving in `original/onPRIUtils.py` unless a file-boundary change is explicitly planned.
 * Do not import `original/botCommand.py` in pytest.
-* Do not touch potion use, potion transfer, combat behavior, rolling, XP payout, renown payout, or level-up handling.
+* Do not touch combat behavior, rolling, XP payout, renown payout, or level-up handling.
 
 Status:
 
-* Armor equipment lifecycle boundary audit complete.
-* Next step may be a focused armor lifecycle extraction plan.
-
----
+* Armor equipment lifecycle extraction complete.
+* Next step should be either potion transfer extraction or potion lifecycle audit.
 
 ## Update Procedure for Future Work
 
