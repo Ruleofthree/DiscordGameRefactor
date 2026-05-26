@@ -683,8 +683,20 @@ Reason:
 
 Possible next audit targets:
 
-* Remaining command-runtime inventory routing in `botCommand.py`, if direct runtime behavior needs to be mapped.
+* `!createpotion` command-runtime inventory mutation audit, if admin potion grant behavior needs to be isolated.
+* Shop display routing audit for `!armorshop` and `!potionshop`, if display construction should be moved out of `botCommand.py`.
 * Combat-adjacent potion effect cleanup, only after a dedicated test plan is written.
+
+Read-only routing audit result:
+
+* Inventory and economy command routing remains in `original/botCommand.py`.
+* Most player-facing inventory and economy commands now delegate mutation behavior into `original/onPRIUtils.py`.
+* `botCommand.py` still owns command parsing, public-room rejection routing, fight-state checks through `gameStatLoad(channel)`, and public/private response routing.
+* `!armorshop` and `!potionshop` still build shop display inputs directly in `botCommand.py`.
+* `!stockarmor` and `!stockpotion` are moderator/admin commands that delegate restock behavior into `onPRIUtils.py`.
+* `!createpotion` remains direct command-runtime inventory mutation inside `botCommand.py`.
+* `botCommand.py` should still not be imported directly in pytest because of runtime dependencies.
+* No extraction target is selected from `botCommand.py` yet.
 
 Recommendation:
 
