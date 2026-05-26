@@ -506,6 +506,135 @@ def test_use_character_potion_applies_temporary_hit_potion():
     assert updated_character["potions"] == []
 
 
+def test_use_character_potion_applies_temporary_damage_potion():
+    character_data = make_use_potion_character(potions=["damage1"])
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "damage1",
+        (1, "increasing damage by 1 for duration of fight"),
+    )
+
+    assert (
+        message
+        == "Testerdrank a damage1 potion, [color=red]increasing damage by 1 for duration of fight[/color] for next match."
+    )
+    assert updated_character["potiondamage"] == 1
+    assert updated_character["potioneffect"] == "increasing damage by 1 for duration of fight"
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_applies_temporary_ac_potion():
+    character_data = make_use_potion_character(potions=["ac1"])
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "ac1",
+        (1, "increasing armor class by 1 for duration of fight"),
+    )
+
+    assert (
+        message
+        == "Tester drank a ac1 potion, [color=red]increasing armor class by 1 for duration of fight[/color] for next match."
+    )
+    assert updated_character["potionac"] == 1
+    assert updated_character["potioneffect"] == "increasing armor class by 1 for duration of fight"
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_applies_temporary_strength_potion():
+    character_data = make_use_potion_character(potions=["tstr1"])
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "tstr1",
+        (1, "increasing strength by 1 for duration of fight"),
+    )
+
+    assert (
+        message
+        == "Tester drank a tstr1 potion, [color=red]increasing strength by 1 for duration of fight[/color] for next match."
+    )
+    assert updated_character["potionstr"] == 1
+    assert updated_character["potioneffect"] == "increasing strength by 1 for duration of fight"
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_applies_temporary_dexterity_potion():
+    character_data = make_use_potion_character(potions=["tdex1"])
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "tdex1",
+        (1, "increasing dexterity by 1 for duration of fight"),
+    )
+
+    assert (
+        message
+        == "Tester drank a tdex1 potion, [color=red]increasing dexterity by 1 for duration of fight[/color] for next match."
+    )
+    assert updated_character["potiondex"] == 1
+    assert updated_character["potioneffect"] == "increasing dexterity by 1 for duration of fight"
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_applies_temporary_constitution_potion():
+    character_data = make_use_potion_character(potions=["tcon1"])
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "tcon1",
+        (1, "increasing constitution by 1 for duration of fight"),
+    )
+
+    assert (
+        message
+        == "Tester drank a tcon1 potion, [color=red]increasing constitution by 1 for duration of fight[/color] for next match."
+    )
+    assert updated_character["potioncon"] == 1
+    assert updated_character["potioneffect"] == "increasing constitution by 1 for duration of fight"
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_applies_temporary_hp_potion():
+    character_data = make_use_potion_character(potions=["hp5"])
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "hp5",
+        (5, "increasing hp by 5 for duration of fight"),
+    )
+
+    assert (
+        message
+        == "Tester drank a hp5 potion, [color=red]increasing hp by 5 for duration of fight[/color] for next match."
+    )
+    assert updated_character["potionhp"] == 5
+    assert updated_character["potioneffect"] == "increasing hp by 5 for duration of fight"
+    assert updated_character["potions"] == []
+
+
+def test_use_character_potion_applies_temporary_blur_potion():
+    character_data = make_use_potion_character(
+        potions=["blur1"],
+        potionblur=2,
+    )
+
+    updated_character, message = use_character_potion(
+        character_data,
+        "blur1",
+        (1, "gives 1% chance to negate opponent's damage"),
+    )
+
+    assert (
+        message
+        == "Tester drank a blur1 potion, [color=red]gives 1% chance to negate opponent's damage for next match."
+    )
+    assert updated_character["potionblur"] == 3
+    assert updated_character["potioneffect"] == "gives 1% chance to negate opponent's damage"
+    assert updated_character["potions"] == []
+
+
 def test_use_character_potion_blocks_temporary_potion_when_effect_is_active():
     character_data = make_use_potion_character(
         potions=["hit1"],

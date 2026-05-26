@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `370 passed`
+* `377 passed`
 
 This test result includes:
 
@@ -683,7 +683,7 @@ Reason:
 
 Possible next audit targets:
 
-* Temporary potion behavior review, if more potion cleanup is desired.
+* Temporary potion behavior legacy wrapper coverage review, if more potion cleanup is desired.
 * Remaining command-runtime inventory routing in `botCommand.py`, if direct runtime behavior needs to be mapped.
 * Combat-adjacent potion effect cleanup, only after a dedicated test plan is written.
 
@@ -698,7 +698,8 @@ Status:
 
 * Potion use lifecycle extraction complete.
 * Potion use cleanup review complete.
-* Full pytest passes with 370 tests.
+* Temporary potion behavior repository coverage expanded.
+* Full pytest passes with 377 tests.
 
 ---
 
