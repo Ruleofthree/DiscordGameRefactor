@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `337 passed`
+* `347 passed`
 
 
 
@@ -45,8 +45,8 @@ added at that time.
 The character repository cleanup pass is complete.
 
 The inventory and economy pass has completed several smaller, testable extraction targets. The completed work now
-covers read-only display behavior, shop restocking behavior, single-character potion economy behavior, armor purchase
-behavior, armor sale behavior, armor equipment lifecycle boundary behavior, and armor equipment lifecycle extraction.
+covers read-only display behavior, shop restocking behavior, single-character potion economy behavior, potion
+transfer behavior, armor purchase behavior, armor sale behavior, armor equipment lifecycle boundary behavior, and armor equipment lifecycle extraction.
 
 Completed inventory/economy areas include:
 
@@ -54,6 +54,7 @@ Completed inventory/economy areas include:
 * Single-character potion sale
 * Potion shop restock
 * Potion purchase
+* Potion transfer
 * Armor shop restock
 * Armor purchase
 * Armor sale
@@ -66,6 +67,7 @@ Repository-backed helpers now exist for:
 * Selling potions
 * Restocking the potion shop
 * Buying potions
+* Giving potions between characters
 * Restocking the armor shop
 * Buying armor
 * Selling armor
@@ -73,8 +75,7 @@ Repository-backed helpers now exist for:
 * Equipping armor
 * Unequipping armor
 
-Remaining targets are higher risk because they touch multiple character files, permanent potion progression, potion
-lifecycle behavior, combat-adjacent temporary potion fields, or transfer behavior.
+Remaining targets are higher risk because they touch permanent potion progression, potion lifecycle behavior, or combat-adjacent temporary potion fields.
 
 ---
 
@@ -99,7 +100,7 @@ Behavior preserved:
 * Three-attribute armor display is preserved.
 * Sold armor still displays with `0` renown.
 * Multiple armor entries still display in the same newline-separated format.
-* Legacy F-list color tags and output formatting are preserved.
+* Legacy color tags and output formatting are preserved.
 * No character files are read or written.
 * `armor.json` is not mutated by armor shop display.
 * Buying, selling, naming, equipping, unequipping, and armor restocking behavior were not changed by this extraction.
@@ -147,6 +148,39 @@ Status:
 * Complete.
 
 ---
+
+### Potion Transfer Extraction
+
+Completed helper:
+
+* `give_character_potion()` in `src.potion_repository`
+
+Legacy wrapper:
+
+* `pri_11_givepotion()` now delegates deterministic potion transfer-state mutation to `give_character_potion()` while keeping both character-file loads and both character-file writes in `original/onPRIUtils.py`.
+
+Behavior preserved:
+
+* Owned potions can still be transferred from the sender to the recipient.
+* The transferred potion is still removed from the sender's potion inventory.
+* The transferred potion is still appended to the recipient's potion inventory.
+* The transferred potion name is still lowercased before transfer.
+* Missing potions still return the legacy rejection message.
+* Recipient inventory capacity still uses the legacy `len(potions) <= 3` rule.
+* Recipients with no inventory space still receive the legacy inventory-space rejection message.
+* Missing sender character files still return the legacy missing-sender message.
+* Missing recipient character files still return the legacy missing-recipient message, including the existing `posiont` typo.
+* Character file loading and saving remain in `original/onPRIUtils.py`.
+* Potion purchase, potion sale, potion use, potion restocking, armor behavior, combat behavior, rolling, XP payout, renown payout, and level-up handling were not changed by this extraction.
+
+Tests added or expanded:
+
+* `tests/test_potion_repository.py`
+* `tests/test_legacy_onpriutils_givepotion.py`
+
+Status:
+
+* Complete.
 
 ### Potion Shop Restock Extraction
 
@@ -529,29 +563,6 @@ changed by the unequip extraction.
 
 ---
 
-### Medium-to-High Risk Remaining Targets
-
-#### `pri_11_givepotion`
-
-Classification:
-
-* Inventory transfer mutation
-* Multi-character file mutation
-
-Reason:
-
-* Mutates two character files.
-* Removes a potion from the gifter.
-* Adds a potion to the recipient.
-* Depends on recipient inventory capacity behavior.
-* Partial-write failures would be dangerous.
-
-Recommendation:
-
-* Defer until single-character inventory behavior remains stable and a dedicated transfer plan is written.
-
----
-
 ### High Risk Remaining Targets
 
 #### `pri_10_usepotion`
@@ -605,19 +616,17 @@ The following remain out of scope for this audit pass unless deliberately select
 
 Recommended next step:
 
-* Decide whether to extract potion transfer behavior or begin a dedicated potion lifecycle pass.
+* Begin a dedicated potion lifecycle audit for `pri_10_usepotion()`.
 
 Reason:
 
 * Armor purchase, armor sale, armor naming, armor equip, and armor unequip are now extracted and tested.
-* Potion purchase, potion sale, and potion shop restocking are already extracted and tested.
-* The remaining potion-related risks are higher impact than the completed armor lifecycle helpers.
-* `pri_11_givepotion` mutates two character files and should be handled with a dedicated transfer test plan.
+* Potion purchase, potion sale, potion shop restocking, and potion transfer are already extracted and tested.
+* The remaining potion-related risk is higher impact than the completed transfer and armor lifecycle helpers.
 * `pri_10_usepotion` mutates temporary potion fields, permanent potion progression, inventory state, and combat-adjacent values.
 
-Possible next implementation targets:
+Possible next implementation target:
 
-* `give_character_potion()`
 * Dedicated potion lifecycle audit for `pri_10_usepotion`
 
 Recommendation:
@@ -630,8 +639,8 @@ Recommendation:
 
 Status:
 
-* Armor equipment lifecycle extraction complete.
-* Next step should be either potion transfer extraction or potion lifecycle audit.
+* Potion transfer extraction complete.
+* Next step should be a potion lifecycle audit.
 
 ## Update Procedure for Future Work
 
