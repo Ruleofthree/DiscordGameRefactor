@@ -16,7 +16,7 @@ The guiding rules for this refactor are:
 * Preserve legacy behavior exactly unless a behavior change is deliberately chosen and tested.
 * Keep file loading and saving in legacy wrappers unless a specific repository boundary is being targeted.
 * Do not mix economy cleanup with combat, rolling, win/loss resolution, XP payout, renown payout, level-up handling,
-* potion lifecycle behavior, or equipment lifecycle behavior.
+potion lifecycle behavior, or equipment lifecycle behavior.
 
 ---
 
