@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `347 passed`
+* `366 passed`
 
 
 
@@ -45,8 +45,9 @@ added at that time.
 The character repository cleanup pass is complete.
 
 The inventory and economy pass has completed several smaller, testable extraction targets. The completed work now
-covers read-only display behavior, shop restocking behavior, single-character potion economy behavior, potion
-transfer behavior, armor purchase behavior, armor sale behavior, armor equipment lifecycle boundary behavior, and armor equipment lifecycle extraction.
+covers read-only display behavior, shop restocking behavior, single-character potion economy behavior, potion transfer
+behavior, potion use lifecycle behavior, armor purchase behavior, armor sale behavior, armor equipment lifecycle
+boundary behavior, and armor equipment lifecycle extraction.
 
 Completed inventory/economy areas include:
 
@@ -55,6 +56,7 @@ Completed inventory/economy areas include:
 * Potion shop restock
 * Potion purchase
 * Potion transfer
+* Potion use lifecycle extraction
 * Armor shop restock
 * Armor purchase
 * Armor sale
@@ -68,6 +70,7 @@ Repository-backed helpers now exist for:
 * Restocking the potion shop
 * Buying potions
 * Giving potions between characters
+* Using potions
 * Restocking the armor shop
 * Buying armor
 * Selling armor
@@ -75,7 +78,7 @@ Repository-backed helpers now exist for:
 * Equipping armor
 * Unequipping armor
 
-Remaining targets are higher risk because they touch permanent potion progression, potion lifecycle behavior, or combat-adjacent temporary potion fields.
+Remaining targets are higher risk because they touch unreworked armor lifecycle edge cases, combat-adjacent state, or broader command/runtime behavior.
 
 ---
 
@@ -265,25 +268,38 @@ Status:
 
 ---
 
-## Potion Use Lifecycle Audit
+### Potion Use Lifecycle Extraction
 
-`pri_10_usepotion` remains in `original/onPRIUtils.py` and has not yet been extracted. The function still owns direct loading of `potions.json`, direct character JSON loading, potion effect mutation, inventory removal, and character JSON saving.
+Completed helper:
 
-The function supports three broad potion lifecycles:
+* `use_character_potion()` in `src.potion_repository`
 
-- Permanent progression potions: `str1` through `str5`, `dex1` through `dex5`, and `con1` through `con5`. These mutate `pstrength`, `pdexterity`, or `pconstitution` only when the existing progression field is exactly one tier lower.
-- Special permanent utility potions: `respec` increments `reset`, while `stimulant` increments both `remaining feats` and `total feats`.
-- Temporary next-match potions: hit, damage, AC, temporary Strength, temporary Dexterity, temporary Constitution, HP, blur, and regeneration potions set one potion bonus field and usually set `potioneffect`.
+Legacy wrapper:
 
-Important legacy behavior to preserve during extraction:
+* `pri_10_usepotion()` now delegates potion mutation and message behavior to `use_character_potion()` while keeping character-file loading and saving in `original/onPRIUtils.py`.
 
-- Valid potion names are checked against the supplied rarity lists, not against the character inventory before use. A valid potion name missing from inventory can raise `ValueError` when removal is attempted.
-- Unknown potion names return `You do not have a potion of <potion>`.
-- A character with an existing `potioneffect` cannot drink another temporary potion.
-- Permanent stat potions, `respec`, and `stimulant` are handled before the temporary potion lock.
-- Regeneration potions currently set `potionregen` and `potioneffect`, but the successful branch does not remove the potion from inventory.
-- The regeneration eligibility condition uses `traitdr == 0 or armordr == 0 or regeneration == 0`, which means the potion is blocked only when all three fields are nonzero.
-- Existing messages, typos, spacing, field names, and questionable conditionals should remain unchanged unless a deliberate behavior change is separately tested.
+Behavior preserved:
+
+* Permanent progression potions are preserved: `str1` through `str5`, `dex1` through `dex5`, and `con1` through `con5` still mutate `pstrength`, `pdexterity`, or `pconstitution` only when the existing progression field is exactly one tier lower.
+* `respec` still increments `reset`.
+* `stimulant` still increments both `remaining feats` and `total feats`.
+* Temporary next-match potions still set the matching potion bonus field and usually set `potioneffect`.
+* Valid potion names are still checked through potion data lookup, not against character inventory before use. A valid potion name missing from inventory can still raise `ValueError` when removal is attempted.
+* Unknown potion names still return `You do not have a potion of <potion>`.
+* A character with an existing `potioneffect` still cannot drink another temporary potion.
+* Permanent stat potions, `respec`, and `stimulant` are still handled before the temporary potion lock.
+* Regeneration potions still set `potionregen` and `potioneffect`, but the successful branch still does not remove the potion from inventory.
+* The regeneration eligibility condition still uses `traitdr == 0 or armordr == 0 or regeneration == 0`, which means the potion is blocked only when all three fields are nonzero.
+* Existing messages, typos, spacing, field names, and questionable conditionals remain preserved.
+
+Tests added or expanded:
+
+* `tests/test_potion_repository.py`
+* `tests/test_legacy_onpriutils_usepotion.py`
+
+Status:
+
+* Complete.
 
 ---
 
