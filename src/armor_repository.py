@@ -204,6 +204,24 @@ def rename_character_armor(character_data, armor_name, armor_remove):
     return "There is no armor in that slot to rename. Please double check inventory, then use this command again."
 
 
+def unequip_character_armor(character_data, armor):
+    character_data["equip"] = ""
+    msg = character_data["name"] + " has unequipped " + armor
+
+    character_data["armorhit"] = 0
+    character_data["armordamage"] = 0
+    character_data["armorac"] = 0
+    character_data["armorhp"] = 0
+    character_data["armordr"] = 0
+    character_data["armorinitiative"] = 0
+    character_data["armorstrength"] = 0
+    character_data["armordexterity"] = 0
+    character_data["armorconstitution"] = 0
+    character_data["armorblur"] = 0
+
+    return msg
+
+
 def build_armor_shop_display(armor_shop_items, armor_dictionary=None):
     """
     Build the legacy armor shop display string.

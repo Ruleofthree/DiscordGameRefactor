@@ -156,6 +156,68 @@ def test_rename_character_armor_rejects_empty_armor_slot():
     assert character_data["armor"] == original_armor
 
 
+def make_equipped_armor_character():
+    return {
+        "name": "Test Character",
+        "equip": "old armor",
+        "armor": {
+            "old armor": ["str1", "hp10", 500],
+        },
+        "armorhit": 1,
+        "armordamage": 2,
+        "armorac": 3,
+        "armorhp": 10,
+        "armordr": 4,
+        "armorinitiative": 5,
+        "armorstrength": 6,
+        "armordexterity": 7,
+        "armorconstitution": 8,
+        "armorblur": 9,
+    }
+
+
+def test_unequip_character_armor_clears_equipped_armor_and_armor_bonuses():
+    from src.armor_repository import unequip_character_armor
+
+    character_data = make_equipped_armor_character()
+
+    msg = unequip_character_armor(character_data, "old armor")
+
+    assert msg == "Test Character has unequipped old armor"
+    assert character_data["equip"] == ""
+    assert character_data["armorhit"] == 0
+    assert character_data["armordamage"] == 0
+    assert character_data["armorac"] == 0
+    assert character_data["armorhp"] == 0
+    assert character_data["armordr"] == 0
+    assert character_data["armorinitiative"] == 0
+    assert character_data["armorstrength"] == 0
+    assert character_data["armordexterity"] == 0
+    assert character_data["armorconstitution"] == 0
+    assert character_data["armorblur"] == 0
+
+
+def test_unequip_character_armor_does_not_validate_armor_name():
+    from src.armor_repository import unequip_character_armor
+
+    character_data = make_equipped_armor_character()
+
+    msg = unequip_character_armor(character_data, "missing armor")
+
+    assert msg == "Test Character has unequipped missing armor"
+    assert character_data["equip"] == ""
+    assert character_data["armorhit"] == 0
+    assert character_data["armordamage"] == 0
+    assert character_data["armorac"] == 0
+    assert character_data["armorhp"] == 0
+    assert character_data["armordr"] == 0
+    assert character_data["armorinitiative"] == 0
+    assert character_data["armorstrength"] == 0
+    assert character_data["armordexterity"] == 0
+    assert character_data["armorconstitution"] == 0
+    assert character_data["armorblur"] == 0
+
+
 def test_get_armor_shop_lists_returns_cat_three_rare_items():
     cat_three_rare = get_armor_shop_lists()[8]
 

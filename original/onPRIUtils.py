@@ -5,6 +5,7 @@ from src.armor_repository import (
     rename_character_armor,
     sell_character_armor,
     stock_armor_shop,
+    unequip_character_armor
 )
 from src.potion_repository import (
     buy_character_potion,
@@ -791,23 +792,11 @@ def pri_8_unequip(character, armor, charFolder, game):
             charFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
             charSheet = json.load(charFile)
             charFile.close()
-            isCharacter = Path(charFolder + character.lower() + ".json")
         except FileNotFoundError:
             msg = "You don't have a character made to use this command."
             return msg
 
-        charSheet['equip'] = ""
-        msg = charSheet['name'] + " has unequipped " + armor
-        charSheet["armorhit"] = 0
-        charSheet["armordamage"] = 0
-        charSheet["armorac"] = 0
-        charSheet["armorhp"] = 0
-        charSheet["armordr"] = 0
-        charSheet["armorinitiative"] = 0
-        charSheet["armorstrength"] = 0
-        charSheet["armordexterity"] = 0
-        charSheet["armorconstitution"] = 0
-        charSheet["armorblur"] = 0
+        msg = unequip_character_armor(charSheet, armor)
 
         file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
         json.dump(charSheet, file, ensure_ascii=False, indent=2)
