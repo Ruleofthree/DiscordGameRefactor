@@ -683,7 +683,6 @@ Reason:
 
 Possible next audit targets:
 
-* Temporary potion behavior legacy wrapper coverage review, if more potion cleanup is desired.
 * Remaining command-runtime inventory routing in `botCommand.py`, if direct runtime behavior needs to be mapped.
 * Combat-adjacent potion effect cleanup, only after a dedicated test plan is written.
 
