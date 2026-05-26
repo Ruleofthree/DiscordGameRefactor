@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `377 passed`
+* `384 passed`
 
 This test result includes:
 
@@ -699,7 +699,8 @@ Status:
 * Potion use lifecycle extraction complete.
 * Potion use cleanup review complete.
 * Temporary potion behavior repository coverage expanded.
-* Full pytest passes with 377 tests.
+* Temporary potion behavior legacy wrapper coverage expanded.
+* Full pytest passes with 384 tests.
 
 ---
 

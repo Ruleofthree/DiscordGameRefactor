@@ -97,6 +97,12 @@ def write_potions_file(tmp_path):
             "common": {
                 "hit1": [500, "increasing hit chance by 1 for duration of fight", 1, "+1 to hit"],
                 "respec": [250, "allows to respec character", 1, "allows to respec character"],
+                "hp5": [150, "increasing hp by 5 for duration of fight", 5, "+5 hit points"],
+                "tstr1": [250, "increasing strength by 1 for duration of fight", 1, "+1 strength"],
+                "tdex1": [250, "increasing dexterity by 1 for duration of fight", 1, "+1 dexterity"],
+                "tcon1": [250, "increasing constitution by 1 for duration of fight", 1, "+1 constitution"],
+                "damage1": [500, "increasing damage by 1 for duration of fight", 1, "+1 to damage"],
+                "ac1": [500, "increasing armor class by 1 for duration of fight", 1, "+1 to armor class"],
             },
             "uncommon": {},
             "rare": {
@@ -107,6 +113,7 @@ def write_potions_file(tmp_path):
                     2,
                 ],
                 "regen1": [500, "grants +1 regeneration for duration of fight", 1, "+1 to regeneration"],
+                "blur1": [80, "gives 1% chance to negate opponent's damage", 1, "1% chance to avoid damage"],
             },
             "vrare": {},
             "relic": {
@@ -222,6 +229,146 @@ def test_pri_10_usepotion_applies_temporary_hit_potion(tmp_path, monkeypatch):
     updated = read_character(characters_dir, "tester")
     assert updated["potionhit"] == 1
     assert updated["potioneffect"] == "increasing hit chance by 1 for duration of fight"
+    assert updated["potions"] == []
+
+
+def test_pri_10_usepotion_applies_temporary_damage_potion(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_potions_file(tmp_path)
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_character(characters_dir, "tester", base_character(potions=["damage1"]))
+
+    msg = call_usepotion("tester", "damage1", characters_dir)
+
+    assert (
+        msg
+        == "Testerdrank a damage1 potion, [color=red]increasing damage by 1 for duration of fight[/color] for next match."
+    )
+    updated = read_character(characters_dir, "tester")
+    assert updated["potiondamage"] == 1
+    assert updated["potioneffect"] == "increasing damage by 1 for duration of fight"
+    assert updated["potions"] == []
+
+
+def test_pri_10_usepotion_applies_temporary_ac_potion(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_potions_file(tmp_path)
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_character(characters_dir, "tester", base_character(potions=["ac1"]))
+
+    msg = call_usepotion("tester", "ac1", characters_dir)
+
+    assert (
+        msg
+        == "Tester drank a ac1 potion, [color=red]increasing armor class by 1 for duration of fight[/color] for next match."
+    )
+    updated = read_character(characters_dir, "tester")
+    assert updated["potionac"] == 1
+    assert updated["potioneffect"] == "increasing armor class by 1 for duration of fight"
+    assert updated["potions"] == []
+
+
+def test_pri_10_usepotion_applies_temporary_strength_potion(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_potions_file(tmp_path)
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_character(characters_dir, "tester", base_character(potions=["tstr1"]))
+
+    msg = call_usepotion("tester", "tstr1", characters_dir)
+
+    assert (
+        msg
+        == "Tester drank a tstr1 potion, [color=red]increasing strength by 1 for duration of fight[/color] for next match."
+    )
+    updated = read_character(characters_dir, "tester")
+    assert updated["potionstr"] == 1
+    assert updated["potioneffect"] == "increasing strength by 1 for duration of fight"
+    assert updated["potions"] == []
+
+
+def test_pri_10_usepotion_applies_temporary_dexterity_potion(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_potions_file(tmp_path)
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_character(characters_dir, "tester", base_character(potions=["tdex1"]))
+
+    msg = call_usepotion("tester", "tdex1", characters_dir)
+
+    assert (
+        msg
+        == "Tester drank a tdex1 potion, [color=red]increasing dexterity by 1 for duration of fight[/color] for next match."
+    )
+    updated = read_character(characters_dir, "tester")
+    assert updated["potiondex"] == 1
+    assert updated["potioneffect"] == "increasing dexterity by 1 for duration of fight"
+    assert updated["potions"] == []
+
+
+def test_pri_10_usepotion_applies_temporary_constitution_potion(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_potions_file(tmp_path)
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_character(characters_dir, "tester", base_character(potions=["tcon1"]))
+
+    msg = call_usepotion("tester", "tcon1", characters_dir)
+
+    assert (
+        msg
+        == "Tester drank a tcon1 potion, [color=red]increasing constitution by 1 for duration of fight[/color] for next match."
+    )
+    updated = read_character(characters_dir, "tester")
+    assert updated["potioncon"] == 1
+    assert updated["potioneffect"] == "increasing constitution by 1 for duration of fight"
+    assert updated["potions"] == []
+
+
+def test_pri_10_usepotion_applies_temporary_hp_potion(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_potions_file(tmp_path)
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_character(characters_dir, "tester", base_character(potions=["hp5"]))
+
+    msg = call_usepotion("tester", "hp5", characters_dir)
+
+    assert (
+        msg
+        == "Tester drank a hp5 potion, [color=red]increasing hp by 5 for duration of fight[/color] for next match."
+    )
+    updated = read_character(characters_dir, "tester")
+    assert updated["potionhp"] == 5
+    assert updated["potioneffect"] == "increasing hp by 5 for duration of fight"
+    assert updated["potions"] == []
+
+
+def test_pri_10_usepotion_applies_temporary_blur_potion(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_potions_file(tmp_path)
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+    write_character(
+        characters_dir,
+        "tester",
+        base_character(
+            potions=["blur1"],
+            potionblur=2,
+        ),
+    )
+
+    msg = call_usepotion("tester", "blur1", characters_dir)
+
+    assert (
+        msg
+        == "Tester drank a blur1 potion, [color=red]gives 1% chance to negate opponent's damage for next match."
+    )
+    updated = read_character(characters_dir, "tester")
+    assert updated["potionblur"] == 3
+    assert updated["potioneffect"] == "gives 1% chance to negate opponent's damage"
     assert updated["potions"] == []
 
 
