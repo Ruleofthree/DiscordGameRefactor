@@ -2,6 +2,7 @@ from src.armor_repository import (
     build_armor_shop_display,
     buy_character_armor,
     get_armor_dictionary,
+    sell_character_armor,
     stock_armor_shop,
 )
 from src.potion_repository import (
@@ -649,36 +650,24 @@ def pri_9_buyarmor(character, armor, charFolder):
 # Use to sell a piece of equipment
 # !sellarmor <armor name>
 def pri_10_sellarmor(character, armor, charFolder):
-    armorData = get_armor_dictionary()
-
     try:
         sellerFile = open(charFolder + character.lower() + ".json", "r", encoding="utf-8")
         sellerData = json.load(sellerFile)
         sellerFile.close()
-    # isCharacter = Path(charFolder + character.lower() + ".json")
     except FileNotFoundError:
         msg = "You do not have a character to use this command."
         return msg
-    if armor in sellerData['armor']:
-        if armor in sellerData['equip']:
-            msg = "You can't sell armor that is currently equipped."
-        else:
-            price = int(sellerData['armor'][armor][-1] / 2)
-            sellerData['renown'] += price
-            sellerData['armor'][armor] = "n/a"
-            if 'armor1' not in sellerData['armor']:
-                sellerData["armor"]['armor1'] = sellerData['armor'].pop(armor)
-            elif 'armor2' not in sellerData['armor']:
-                sellerData["armor"]['armor2'] = sellerData['armor'].pop(armor)
-            elif 'armor3' not in sellerData['armor']:
-                sellerData["armor"]['armor3'] = sellerData['armor'].pop(armor)
-            msg = character + " sold some armor for [color=yellow] " + str(price) + " renown[/color]"
-    else:
-        msg = "You do not have that armor to sell."
+
+    sellerData, msg = sell_character_armor(
+        sellerData,
+        armor,
+        character,
+    )
 
     file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
     json.dump(sellerData, file, ensure_ascii=False, indent=2)
     file.close()
+
     return msg
 
 # Use to name a piece of equipment
