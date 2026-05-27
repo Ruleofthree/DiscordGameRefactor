@@ -2054,36 +2054,18 @@ class EchoBot(fchat.FChatClient):
             if character in myModerators:
                 words = message[14:].split(" - ")
                 try:
-                    potionFile = open("potions.json", "r", encoding="utf-8")
-                    potionData = json.load(potionFile)
-                    potionFile.close()
                     path = os.getcwd()
                     item = words[0]
                     gifted = words[1]
+                    charFolder = os.path.join(path + "/characters/")
                     try:
-                        charFolder = os.path.join(path + "/characters/")
-                        charFile = open(charFolder + gifted.lower() + ".json", "r", encoding="utf-8")
-                        charSheet = json.load(charFile)
-                        charFile.close()
+                        charSheet = pri_createpotion(item, gifted, charFolder)
                     except FileNotFoundError:
                         super.PRI(character, "Doesn't look like this character sheet exists. Please use proper format:"
                                              "!createpotion <potion> - <profile name>")
-                    if item in potionData[0]['common']:
-                        charSheet['potions'].append(item)
-                    elif item in potionData[0]['uncommon']:
-                        charSheet['potions'].append(item)
-                    elif item in potionData[0]['rare']:
-                        charSheet['potions'].append(item)
-                    elif item in potionData[0]['vrare']:
-                        charSheet['potions'].append(item)
-                    elif item in potionData[0]['relic']:
-                        charSheet['potions'].append(item)
                     super().MSG(unspoiledBarOOC, charSheet['name'] + " has obtained a potion of " + item)
                     super().PRI("An Entity",
                                 character + " has just used the bot to give " + gifted + "a potion of " + item)
-                    file = open(charFolder + gifted.lower() + ".json", "w", encoding="utf-8")
-                    json.dump(charSheet, file, ensure_ascii=False, indent=2)
-                    file.close()
                 except ValueError:
                     super().PRI(character, "Please make sure the format is as follows: !givepotion "
                                            "[color=yellow]<potions name>[/color] - [color=pink] "

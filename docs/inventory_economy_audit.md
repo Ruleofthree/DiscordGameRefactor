@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `392 passed`
+* `398 passed`
 
 This test result includes:
 
@@ -56,6 +56,7 @@ Completed inventory/economy areas include:
 * Potion transfer
 * Potion use lifecycle extraction
 * Potion use cleanup review
+* Create potion boundary extraction
 * Armor shop restock
 * Armor purchase
 * Armor sale
@@ -77,6 +78,7 @@ Repository-backed helpers now exist for:
 * Renaming armor
 * Equipping armor
 * Unequipping armor
+* Creating moderator-granted potions
 
 Remaining targets are higher risk because they may touch combat-adjacent state, broader command/runtime behavior,
 or behavior that has not yet been isolated behind repository helpers.
@@ -124,11 +126,15 @@ Status:
 
 The remaining `!armorshop` display boundary was reviewed after armor shop line formatting had already been moved behind `pri_10_armorshop()`.
 
-A thin `pri_armorshop()` wrapper was added to `original/onPRIUtils.py`. The wrapper loads armor data through `src.armor_repository.get_armor_dictionary()`, builds the armor display input list from `armor_dictionary[0]["armorlist"]`, and returns the display body from `src.armor_repository.build_armor_shop_display()`.
+A thin `pri_armorshop()` wrapper was added to `original/onPRIUtils.py`. The wrapper loads armor data through
+`src.armor_repository.get_armor_dictionary()`, builds the armor display input list from `armor_dictionary[0]["armorlist"]`,
+and returns the display body from `src.armor_repository.build_armor_shop_display()`.
 
-`original/botCommand.py` now delegates armor shop body loading and construction to `pri_armorshop()`, while preserving the legacy display header and `super().PRI(...)` delivery behavior in place.
+`original/botCommand.py` now delegates armor shop body loading and construction to `pri_armorshop()`, while preserving
+the legacy display header and `super().PRI(...)` delivery behavior in place.
 
-This extraction does not change armor buying, armor selling, armor naming, armor equip, armor unequip, potion behavior, combat behavior, rolling, XP payout, renown payout, or level-up handling.
+This extraction does not change armor buying, armor selling, armor naming, armor equip, armor unequip, potion behavior,
+combat behavior, rolling, XP payout, renown payout, or level-up handling.
 
 Test coverage:
 
@@ -176,6 +182,27 @@ the legacy private message header and `super().PRI(...)` delivery behavior in pl
 This extraction does not change potion buying, potion selling, potion transfer, potion use, shop stocking, armor
 behavior, combat behavior, rolling, XP payout, renown payout, or level-up handling.
 
+### Create Potion Boundary Extraction
+
+* `!createpotion` still owns command routing, moderator gating, command input parsing, and notification sending in `original/botCommand.py`.
+* `pri_createpotion()` loads potion data through `src.potion_repository.get_potion_dictionary()`.
+* `pri_createpotion()` loads and saves the target character through the character repository helpers.
+* `src.potion_repository.create_character_potion()` owns the rarity-bucket potion append decision.
+* The extraction intentionally preserves legacy behavior for unknown potion names: unknown potion names do not append
+  anything, but command-level success-style notifications remain unchanged.
+* The extraction intentionally preserves the existing fragile command parser and missing-character handling behavior.
+* Repository coverage now includes create-potion append behavior for common, uncommon, rare, very rare, relic, and unknown potion names.
+* `original/botCommand.py` no longer opens `potions.json` directly inside the `!createpotion` command block.
+* `original/botCommand.py` no longer directly writes the target character file inside the `!createpotion` command block.
+
+Tests added or expanded:
+
+* `tests/test_potion_repository.py`
+
+Status:
+
+* Complete.
+
 ---
 
 ### Potion Sale Extraction
@@ -219,7 +246,8 @@ Completed helper:
 
 Legacy wrapper:
 
-* `pri_11_givepotion()` now delegates deterministic potion transfer-state mutation to `give_character_potion()` while keeping both character-file loads and both character-file writes in `original/onPRIUtils.py`.
+* `pri_11_givepotion()` now delegates deterministic potion transfer-state mutation to `give_character_potion()` while
+  keeping both character-file loads and both character-file writes in `original/onPRIUtils.py`.
 
 Behavior preserved:
 
@@ -337,28 +365,34 @@ Completed helpers:
 
 Legacy wrapper:
 
-* `pri_10_usepotion()` now delegates potion mutation and message behavior to `use_character_potion()` while keeping character-file loading and saving in `original/onPRIUtils.py`.
+* `pri_10_usepotion()` now delegates potion mutation and message behavior to `use_character_potion()` while keeping
+  character-file loading and saving in `original/onPRIUtils.py`.
 
 Behavior preserved:
 
-* Permanent progression potions are preserved: `str1` through `str5`, `dex1` through `dex5`, and `con1` through `con5` still mutate `pstrength`, `pdexterity`, or `pconstitution` only when the existing progression field is exactly one tier lower.
+* Permanent progression potions are preserved: `str1` through `str5`, `dex1` through `dex5`, and `con1` through `con5`
+  still mutate `pstrength`, `pdexterity`, or `pconstitution` only when the existing progression field is exactly one tier lower.
 * Permanent stat potion progression has been consolidated into `_apply_permanent_stat_potion()`.
 * `_apply_permanent_stat_potion()` preserves the legacy success message, inventory removal behavior, and invalid-progression rejection message.
 * `respec` still increments `reset`.
 * `stimulant` still increments both `remaining feats` and `total feats`.
 * Temporary next-match potions still set the matching potion bonus field and usually set `potioneffect`.
-* Valid potion names are still checked through potion data lookup, not against character inventory before use. A valid potion name missing from inventory can still raise `ValueError` when removal is attempted.
+* Valid potion names are still checked through potion data lookup, not against character inventory before use. A valid
+  potion name missing from inventory can still raise `ValueError` when removal is attempted.
 * Unknown potion names still return `You do not have a potion of <potion>`.
 * A character with an existing `potioneffect` still cannot drink another temporary potion.
 * Permanent stat potions, `respec`, and `stimulant` are still handled before the temporary potion lock.
-* Regeneration potions still set `potionregen` and `potioneffect`, but the successful branch still does not remove the potion from inventory.
-* The regeneration eligibility condition still uses `traitdr == 0 or armordr == 0 or regeneration == 0`, which means the potion is blocked only when all three fields are nonzero.
+* Regeneration potions still set `potionregen` and `potioneffect`, but the successful branch still does not remove
+  the potion from inventory.
+* The regeneration eligibility condition still uses `traitdr == 0 or armordr == 0 or regeneration == 0`, which means
+  the potion is blocked only when all three fields are nonzero.
 * Existing messages, typos, spacing, field names, and questionable conditionals remain preserved.
 
 Cleanup review result:
 
 * The permanent stat potion progression block was the only safe cleanup boundary selected after extraction.
-* Temporary potion behavior was intentionally left inside `use_character_potion()` because it contains fragile legacy behavior and combat-adjacent state setup.
+* Temporary potion behavior was intentionally left inside `use_character_potion()` because it contains fragile legacy
+  behavior and combat-adjacent state setup.
 * No behavior changes were made during the cleanup review.
 
 Tests added or expanded:
@@ -745,31 +779,6 @@ Possible next audit targets:
 * `!potionshop` display construction extraction, if potion shop display behavior should be moved out of `botCommand.py`.
 * Combat-adjacent potion effect cleanup, only after a dedicated test plan is written.
 
-Read-only routing audit result:
-
-* Inventory and economy command routing remains in `original/botCommand.py`.
-* Most player-facing inventory and economy commands now delegate mutation behavior into `original/onPRIUtils.py`.
-* `botCommand.py` still owns command parsing, public-room rejection routing, fight-state checks through `gameStatLoad(channel)`, and public/private response routing.
-* `!armorshop` and `!potionshop` still build shop display inputs directly in `botCommand.py`.
-* `!stockarmor` and `!stockpotion` are moderator/admin commands that delegate restock behavior into `onPRIUtils.py`.
-* `!createpotion` remains direct command-runtime inventory mutation inside `botCommand.py`.
-* `botCommand.py` should still not be imported directly in pytest because of runtime dependencies.
-* No extraction target is selected from `botCommand.py` yet.
-
-Read-only `!createpotion` audit result:
-
-* `!createpotion` exists only in `original/botCommand.py`.
-* The command is moderator-only through the `character in myModerators` check.
-* The command parses input with `message[14:].split(" - ")`.
-* The command opens `potions.json` directly from the runtime working directory.
-* The command opens and writes the target character file directly.
-* The command appends the requested potion directly to the target character's `potions` list when the potion name exists in one of the potion rarity dictionaries.
-* The command does not currently delegate to `original/onPRIUtils.py` or `src.potion_repository`.
-* Missing target character handling appears fragile because the code calls `super.PRI(...)` instead of `super().PRI(...)`, then may continue without a loaded `charSheet`.
-* Bad command formatting may raise `IndexError` rather than the currently handled `ValueError`.
-* Unknown potion names may still produce success-style notification messages without appending a potion.
-* No extraction target is selected yet.
-
 Read-only shop display routing audit result:
 
 * Inventory and economy command routing remains in `original/botCommand.py`.
@@ -781,7 +790,6 @@ Read-only shop display routing audit result:
 * `pri_10_armorshop()` delegates armor display body formatting to `src.armor_repository.build_armor_shop_display()`.
 * `botCommand.py` still owns the `!armorshop` display header and private response routing.
 * `!potionshop` no longer opens `potions.json` directly in `botCommand.py`.
-* `!potionshop` now delegates potion data loading and shop body construction to `pri_potionshop()`.
 * `pri_potionshop()` loads potion data through `src.potion_repository.get_potion_dictionary()`.
 * `src.potion_repository.build_potion_shop_display()` now owns duplicate counting, rarity price lookup, first-seen
   shop order preservation, and final potion shop body line construction.
@@ -803,7 +811,7 @@ Status:
 * Temporary potion behavior legacy wrapper coverage expanded.
 * Temporary potion edge-case repository coverage expanded.
 * Temporary potion regeneration no-benefit wrapper coverage expanded.
-* Full pytest passes with 387 tests.
+* Full pytest passes with 398 tests.
 
 ---
 
@@ -814,7 +822,8 @@ When another inventory or economy boundary is completed, update this audit in th
 1. Run the full test suite and update only `## Current Test Status` with the latest result.
 2. Add the completed area to `## Current Position`.
 3. Add one new subsection under `## Completed Extractions`.
-4. Move the completed function out of the active risk list and into `### Extracted Inventory and Economy Boundaries` if it belongs there.
+4. Move the completed function out of the active risk list and into `### Extracted Inventory and Economy Boundaries`
+   if it belongs there.
 5. Update `## Recommended Next Target` to reflect the next audit or extraction target.
 6. Do not keep old full pytest totals inside older completed extraction sections.
 7. Do not add chapter labels or chapter numbers to this audit file.

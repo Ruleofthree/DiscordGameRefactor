@@ -11,6 +11,7 @@ from src.armor_repository import (
 from src.potion_repository import (
     build_potion_shop_display,
     buy_character_potion,
+    create_character_potion,
     get_potion_dictionary,
     get_potion_effect_info,
     get_potion_sell_value,
@@ -46,6 +47,14 @@ from threading import Timer
 def pri_potionshop():
     potion_dictionary = get_potion_dictionary()
     return build_potion_shop_display(potion_dictionary)
+
+
+def pri_createpotion(item, gifted, charFolder):
+    potion_dictionary = get_potion_dictionary()
+    charData = load_character(gifted, charFolder)
+    charData = create_character_potion(charData, potion_dictionary, item)
+    save_character(gifted, charData, charFolder)
+    return charData
 
 
 def pri_armorshop():

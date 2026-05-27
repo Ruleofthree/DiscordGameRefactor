@@ -214,6 +214,28 @@ def buy_character_potion(character_data, potion_data, potion_name):
     return character_data, potion_data, message
 
 
+def create_character_potion(character_data, potion_data, item):
+    """
+    Add a moderator-created potion to a character inventory.
+
+    This intentionally preserves the legacy !createpotion behavior:
+    unknown potion names do not append anything, but validation and messaging
+    remain outside this helper for now.
+    """
+    if item in potion_data[0]["common"]:
+        character_data["potions"].append(item)
+    elif item in potion_data[0]["uncommon"]:
+        character_data["potions"].append(item)
+    elif item in potion_data[0]["rare"]:
+        character_data["potions"].append(item)
+    elif item in potion_data[0]["vrare"]:
+        character_data["potions"].append(item)
+    elif item in potion_data[0]["relic"]:
+        character_data["potions"].append(item)
+
+    return character_data
+
+
 def give_character_potion(gifter_data, gifted_data, item):
     item = item.lower()
 

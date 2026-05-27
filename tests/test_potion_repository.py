@@ -2,6 +2,7 @@ from src.potion_repository import (
     POTION_RARITY_ORDER,
     build_potion_shop_display,
     buy_character_potion,
+    create_character_potion,
     find_potion,
     give_character_potion,
     get_potion_description,
@@ -347,6 +348,118 @@ def test_give_character_potion_transfers_potion_to_recipient():
     assert gifted == "Bob"
     assert gifter_data["potions"] == ["hit1"]
     assert gifted_data["potions"] == ["damage1", "hp5"]
+
+
+def make_create_potion_data():
+    return [
+        {
+            "common": {
+                "hp5": [150, "increasing hp by 5 for duration of fight", 5],
+            },
+            "uncommon": {
+                "hp15": [450, "increasing hp by 15 for duration of fight", 15],
+            },
+            "rare": {
+                "str1": [10000, "permanently increases strength by 1", 1],
+            },
+            "vrare": {
+                "damage5": [2000, "increasing damage by 5 for duration of fight", 5],
+            },
+            "relic": {
+                "stimulant": [50000, "allows the player to learn one additional feat", 1],
+            },
+        }
+    ]
+
+
+def test_create_character_potion_adds_common_potion():
+    character_data = {
+        "name": "Test Hero",
+        "potions": [],
+    }
+
+    updated_character = create_character_potion(
+        character_data,
+        make_create_potion_data(),
+        "hp5",
+    )
+
+    assert updated_character["potions"] == ["hp5"]
+
+
+def test_create_character_potion_adds_uncommon_potion():
+    character_data = {
+        "name": "Test Hero",
+        "potions": [],
+    }
+
+    updated_character = create_character_potion(
+        character_data,
+        make_create_potion_data(),
+        "hp15",
+    )
+
+    assert updated_character["potions"] == ["hp15"]
+
+
+def test_create_character_potion_adds_rare_potion():
+    character_data = {
+        "name": "Test Hero",
+        "potions": [],
+    }
+
+    updated_character = create_character_potion(
+        character_data,
+        make_create_potion_data(),
+        "str1",
+    )
+
+    assert updated_character["potions"] == ["str1"]
+
+
+def test_create_character_potion_adds_very_rare_potion():
+    character_data = {
+        "name": "Test Hero",
+        "potions": [],
+    }
+
+    updated_character = create_character_potion(
+        character_data,
+        make_create_potion_data(),
+        "damage5",
+    )
+
+    assert updated_character["potions"] == ["damage5"]
+
+
+def test_create_character_potion_adds_relic_potion():
+    character_data = {
+        "name": "Test Hero",
+        "potions": [],
+    }
+
+    updated_character = create_character_potion(
+        character_data,
+        make_create_potion_data(),
+        "stimulant",
+    )
+
+    assert updated_character["potions"] == ["stimulant"]
+
+
+def test_create_character_potion_ignores_unknown_potion_without_changing_inventory():
+    character_data = {
+        "name": "Test Hero",
+        "potions": ["hp5"],
+    }
+
+    updated_character = create_character_potion(
+        character_data,
+        make_create_potion_data(),
+        "notapotion",
+    )
+
+    assert updated_character["potions"] == ["hp5"]
 
 
 def test_give_character_potion_lowercases_item_before_transfer():
