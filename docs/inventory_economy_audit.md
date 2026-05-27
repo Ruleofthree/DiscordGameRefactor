@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `390 passed`
+* `391 passed`
 
 This test result includes:
 
@@ -142,6 +142,22 @@ Test coverage:
 - `tests/test_potion_repository.py` verifies first-seen shop order is preserved.
 - `tests/test_potion_repository.py` verifies potion prices are resolved from the expected rarity buckets.
 - `tests/test_potion_repository.py` verifies an empty shop list returns an empty display body.
+
+---
+
+### Potion Shop Display Wrapper Boundary Extraction
+
+The remaining `!potionshop` command boundary was reviewed after the shop display body construction was extracted.
+The command still owns routing and private message delivery, while the potion repository owns deterministic shop display body construction.
+
+A thin `pri_potionshop()` wrapper was added to `original/onPRIUtils.py`. The wrapper loads the potion dictionary
+through the potion repository loader and returns the display body from `build_potion_shop_display()`.
+
+`original/botCommand.py` now delegates potion shop body loading and construction to `pri_potionshop()`, while preserving
+the legacy private message header and `super().PRI(...)` delivery behavior in place.
+
+This extraction does not change potion buying, potion selling, potion transfer, potion use, shop stocking, armor
+behavior, combat behavior, rolling, XP payout, renown payout, or level-up handling.
 
 ---
 

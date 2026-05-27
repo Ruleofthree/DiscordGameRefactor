@@ -9,7 +9,9 @@ from src.armor_repository import (
     unequip_character_armor,
 )
 from src.potion_repository import (
+    build_potion_shop_display,
     buy_character_potion,
+    get_potion_dictionary,
     get_potion_effect_info,
     get_potion_sell_value,
     give_character_potion,
@@ -39,6 +41,11 @@ import random
 import time
 from pathlib import Path
 from threading import Timer
+
+
+def pri_potionshop():
+    potion_dictionary = get_potion_dictionary()
+    return build_potion_shop_display(potion_dictionary)
 
 # Method to echo private messages to discord
 def pri_discord_echo(note):
@@ -359,6 +366,7 @@ def pri_10_buypotion(character, potion, charFolder):
     file.close()
 
     return msg, buyer, potion
+
 
 # Use to sell a potion
 # !sellpotion <potion name>

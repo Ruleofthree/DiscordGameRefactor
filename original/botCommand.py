@@ -2428,10 +2428,7 @@ class EchoBot(fchat.FChatClient):
 # -----------------------------------------------POTION COMMANDS--------------------------------------------------------
         # view potions in shop
         if message == "!potionshop":
-            potionFile = open("potions.json", "r", encoding="utf-8")
-            potionDictionary = json.load(potionFile)
-            potionFile.close()
-            shopList = build_potion_shop_display(potionDictionary)
+            shopList = pri_potionshop()
 
             super().PRI(character, "Items available in shop: (Item:  [color=red]Amount[/color]"
                                    "[color=yellow] (cost)[/color]) \n" + shopList)
