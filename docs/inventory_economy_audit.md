@@ -683,7 +683,7 @@ Reason:
 
 Possible next audit targets:
 
-* Shop display routing audit for `!armorshop` and `!potionshop`, if display construction should be moved out of `botCommand.py`.
+* `!potionshop` display construction extraction, if potion shop display behavior should be moved out of `botCommand.py`.
 * Combat-adjacent potion effect cleanup, only after a dedicated test plan is written.
 
 Read-only routing audit result:
@@ -709,6 +709,20 @@ Read-only `!createpotion` audit result:
 * Missing target character handling appears fragile because the code calls `super.PRI(...)` instead of `super().PRI(...)`, then may continue without a loaded `charSheet`.
 * Bad command formatting may raise `IndexError` rather than the currently handled `ValueError`.
 * Unknown potion names may still produce success-style notification messages without appending a potion.
+* No extraction target is selected yet.
+
+Read-only shop display routing audit result:
+
+* `!armorshop` still opens `armor.json` directly in `botCommand.py`.
+* `!armorshop` builds the armor display input list in `botCommand.py`.
+* `!armorshop` already delegates armor line formatting to `pri_10_armorshop()`.
+* `botCommand.py` still owns the `!armorshop` display header and private response routing.
+* `!potionshop` still opens `potions.json` directly in `botCommand.py`.
+* `!potionshop` still counts shop inventory with `Counter(shopList)` inside `botCommand.py`.
+* `!potionshop` still performs potion rarity price lookup directly in `botCommand.py`.
+* `!potionshop` still builds the final potion shop display lines directly in `botCommand.py`.
+* `!potionshop` does not currently delegate display construction to `original/onPRIUtils.py` or `src.potion_repository`.
+* The safest future shop-display target is `!potionshop` display construction, because `!armorshop` already has repository-backed display formatting behind `pri_10_armorshop()`.
 * No extraction target is selected yet.
 
 Recommendation:
