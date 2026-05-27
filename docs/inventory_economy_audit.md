@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `391 passed`
+* `392 passed`
 
 This test result includes:
 
@@ -117,6 +117,23 @@ Tests added or expanded:
 Status:
 
 * Complete.
+
+---
+
+### Armor Shop Display Wrapper Boundary Extraction
+
+The remaining `!armorshop` display boundary was reviewed after armor shop line formatting had already been moved behind `pri_10_armorshop()`.
+
+A thin `pri_armorshop()` wrapper was added to `original/onPRIUtils.py`. The wrapper loads armor data through `src.armor_repository.get_armor_dictionary()`, builds the armor display input list from `armor_dictionary[0]["armorlist"]`, and returns the display body from `src.armor_repository.build_armor_shop_display()`.
+
+`original/botCommand.py` now delegates armor shop body loading and construction to `pri_armorshop()`, while preserving the legacy display header and `super().PRI(...)` delivery behavior in place.
+
+This extraction does not change armor buying, armor selling, armor naming, armor equip, armor unequip, potion behavior, combat behavior, rolling, XP payout, renown payout, or level-up handling.
+
+Test coverage:
+
+* `tests/test_legacy_onpriutils_armorshop.py` confirms `pri_armorshop()` loads armor data and returns the shop display body.
+* Existing repository and legacy wrapper tests continue to cover armor shop line formatting.
 
 ---
 
@@ -216,7 +233,8 @@ Behavior preserved:
 * Missing sender character files still return the legacy missing-sender message.
 * Missing recipient character files still return the legacy missing-recipient message, including the existing `posiont` typo.
 * Character file loading and saving remain in `original/onPRIUtils.py`.
-* Potion purchase, potion sale, potion use, potion restocking, armor behavior, combat behavior, rolling, XP payout, renown payout, and level-up handling were not changed by this extraction.
+* Potion purchase, potion sale, potion use, potion restocking, armor behavior, combat behavior, rolling, XP payout,
+  renown payout, and level-up handling were not changed by this extraction.
 
 Tests added or expanded:
 
@@ -754,17 +772,21 @@ Read-only `!createpotion` audit result:
 
 Read-only shop display routing audit result:
 
-* `!armorshop` still opens `armor.json` directly in `botCommand.py`.
-* `!armorshop` builds the armor display input list in `botCommand.py`.
-* `!armorshop` already delegates armor line formatting to `pri_10_armorshop()`.
+* Inventory and economy command routing remains in `original/botCommand.py`.
+* `!armorshop` no longer opens `armor.json` directly in `botCommand.py`.
+* `!armorshop` no longer builds the armor display input list in `botCommand.py`.
+* `!armorshop` now delegates armor data loading and shop body construction to `pri_armorshop()`.
+* `pri_armorshop()` loads armor data through `src.armor_repository.get_armor_dictionary()`.
+* `pri_armorshop()` builds the armor display input list from `armor_dictionary[0]["armorlist"]`.
+* `pri_10_armorshop()` delegates armor display body formatting to `src.armor_repository.build_armor_shop_display()`.
 * `botCommand.py` still owns the `!armorshop` display header and private response routing.
-* `!potionshop` still opens `potions.json` directly in `botCommand.py`.
-* `!potionshop` still counts shop inventory with `Counter(shopList)` inside `botCommand.py`.
-* `!potionshop` still performs potion rarity price lookup directly in `botCommand.py`.
-* `!potionshop` still builds the final potion shop display lines directly in `botCommand.py`.
-* `!potionshop` does not currently delegate display construction to `original/onPRIUtils.py` or `src.potion_repository`.
-* The safest future shop-display target is `!potionshop` display construction, because `!armorshop` already has repository-backed display formatting behind `pri_10_armorshop()`.
-* No extraction target is selected yet.
+* `!potionshop` no longer opens `potions.json` directly in `botCommand.py`.
+* `!potionshop` now delegates potion data loading and shop body construction to `pri_potionshop()`.
+* `pri_potionshop()` loads potion data through `src.potion_repository.get_potion_dictionary()`.
+* `src.potion_repository.build_potion_shop_display()` now owns duplicate counting, rarity price lookup, first-seen
+  shop order preservation, and final potion shop body line construction.
+* `botCommand.py` still owns the `!potionshop` display header and private response routing.
+* No shop display extraction target remains active.
 
 Recommendation:
 

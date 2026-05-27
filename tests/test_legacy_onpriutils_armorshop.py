@@ -78,3 +78,22 @@ def test_pri_10_armorshop_preserves_multiple_line_display(monkeypatch):
         "Armor3 [color=red]['con4', 'hp15', 'hit4'][/color]: [color=yellow](12500 renown)[/color]\n"
         "Armor4 [color=red]sold[/color]: [color=yellow](0 renown)[/color]"
     )
+
+
+def test_pri_armorshop_loads_armor_data_and_returns_shop_display(monkeypatch):
+    armor_data = [{"armorlist": {"armor1": ["str1"]}}]
+
+    monkeypatch.setattr(
+        onPRIUtils,
+        "get_armor_dictionary",
+        lambda: armor_data,
+    )
+    monkeypatch.setattr(
+        onPRIUtils,
+        "build_armor_shop_display",
+        lambda loaded_items: "Armor1 [color=red]['str1'][/color]: [color=yellow](500 renown)[/color]",
+    )
+
+    result = onPRIUtils.pri_armorshop()
+
+    assert result == "Armor1 [color=red]['str1'][/color]: [color=yellow](500 renown)[/color]"

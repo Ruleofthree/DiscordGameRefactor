@@ -2297,14 +2297,7 @@ class EchoBot(fchat.FChatClient):
 # -----------------------------------------------ARMOR COMMANDS---------------------------------------------------------
         # view armor in shop
         if message == "!armorshop":
-            armorFile = open("armor.json", "r", encoding="utf-8")
-            armorDictionary = json.load(armorFile)
-            armorFile.close()
-            myList = []
-            num = 1
-            for key in armorDictionary[0]["armorlist"]:
-                myList.append(armorDictionary[0]["armorlist"][key])
-            armorList = pri_10_armorshop(myList)
+            armorList = pri_armorshop()
             super().PRI(character, "Items available in shop: (Item:  Armor: [color=red][stats][/color]"
                                    "[color=yellow] (cost)[/color]) \n" + armorList)
 

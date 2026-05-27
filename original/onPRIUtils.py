@@ -47,6 +47,15 @@ def pri_potionshop():
     potion_dictionary = get_potion_dictionary()
     return build_potion_shop_display(potion_dictionary)
 
+
+def pri_armorshop():
+    armor_dictionary = get_armor_dictionary()
+    armor_shop_items = []
+    for key in armor_dictionary[0]["armorlist"]:
+        armor_shop_items.append(armor_dictionary[0]["armorlist"][key])
+    return build_armor_shop_display(armor_shop_items)
+
+
 # Method to echo private messages to discord
 def pri_discord_echo(note):
     with open('room.json', 'r+') as file:
