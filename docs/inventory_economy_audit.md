@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `387 passed`
+* `390 passed`
 
 This test result includes:
 
@@ -136,6 +136,12 @@ The extracted helper preserves the legacy behavior:
 
 `original/botCommand.py` still owns command routing, `potions.json` loading, and private message delivery.
 No buying, selling, transfer, use, stocking, armor, combat, XP, renown payout, or level-up behavior was changed.
+
+Test coverage:
+- `tests/test_potion_repository.py` verifies duplicate shop entries are counted correctly.
+- `tests/test_potion_repository.py` verifies first-seen shop order is preserved.
+- `tests/test_potion_repository.py` verifies potion prices are resolved from the expected rarity buckets.
+- `tests/test_potion_repository.py` verifies an empty shop list returns an empty display body.
 
 ---
 
