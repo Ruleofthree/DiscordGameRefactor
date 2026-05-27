@@ -120,6 +120,25 @@ Status:
 
 ---
 
+### Potion Shop Display Construction Extraction
+
+`!potionshop` previously built the potion shop display body directly inside `original/botCommand.py` after opening `potions.json`.
+
+The display construction has been extracted into `src.potion_repository.build_potion_shop_display()`.
+
+The extracted helper preserves the legacy behavior:
+- reads `potion_data[0]["shoplist"]`
+- counts duplicate stocked potions with `Counter`
+- preserves first-seen shop order from the stocked shop list
+- resolves potion prices across `common`, `uncommon`, `rare`, `vrare`, and `relic`
+- builds each display line in the legacy format:
+  `<potion>: [color=red]<amount>[/color] [color=yellow](<price> renown)[/color]`
+
+`original/botCommand.py` still owns command routing, `potions.json` loading, and private message delivery.
+No buying, selling, transfer, use, stocking, armor, combat, XP, renown payout, or level-up behavior was changed.
+
+---
+
 ### Potion Sale Extraction
 
 Completed helper:

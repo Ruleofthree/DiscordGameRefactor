@@ -1,7 +1,9 @@
 from src.potion_repository import (
     POTION_RARITY_ORDER,
+    build_potion_shop_display,
     buy_character_potion,
     find_potion,
+    give_character_potion,
     get_potion_description,
     get_potion_dictionary,
     get_potion_effect_info,
@@ -866,3 +868,92 @@ def test_use_character_potion_applies_constitution_progression():
     assert message == "Tester drank a con5 potion, obtaining a permanent [color=red] +1 to constitution[/color]"
     assert updated_character["pconstitution"] == 5
     assert "con5" not in updated_character["potions"]
+
+
+def test_build_potion_shop_display_counts_duplicates_and_uses_prices():
+    potion_data = [
+        {
+            "common": {
+                "hp5": [150, "increasing hp by 5", 5, "+5 hit points"],
+                "hit1": [500, "increasing hit by 1", 1, "+1 to hit"],
+            },
+            "uncommon": {
+                "hp15": [450, "increasing hp by 15", 15, "+15 hit points"],
+            },
+            "rare": {
+                "str1": [10000, "permanently increases strength by 1", 1],
+            },
+            "vrare": {
+                "damage5": [2000, "increasing damage by 5", 5, "+5 to damage"],
+            },
+            "relic": {
+                "stimulant": [50000, "Allows one to learn a new feat", 1],
+            },
+            "shoplist": [
+                "hp5",
+                "hp5",
+                "hp15",
+                "str1",
+                "damage5",
+                "stimulant",
+                "hit1",
+            ],
+        }
+    ]
+
+    result = build_potion_shop_display(potion_data)
+
+    assert result == (
+        "hp5: [color=red]2[/color] [color=yellow](150 renown)[/color]\n"
+        "hp15: [color=red]1[/color] [color=yellow](450 renown)[/color]\n"
+        "str1: [color=red]1[/color] [color=yellow](10000 renown)[/color]\n"
+        "damage5: [color=red]1[/color] [color=yellow](2000 renown)[/color]\n"
+        "stimulant: [color=red]1[/color] [color=yellow](50000 renown)[/color]\n"
+        "hit1: [color=red]1[/color] [color=yellow](500 renown)[/color]"
+    )
+
+
+def test_build_potion_shop_display_preserves_first_seen_shop_order():
+    potion_data = [
+        {
+            "common": {
+                "hp5": [150, "increasing hp by 5", 5, "+5 hit points"],
+                "hit1": [500, "increasing hit by 1", 1, "+1 to hit"],
+            },
+            "uncommon": {},
+            "rare": {},
+            "vrare": {},
+            "relic": {},
+            "shoplist": [
+                "hit1",
+                "hp5",
+                "hit1",
+                "hp5",
+                "hp5",
+            ],
+        }
+    ]
+
+    result = build_potion_shop_display(potion_data)
+
+    assert result == (
+        "hit1: [color=red]2[/color] [color=yellow](500 renown)[/color]\n"
+        "hp5: [color=red]3[/color] [color=yellow](150 renown)[/color]"
+    )
+
+
+def test_build_potion_shop_display_returns_empty_string_for_empty_shop():
+    potion_data = [
+        {
+            "common": {},
+            "uncommon": {},
+            "rare": {},
+            "vrare": {},
+            "relic": {},
+            "shoplist": [],
+        }
+    ]
+
+    result = build_potion_shop_display(potion_data)
+
+    assert result == ""

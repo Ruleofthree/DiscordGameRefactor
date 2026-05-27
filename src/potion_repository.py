@@ -1,6 +1,7 @@
-import random
-
+from collections import Counter
 from src.data_loader import load_potions
+
+import random
 
 
 POTION_RARITY_ORDER = ("common", "uncommon", "rare", "vrare", "relic")
@@ -414,3 +415,29 @@ def use_character_potion(character_data, potion_name, potion_info):
         msg = "You do not have a potion of " + potion_name
 
     return character_data, msg
+
+
+def build_potion_shop_display(potion_data):
+    shop_list = potion_data[0]["shoplist"]
+    ordered_list = Counter(shop_list)
+    item = []
+
+    for key in ordered_list:
+        item.append(key)
+        item.append(ordered_list[key])
+
+        if key in potion_data[0]["common"]:
+            item.append(potion_data[0]["common"][key][0])
+        elif key in potion_data[0]["uncommon"]:
+            item.append(potion_data[0]["uncommon"][key][0])
+        elif key in potion_data[0]["rare"]:
+            item.append(potion_data[0]["rare"][key][0])
+        elif key in potion_data[0]["vrare"]:
+            item.append(potion_data[0]["vrare"][key][0])
+        elif key in potion_data[0]["relic"]:
+            item.append(potion_data[0]["relic"][key][0])
+
+    return "\n".join(
+        "{}: [color=red]{}[/color] [color=yellow]({} renown)[/color]".format(*i)
+        for i in zip(item[::3], item[1::3], item[2::3])
+    )

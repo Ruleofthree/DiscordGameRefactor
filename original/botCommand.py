@@ -1,4 +1,6 @@
 from src.character_repository import apply_passive_status_timer_tick
+from src.potion_repository import build_potion_shop_display
+
 import fchat
 import random
 import discord
@@ -2429,25 +2431,7 @@ class EchoBot(fchat.FChatClient):
             potionFile = open("potions.json", "r", encoding="utf-8")
             potionDictionary = json.load(potionFile)
             potionFile.close()
-            shopList = potionDictionary[0]['shoplist']
-            orderedList = Counter(shopList)
-            item = []
-            for key in orderedList:
-                item.append(key)
-                item.append(orderedList[key])
-                if key in potionDictionary[0]['common']:
-                    item.append(potionDictionary[0]['common'][key][0])
-                elif key in potionDictionary[0]['uncommon']:
-                    item.append(potionDictionary[0]['uncommon'][key][0])
-                elif key in potionDictionary[0]['rare']:
-                    item.append(potionDictionary[0]['rare'][key][0])
-                elif key in potionDictionary[0]['vrare']:
-                    item.append(potionDictionary[0]['vrare'][key][0])
-                elif key in potionDictionary[0]['relic']:
-                    item.append(potionDictionary[0]['relic'][key][0])
-
-            shopList = "\n".join("{}: [color=red]{}[/color] [color=yellow]({} renown)[/color]".format(*i)
-                                 for i in zip(item[::3], item[1::3], item[2::3]))
+            shopList = build_potion_shop_display(potionDictionary)
 
             super().PRI(character, "Items available in shop: (Item:  [color=red]Amount[/color]"
                                    "[color=yellow] (cost)[/color]) \n" + shopList)
