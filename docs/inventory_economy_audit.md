@@ -1066,6 +1066,22 @@ Combat saved-total refresh helper extraction result:
 * Added repository tests proving the helper updates `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration` using temporary character files only.
 * Local pytest passed with 405 tests.
 
+Combat refresh helper wiring audit result:
+
+* `src.character_repository.refresh_character_combat_totals()` remains a repository-only helper.
+* No behavior wiring was added during this audit.
+* `!viewchar` still refreshes saved combat-facing totals through `build_and_save_character_view()`.
+* `!challenge` still snapshots player one combat HP from saved `thp`.
+* `!accept` still loads player two data and resolves initiative from saved `initiative`.
+* `!accept` still snapshots player two combat HP from saved `thp`.
+* `!roll` still operates on already-loaded combat state and should not be the first refresh wiring point.
+* Future wiring directly at combat entry would change the current legacy contract that character-changing commands require a later refresh before combat.
+* Future wiring after mutation commands is safer than refreshing during combat, but it should be done one command at a time with contract tests.
+* Candidate mutation commands that can make saved combat-facing totals stale include `!stats`, `!build`, `!traitpick`,
+  `!featpick`, `!add`, `!respec`, `!usepotion`, `!equip`, `!unequip`, and post-combat level-up handling.
+* A narrow future target would be one mutation command such as `!add`, because existing coverage already documents
+  that source ability changes preserve saved combat-facing totals until refresh.
+
 Combat saved-total recommendation:
 
 * Do not change combat freshness behavior in this pass.
