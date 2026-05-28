@@ -140,10 +140,17 @@ def test_pri_viewchar_displays_strength_character_and_updates_totals(tmp_path, m
 
     assert len(result) == 1
     assert "Test Hero's Character Sheet" in result[0]
-    assert "Build:" in result[0]
-    assert "[color=red]strength[/color]" in result[0]
-    assert "𝚂𝚝𝚛𝚎𝚗𝚐𝚝𝚑" in result[0]
-    assert "[color=red]6[/color]" in result[0]
+    assert "Core" in result[0]
+    assert "Build: strength" in result[0]
+    assert "Attributes" in result[0]
+    assert "Strength:" in result[0]
+    assert "Combat Summary" in result[0]
+    assert "Hit Points: 30" in result[0]
+    assert "Armor Class: 14" in result[0]
+    assert "Damage Modifier: 7" in result[0]
+    assert "Inventory" in result[0]
+    assert "Armor Inventory:" in result[0]
+
     assert saved_character["thp"] == 30
     assert saved_character["tac"] == 14
     assert saved_character["tdr"] == 0
@@ -170,7 +177,8 @@ def test_pri_viewchar_displays_dexterity_character_and_updates_totals(tmp_path, 
 
     assert len(result) == 1
     assert "Test Hero's Character Sheet" in result[0]
-    assert "[color=red]dexterity[/color]" in result[0]
+    assert "Build: dexterity" in result[0]
+    assert "Dexterity:" in result[0]
     assert saved_character["thp"] == 30
     assert saved_character["tac"] == 12
     assert saved_character["tdr"] == 0
@@ -197,7 +205,8 @@ def test_pri_viewchar_displays_constitution_character_and_updates_totals(tmp_pat
 
     assert len(result) == 1
     assert "Test Hero's Character Sheet" in result[0]
-    assert "[color=red]constitution[/color]" in result[0]
+    assert "Build: constitution" in result[0]
+    assert "Constitution:" in result[0]
     assert saved_character["thp"] == 26
     assert saved_character["tac"] == 16
     assert saved_character["tdr"] == 0

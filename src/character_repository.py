@@ -1168,6 +1168,99 @@ def build_character_view_context(char_data):
     }
 
 
+def build_character_view_message(view_context):
+    totals = view_context["totals"]
+
+    armor_one = view_context["armor_one"]
+    armor_two = view_context["armor_two"]
+    armor_three = view_context["armor_three"]
+    armor_inv_one = view_context["armor_inv_one"]
+    armor_inv_two = view_context["armor_inv_two"]
+    armor_inv_three = view_context["armor_inv_three"]
+
+    potion_inventory_list = view_context["potion_inventory"]
+
+    equip = view_context["equip"]
+    name = view_context["name"]
+    build = view_context["build"]
+    trait = view_context["trait"]
+    level = view_context["level"]
+    total_feats = view_context["total_feats"]
+    base_damage = view_context["base_damage"]
+    renown = view_context["renown"]
+    current_xp = view_context["current_xp"]
+    next_level = view_context["next_level"]
+    remaining_feats = view_context["remaining_feats"]
+    feats_taken = view_context["feats_taken"]
+    ap = view_context["ap"]
+    reset = view_context["reset"]
+    wins = view_context["wins"]
+    losses = view_context["losses"]
+    forfeits = view_context["forfeits"]
+    potion_effect = view_context["potion_effect"]
+    permanent_strength = view_context["permanent_strength"]
+    permanent_dexterity = view_context["permanent_dexterity"]
+    permanent_constitution = view_context["permanent_constitution"]
+
+    strength = totals["strength"]
+    dexterity = totals["dexterity"]
+    constitution = totals["constitution"]
+    thp = totals["thp"]
+    tac = totals["tac"]
+    tdr = totals["tdr"]
+    thit = totals["thit"]
+    tdamage = totals["tdamage"]
+    regeneration = totals["regeneration"]
+    blur = totals["blur"]
+    initiative = totals["initiative"]
+
+    return (
+        f"{name}'s Character Sheet\n\n"
+        "Core\n"
+        f"Name: {name}\n"
+        f"Build: {build}\n"
+        f"Trait: {trait}\n"
+        f"Level: {level}\n"
+        f"Renown: {int(renown)}\n"
+        f"Current XP: {current_xp}\n"
+        f"XP Needed: {next_level}\n\n"
+        "Attributes\n"
+        f"Strength: {strength}\n"
+        f"Dexterity: {dexterity}\n"
+        f"Constitution: {constitution}\n"
+        "Permanent Bonuses (Str, Dex, Con): "
+        f"{permanent_strength}, {permanent_dexterity}, {permanent_constitution}\n\n"
+        "Combat Summary\n"
+        f"Hit Points: {thp}\n"
+        f"Armor Class: {tac}\n"
+        f"To Hit Modifier: {thit}\n"
+        f"Damage Modifier: {tdamage}\n"
+        f"Base Damage: {base_damage}\n"
+        f"Damage Reduction: {tdr}\n"
+        f"Regeneration: {regeneration}\n"
+        f"Blur: {blur}%\n"
+        f"Initiative Bonus: {initiative}\n\n"
+        "Progress\n"
+        f"Ability Points: {ap}\n"
+        f"Reset Available: {reset}\n"
+        f"Total Feats: {total_feats}\n"
+        f"Available Feats: {remaining_feats}\n"
+        f"Feats Taken: {feats_taken}\n\n"
+        "Record\n"
+        f"Wins: {wins}\n"
+        f"Losses: {losses}\n"
+        f"Forfeits: {forfeits}\n\n"
+        "Inventory\n"
+        f"Potion Inventory: {potion_inventory_list}\n"
+        f"Potion Effect: {potion_effect}\n"
+        "Armor Inventory: "
+        f"{armor_one}: ({armor_inv_one}), "
+        f"{armor_two}: ({armor_inv_two}), "
+        f"{armor_three}: ({armor_inv_three})\n"
+        f"Armor Equipped: {equip}"
+    )
+
+
 def apply_character_view_totals(char_data, totals):
     char_data["thp"] = totals["thp"]
     char_data["tac"] = totals["tac"]
@@ -1177,7 +1270,6 @@ def apply_character_view_totals(char_data, totals):
     char_data["initiative"] = totals["initiative"]
     char_data["regeneration"] = totals["regeneration"]
     return char_data
-
 
 def add_ability_point(char_data: dict, ability: str) -> tuple[dict, list[str]]:
     msg = []

@@ -27,6 +27,7 @@ from src.character_repository import (
     apply_character_view_totals,
     assign_character_stats,
     build_character_view_context,
+    build_character_view_message,
     calculate_character_view_totals,
     character_exists,
     format_character_view_armor_inventory,
@@ -228,91 +229,9 @@ def pri_viewchar(character):
         charData = load_character(character, charFolder)
 
         view_context = build_character_view_context(charData)
-
         totals = view_context["totals"]
 
-        armorOne = view_context["armor_one"]
-        armorTwo = view_context["armor_two"]
-        armorThree = view_context["armor_three"]
-        armorInvOne = view_context["armor_inv_one"]
-        armorInvTwo = view_context["armor_inv_two"]
-        armorInvThree = view_context["armor_inv_three"]
-
-        potionInventoryList = view_context["potion_inventory"]
-
-        equip = view_context["equip"]
-        name = view_context["name"]
-        build = view_context["build"]
-        trait = view_context["trait"]
-        level = view_context["level"]
-        tFeats = view_context["total_feats"]
-        baseDamage = view_context["base_damage"]
-        renown = view_context["renown"]
-        xp = view_context["current_xp"]
-        nextLevel = view_context["next_level"]
-        remainingFeats = view_context["remaining_feats"]
-        hasTakenList = view_context["feats_taken"]
-        ap = view_context["ap"]
-        reset = view_context["reset"]
-        wins = view_context["wins"]
-        losses = view_context["losses"]
-        forfeits = view_context["forfeits"]
-        potionEffect = view_context["potion_effect"]
-        pstrength = view_context["permanent_strength"]
-        pdexterity = view_context["permanent_dexterity"]
-        pconstitution = view_context["permanent_constitution"]
-
-        # except:
-        #     print("Something above doesn't exist")
-        print("What?")
-
-        strength = totals["strength"]
-        dexterity = totals["dexterity"]
-        constitution = totals["constitution"]
-        thp = totals["thp"]
-        tac = totals["tac"]
-        tdr = totals["tdr"]
-        thit = totals["thit"]
-        tdamage = totals["tdamage"]
-        regen = totals["regeneration"]
-        blur = totals["blur"]
-        initiative = totals["initiative"]
-
-        msg.append("\n" + name + "'s Character Sheet:\n"
-                   "𝙲𝚑𝚊𝚛𝚊𝚌𝚝𝚎𝚛 𝙽𝚊𝚖𝚎:\t\t\t\t\t[color=red]" + name + "[/color]\n"
-                   "Build:\t\t\t\t\t\t\t[color=red]" + build + "[/color]\n" 
-                   "𝚂𝚝𝚛𝚎𝚗𝚐𝚝𝚑:\t\t\t\t\t\t[color=red]" + str(strength) + "[/color]\t\t\t\t\t"
-                   "𝙻𝚎𝚟𝚎𝚕:\t\t\t\t\t\t\t[color=red]" + str(level) + "[/color]\n"
-                   "𝙳𝚎𝚡𝚝𝚎𝚛𝚒𝚝𝚢:\t\t\t\t\t\t[color=red]" + str(dexterity) + "[/color]\t\t\t\t\t"
-                   "𝙰𝚛𝚖𝚘𝚛 𝙲𝚕𝚊𝚜𝚜:\t\t\t\t\t[color=red]" + str(tac) + "[/color]\n"
-                   "𝙲𝚘𝚗𝚜𝚝𝚒𝚝𝚞𝚝𝚒𝚘𝚗:\t\t\t\t\t[color=red]" + str(constitution) + "[/color]\t\t\t\t\t"
-                   "𝙷𝚒𝚝 𝙿𝚘𝚒𝚗𝚝𝚜:\t\t\t\t\t\t[color=red]" + str(thp) + "[/color]\n"
-                   "𝚃𝚘 𝙷𝚒𝚝 𝙼𝚘𝚍𝚒𝚏𝚒𝚎𝚛:\t\t\t\t\t[color=red]" + str(thit) + "[/color]\t\t\t\t\t"
-                   "𝚃𝚘𝚝𝚊𝚕 𝙰𝚋𝚒𝚕𝚒𝚝𝚢 𝙿𝚘𝚒𝚗𝚝𝚜:\t\t\t[color=red]" + str(ap) + "[/color]\n"
-                   "𝙳𝚊𝚖𝚊𝚐𝚎 𝙼𝚘𝚍𝚒𝚏𝚒𝚎𝚛:\t\t\t\t[color=red]" + str(tdamage) + "[/color]\t\t\t\t\t"
-                   "𝙱𝚊𝚜𝚎 𝙳𝚊𝚖𝚊𝚐𝚎:\t\t\t\t\t[color=red]" + str(baseDamage) + "[/color]\n"
-                   "𝚁𝚎𝚐𝚎𝚗𝚎𝚛𝚊𝚝𝚒𝚘𝚗:\t\t\t\t\t[color=red]" + str(regen) + "[/color]\t\t\t\t\t"
-                   "𝙳𝚊𝚖𝚊𝚐𝚎 𝚁𝚎𝚍𝚞𝚌𝚝𝚒𝚘𝚗:\t\t\t\t[color=red]" + str(tdr) + "[/color]\n"
-                   "𝚁𝚎𝚜𝚎𝚝:\t\t\t\t\t\t\t[color=red]" + str(reset) + "[/color]\t\t\t\t\t"
-                   "𝚃𝚘𝚝𝚊𝚕 𝙵𝚎𝚊𝚝𝚜:\t\t\t\t\t[color=red]" + str(tFeats) + "[/color]\n"
-                   "𝚆𝚒𝚗𝚜:\t\t\t\t\t\t\t[color=red]" + str(wins) + "[/color]\t\t\t\t\t"
-                   "𝙻𝚘𝚜𝚜𝚎𝚜:\t\t\t\t\t\t\t[color=red]" + str(losses) + "[/color]\n"
-                   "Forfeits:\t\t\t\t\t\t\t[color=red]" +str(forfeits) + "[/color]\t\t\t\t\t"                                                                                           
-                   "𝚁𝚎𝚗𝚘𝚠𝚗:\t\t\t\t\t\t\t[color=red]" + str(int(renown)) + "[/color]\n"
-                   "𝚃𝚛𝚊𝚒𝚝:\t\t\t\t\t\t\t[color=red]" + str(trait) + "[/color]\n"
-                   "𝙱𝚕𝚞𝚛:\t\t\t\t\t\t\t[color=red]" + str(blur) + "%[/color]\n"
-                   "𝙸𝚗𝚒𝚝𝚒𝚊𝚝𝚒𝚟𝚎 Bonus:\t\t\t\t[color=red]" + str(initiative) + "[/color]\n"
-                   "𝙲𝚞𝚛𝚛𝚎𝚗𝚝 𝚇𝙿:\t\t\t\t\t\t[color=red]" + str(xp) + "[/color]\n"
-                   "𝚇𝙿 𝚗𝚎𝚎𝚍𝚎𝚍 𝚝𝚘 𝚕𝚎𝚟𝚎𝚕:\t\t\t\t[color=red]" + str(nextLevel) + "[/color]\n"
-                   "𝙿𝚘𝚝𝚒𝚘𝚗 𝙸𝚗𝚟𝚎𝚗𝚝𝚘𝚛𝚢:\t\t\t\t[color=red]" + str(potionInventoryList) + "[/color]\n"
-                   "𝙿𝚘𝚝𝚒𝚘𝚗 𝙴𝚏𝚏𝚎𝚌𝚝:\t\t\t\t\t[color=red]" + str(potionEffect) + "[/color]\n"
-                   "𝙿𝚎𝚛𝚖𝚊𝚗𝚎𝚗𝚝 𝙱𝚘𝚗𝚞𝚜𝚎𝚜 (𝚂𝚝𝚛, 𝙳𝚎𝚡, 𝙲𝚘𝚗)\t[color=red]" + str(pstrength) + ", " +
-                   str(pdexterity) + ", " + str(pconstitution) + "[/color]\n" 
-                   "𝙰𝚟𝚊𝚒𝚕𝚊𝚋𝚕𝚎 𝙵𝚎𝚊𝚝𝚜:\t\t\t\t[color=red]" + str(remainingFeats) + "[/color]\n"
-                   "𝙵𝚎𝚊𝚝𝚜 𝚃𝚊𝚔𝚎𝚗:\t\t\t\t\t" + hasTakenList + "\n"
-                   "𝙰𝚛𝚖𝚘𝚛 𝙸𝚗𝚟𝚎𝚗𝚝𝚘𝚛𝚢:\t\t\t\t\t[color=red] " + armorOne + ": (" + armorInvOne + "), " +
-                   armorTwo + ": (" + armorInvTwo + "), " + armorThree + ": (" + armorInvThree + "), [/color]\n"
-                   "𝙰𝚛𝚖𝚘𝚛 𝙴𝚚𝚞𝚒𝚙𝚙𝚎𝚍:\t\t\t\t[color=red] " + equip)
+        msg.append(build_character_view_message(view_context))
 
         apply_character_view_totals(charData, totals)
         save_character(character, charData, charFolder)
