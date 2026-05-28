@@ -977,6 +977,85 @@ Conclusion:
 * Any future `pri_viewchar()` work should focus only on the mutation-bearing total recalculation/write-back boundary, not display formatting.
 * Character view total write-back orchestration extraction complete.
 
+### Combat Saved-Total Dependency Review
+
+Search-only review completed for saved combat-facing totals:
+
+* `thp`
+* `tac`
+* `tdr`
+* `thit`
+* `tdamage`
+* `initiative`
+* `regeneration`
+
+Current behavior:
+
+* `!viewchar` remains the saved-total refresh boundary.
+* `!challenge` snapshots player one combat HP from saved `pOneInfo["thp"]`.
+* `!accept` snapshots player two combat HP from saved `pTwoInfo["thp"]`.
+* Challenge acceptance and initiative resolution use saved `initiative` values.
+* Roll handling uses saved `thit`, `tac`, `tdr`, `tdamage`, and `regeneration` values from the loaded player info.
+* True Strike and normal strike paths both read saved combat-facing totals.
+* Evasion/pass/deflect-style combat branches also read saved `regeneration`.
+* Combat setup does not recalculate character totals before storing combat state.
+* Combat roll handling does not recalculate character totals before resolving attacks.
+
+Saved-total write-back source:
+
+* `src.character_repository.apply_character_view_totals()` writes `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration`.
+* `src.character_repository.build_and_save_character_view()` is the repository-backed orchestration helper that loads the character, builds the character view context, builds the display message, applies calculated totals, and saves the character.
+* `original/onPRIUtils.py::pri_viewchar()` remains the legacy command boundary that triggers that refresh.
+
+Confirmed combat dependencies:
+
+* Challenge setup dependency: `!challenge` and `!accept` copy saved `thp` into combat total/current HP state.
+* Initiative dependency: challenge acceptance compares saved `initiative`.
+* Attack roll dependency: normal roll handling reads saved `thit`.
+* Armor class dependency: normal roll handling reads saved `tac`.
+* Damage dependency: normal and True Strike handling read saved `tdamage`.
+* Damage reduction dependency: normal roll, True Strike, and stoneskin/DR helper paths read saved `tdr`.
+* Regeneration dependency: normal roll, True Strike, pass/evasion handling, and regeneration helper paths read saved `regeneration`.
+
+Confirmed stale-total mutation sources:
+
+* Stat selection changes strength, dexterity, constitution, and initiative-facing data.
+* Build selection changes the formula used to calculate combat totals.
+* Trait selection changes trait hit, damage, AC, DR, HP, regeneration, and initiative-facing data.
+* Feat selection changes feat hit, damage, AC, HP, and other combat-facing behavior.
+* Armor equip and unequip change armor hit, damage, AC, HP, DR, initiative, strength, dexterity, constitution, and blur fields.
+* Potion use changes potion hit, damage, AC, HP, strength, dexterity, constitution, regeneration, and blur fields.
+* Permanent stat potion use changes permanent strength, dexterity, and constitution fields.
+* Potion cleanup after combat resets temporary potion fields.
+* Level-up handling changes HP, base damage, hit, damage, AC, feat slots, ability point state, and trait scaling fields.
+* Ability point add changes strength, dexterity, or constitution and explicitly tells the player to run `!viewchar` to ensure changes.
+
+Risk classification:
+
+* This is a risky behavior area because combat currently relies on saved totals rather than recalculating from source fields at combat start.
+* The current legacy contract appears to be that players must run `!viewchar` after character-changing actions to refresh combat-facing totals.
+* Changing challenge setup to automatically refresh totals would be a behavior change.
+* Changing roll handling to automatically refresh totals would be a larger combat behavior change.
+* Changing potion cleanup, armor equip, trait selection, feat selection, stat selection, level-up, or ability point
+  add to automatically refresh totals would also be behavior-changing because it would alter when combat-facing saved totals become current.
+
+Expected test coverage:
+
+* Existing view character tests cover saved-total write-back for strength, dexterity, and constitution builds.
+* Existing apply-view-total tests cover the direct total write-back helper.
+* Existing challenge acceptance tests cover initiative behavior using provided saved initiative values.
+* Existing armor, potion, trait, feat, stat, and ability-point tests cover the mutation sources themselves.
+* No current test should be assumed to enforce automatic combat freshness.
+* Any future combat freshness change needs explicit tests proving the old stale-total behavior first, then deliberate tests for the selected new behavior.
+
+Recommendation:
+
+* Do not change combat freshness behavior in this pass.
+* Do not introduce automatic total recalculation at `!challenge`, `!accept`, or `!roll` yet.
+* Do not change combat, rolling, payout, potion cleanup, level-up, armor, potion, inventory/economy, leaderboard, who, player-score, wholevel, or character view display behavior.
+* If this review continues beyond this audit, the safest next step is test-only coverage that documents the current stale-total contract.
+* A repository helper for explicit total refresh may be considered later, but it should not be wired into combat until a deliberate behavior change is selected.
+
 Recommendation:
 
 * Pause additional inventory and economy extraction until the next target is deliberately selected.
