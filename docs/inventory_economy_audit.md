@@ -856,9 +856,32 @@ Remaining inventory/economy boundary review result:
 * No further read-only shop display boundary remains in `original/botCommand.py`.
 * Further inventory/economy extraction should continue only through a focused mutation-boundary pass with temporary test files and no live data access.
 
+Leaderboard and character summary display boundary review result:
+
+* `!leaderboard` routing remains in `original/botCommand.py`.
+* `message_12_leaderboard()` in `original/onMSGUtils.py` already delegates leaderboard display construction to `src.character_repository.build_character_leaderboard_messages()`.
+* `build_character_leaderboard_messages()` owns the current leaderboard file-loading, win/loss/percent calculation, sorting, and display-line formatting.
+* Repository tests already cover leaderboard sorting by wins, losses, percent, default sorting behavior, and zero-match percent handling.
+* `!who` routing remains in `original/botCommand.py`, while character-summary score behavior is already covered by repository and legacy tests.
+* `!player` remains commented out in `original/botCommand.py`; related score-display helper behavior still has tests, but the public command route is dead legacy routing.
+* `!wholevel` routing remains in `original/botCommand.py`, with repository and legacy tests covering the extracted behavior.
+* `pri_viewchar()` still displays wins, losses, and forfeits from the view context, but it belongs to the broader
+  character view summary boundary rather than the leaderboard/who boundary.
+* Combat result mutations that increment wins, losses, and forfeits remain in combat-result files and `botCommand.py`;
+  those are expected mutation hits and are out of scope for this display-boundary review.
+* Feat percentage hits in `original/feat_methods.py` are unrelated combat percentage logic and are out of scope for leaderboard and character summary display extraction.
+
+Conclusion:
+
+* No new leaderboard, who, player-score, or wholevel extraction is recommended at this time.
+* This area is sufficiently extracted and tested for the current refactor phase.
+* The remaining meaningful work is `pri_viewchar()` character summary calculation/display separation, but that should
+  be handled as a separate focused character-view boundary audit because it is larger and closer to mutation-bearing summary recalculation.
+
 Recommendation:
 
 * Pause additional inventory and economy extraction until the next target is deliberately selected.
+* Skip leaderboard, who, player-score, and wholevel extraction for now because those areas are already sufficiently extracted and tested.
 * Do not split temporary potion behavior further without a focused audit.
 * Keep file loading and saving in `original/onPRIUtils.py` unless a file-boundary change is explicitly planned.
 * Do not import `original/botCommand.py` in pytest.
