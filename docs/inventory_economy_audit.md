@@ -845,8 +845,20 @@ Read-only shop display routing audit result:
 * `botCommand.py` still owns the `!potionshop` display header and private response routing.
 * No shop display extraction target remains active.
 
+Remaining inventory/economy boundary review result:
+
+* `original/botCommand.py` no longer directly opens `potions.json` or `armor.json`.
+* `!potionshop` routes through `pri_potionshop()`.
+* `!armorshop` routes through `pri_armorshop()`.
+* Remaining direct `potions.json` and `armor.json` access is limited to legacy PRI wrappers, repository/data-loader code, and tests.
+* Remaining `original/onPRIUtils.py` direct JSON access is tied to legacy wrapper file loading and saving for
+  shop stocking, potion buying/selling/using, armor buying/selling/equipping, inventory updates, renown updates, and shop depletion.
+* No further read-only shop display boundary remains in `original/botCommand.py`.
+* Further inventory/economy extraction should continue only through a focused mutation-boundary pass with temporary test files and no live data access.
+
 Recommendation:
 
+* Pause additional inventory and economy extraction until the next target is deliberately selected.
 * Do not split temporary potion behavior further without a focused audit.
 * Keep file loading and saving in `original/onPRIUtils.py` unless a file-boundary change is explicitly planned.
 * Do not import `original/botCommand.py` in pytest.
@@ -860,7 +872,8 @@ Status:
 * Temporary potion behavior legacy wrapper coverage expanded.
 * Temporary potion edge-case repository coverage expanded.
 * Temporary potion regeneration no-benefit wrapper coverage expanded.
-* Full pytest passes with 400 tests.
+* Remaining inventory/economy boundary review complete.
+
 
 ---
 
