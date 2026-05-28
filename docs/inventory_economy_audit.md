@@ -1056,6 +1056,16 @@ Combat saved-total contract test coverage result:
 * Ability point mutation is covered as updating the source ability score while preserving saved combat-facing totals until character view refresh.
 * This coverage documents current legacy behavior only; it does not change combat freshness, rolling behavior, mutation behavior, or character view total write-back behavior.
 
+Combat saved-total refresh helper extraction result:
+
+* Added `src.character_repository.refresh_character_combat_totals()` as a repository-level helper for refreshing one character's saved combat-facing totals.
+* The helper loads the character from the supplied character directory, calculates totals through `calculate_character_view_totals()`,
+  applies saved combat-facing totals through `apply_character_view_totals()`, saves the character, and returns the refreshed character data.
+* The helper is intentionally not wired into `!viewchar`, `!challenge`, `!accept`, `!roll`, or `original/botCommand.py`.
+* Combat behavior remains unchanged. Existing combat continues to rely on saved combat-facing totals already present on the character sheet.
+* Added repository tests proving the helper updates `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration` using temporary character files only.
+* Local pytest passed with 405 tests.
+
 Combat saved-total recommendation:
 
 * Do not change combat freshness behavior in this pass.

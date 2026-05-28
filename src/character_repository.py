@@ -1272,6 +1272,26 @@ def apply_character_view_totals(char_data, totals):
     return char_data
 
 
+def refresh_character_combat_totals(
+    character: str,
+    characters_dir: Path | str = CHARACTERS_DIR,
+) -> dict[str, Any]:
+    """
+    Refresh saved combat-facing totals for one character.
+
+    This intentionally calculates totals directly instead of building the full
+    character view message. The helper updates only the saved totals that combat
+    already reads from the character file and does not change combat routing.
+    """
+    char_data = load_character(character, characters_dir)
+
+    totals = calculate_character_view_totals(char_data)
+    apply_character_view_totals(char_data, totals)
+    save_character(character, char_data, characters_dir)
+
+    return char_data
+
+
 def build_and_save_character_view(character, characters_dir=CHARACTERS_DIR):
     char_data = load_character(character, characters_dir)
 
