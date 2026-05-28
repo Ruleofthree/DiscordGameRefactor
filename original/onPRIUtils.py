@@ -3,6 +3,7 @@ from src.armor_repository import (
     buy_character_armor,
     equip_character_armor,
     get_armor_dictionary,
+    get_armor_shop_lists,
     rename_character_armor,
     sell_character_armor,
     stock_armor_shop,
@@ -15,6 +16,7 @@ from src.potion_repository import (
     get_potion_dictionary,
     get_potion_effect_info,
     get_potion_sell_value,
+    get_potion_shop_lists,
     give_character_potion,
     sell_character_potion,
     stock_potion_shop,
@@ -63,6 +65,14 @@ def pri_armorshop():
     for key in armor_dictionary[0]["armorlist"]:
         armor_shop_items.append(armor_dictionary[0]["armorlist"][key])
     return build_armor_shop_display(armor_shop_items)
+
+
+def pri_potion_shop_lists():
+    return get_potion_shop_lists()
+
+
+def pri_armor_shop_lists():
+    return get_armor_shop_lists()
 
 
 # Method to echo private messages to discord

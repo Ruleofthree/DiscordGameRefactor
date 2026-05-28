@@ -352,104 +352,6 @@ def traitDict():
     from src.trait_repository import get_trait_dictionary_and_names
     return get_trait_dictionary_and_names()
 
-
-def potionShop():
-    # Open up a json object containing the list of potions
-    potionFile = open("potions.json", "r", encoding="utf-8")
-    potionDictionary = json.load(potionFile)
-    potionFile.close()
-
-    # place all keys within a list for comparison later
-    potionList = []
-    for keys in potionDictionary[0]:
-        potionList.append(keys)
-
-    for category in potionList:
-        if category == "common":
-            commonList = []
-            for keys in potionDictionary[0][category]:
-                commonList.append(keys)
-        if category == "uncommon":
-            uncommonList = []
-            for keys in potionDictionary[0][category]:
-                uncommonList.append(keys)
-        if category == "rare":
-            rareList = []
-            for keys in potionDictionary[0][category]:
-                rareList.append(keys)
-        if category == "vrare":
-            vrareList = []
-            for keys in potionDictionary[0][category]:
-                vrareList.append(keys)
-        if category == "relic":
-            relicList = []
-            for keys in potionDictionary[0][category]:
-                relicList.append(keys)
-
-    return commonList, uncommonList, rareList, vrareList, relicList
-
-
-def armorShop():
-    armorFile = open("armor.json", "r", encoding="utf-8")
-    armorDictionary = json.load(armorFile)
-    armorFile.close()
-
-    # place all keys within a list for comparison later
-    catOneList = []
-    catTwoList = []
-    catThreeList = []
-    for keys in armorDictionary[0]["cat1"]:
-        catOneList.append(keys)
-    for keys in armorDictionary[0]["cat2"]:
-        catTwoList.append(keys)
-    for keys in armorDictionary[0]["cat3"]:
-        catThreeList.append(keys)
-
-    for category in catOneList:
-        if category == "common":
-            catOneCommonList = []
-            for keys in armorDictionary[0]["cat1"][category]:
-                catOneCommonList.append(keys)
-        if category == "uncommon":
-            catOneUncommonList = []
-            for keys in armorDictionary[0]["cat1"][category]:
-                catOneUncommonList.append(keys)
-        if category == "rare":
-            catOneRareList = []
-            for keys in armorDictionary[0]["cat1"][category]:
-                catOneRareList.append(keys)
-
-    for category in catTwoList:
-        if category == "common":
-            catTwoCommonList = []
-            for keys in armorDictionary[0]["cat2"][category]:
-                catTwoCommonList.append(keys)
-        if category == "uncommon":
-            catTwoUncommonList = []
-            for keys in armorDictionary[0]["cat2"][category]:
-                catTwoUncommonList.append(keys)
-        if category == "rare":
-            catTwoRareList = []
-            for keys in armorDictionary[0]["cat2"][category]:
-                catTwoRareList.append(keys)
-
-    for category in catThreeList:
-        if category == "common":
-            catThreeCommonList = []
-            for keys in armorDictionary[0]["cat3"][category]:
-                catThreeCommonList.append(keys)
-        if category == "uncommon":
-            catThreeUncommonList = []
-            for keys in armorDictionary[0]["cat3"][category]:
-                catThreeUncommonList.append(keys)
-        if category == "rare":
-            catThreeRareList = []
-            for keys in armorDictionary[0]["cat3"][category]:
-                catThreeRareList.append(keys)
-
-    return catOneCommonList, catOneUncommonList, catOneRareList, catTwoCommonList, catTwoUncommonList, catTwoRareList,\
-    catThreeCommonList, catThreeUncommonList, catThreeRareList
-
 # global note
 # note = ""
 
@@ -1704,8 +1606,8 @@ class EchoBot(fchat.FChatClient):
         # restock armor
         if message == "!stockarmor":
             if character in myCharacters:
-                catOneCommonList, catOneUncommonList, catOneRareList, catTwoCommonList, catTwoUncommonList,\
-                catTwoRareList, catThreeCommonList, catThreeUncommonList, catThreeRareList = armorShop()
+                catOneCommonList, catOneUncommonList, catOneRareList, catTwoCommonList, catTwoUncommonList, \
+                    catTwoRareList, catThreeCommonList, catThreeUncommonList, catThreeRareList = pri_armor_shop_lists()
                 msg = pri_11_stockarmor(catOneCommonList, catOneUncommonList, catOneRareList, catTwoCommonList,
                                         catTwoUncommonList, catTwoRareList, catThreeCommonList,
                                         catThreeUncommonList, catThreeRareList)
@@ -1716,7 +1618,7 @@ class EchoBot(fchat.FChatClient):
         # restock potions
         if message == "!stockpotion":
             if character in myCharacters:
-                commonList, uncommonList, rareList, vrareList, relicList = potionShop()
+                commonList, uncommonList, rareList, vrareList, relicList = pri_potion_shop_lists()
                 msg, shopList = pri_10_stockpotion(commonList, uncommonList, rareList, vrareList, relicList)
                 super().PRI(character, msg)
             else:
@@ -2512,7 +2414,7 @@ class EchoBot(fchat.FChatClient):
                 path = os.getcwd()
                 charFolder = os.path.join(path + "/characters/")
                 print("in usepotion")
-                commonList, uncommonList, rareList, vrareList, relicList = potionShop()
+                commonList, uncommonList, rareList, vrareList, relicList = pri_potion_shop_lists()
                 msg = pri_10_usepotion(character, potion, commonList, uncommonList, rareList,
                                            vrareList, relicList, charFolder)
                 if "You" in msg:

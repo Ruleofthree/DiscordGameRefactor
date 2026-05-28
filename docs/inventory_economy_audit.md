@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `398 passed`
+* `400 passed`
 
 This test result includes:
 
@@ -57,6 +57,7 @@ Completed inventory/economy areas include:
 * Potion use lifecycle extraction
 * Potion use cleanup review
 * Create potion boundary extraction
+* Shop list loader boundary extraction
 * Armor shop restock
 * Armor purchase
 * Armor sale
@@ -79,6 +80,8 @@ Repository-backed helpers now exist for:
 * Equipping armor
 * Unequipping armor
 * Creating moderator-granted potions
+* Loading potion shop list buckets
+* Loading armor shop list buckets
 
 Remaining targets are higher risk because they may touch combat-adjacent state, broader command/runtime behavior,
 or behavior that has not yet been isolated behind repository helpers.
@@ -140,6 +143,52 @@ Test coverage:
 
 * `tests/test_legacy_onpriutils_armorshop.py` confirms `pri_armorshop()` loads armor data and returns the shop display body.
 * Existing repository and legacy wrapper tests continue to cover armor shop line formatting.
+
+---
+
+### Shop List Loader Boundary Extraction
+
+Raw shop list loading was removed from `original/botCommand.py`.
+
+Thin wrappers were added to `original/onPRIUtils.py`:
+
+* `pri_potion_shop_lists()`
+* `pri_armor_shop_lists()`
+
+`pri_potion_shop_lists()` delegates to `src.potion_repository.get_potion_shop_lists()`.
+
+`pri_armor_shop_lists()` delegates to `src.armor_repository.get_armor_shop_lists()`.
+
+`original/botCommand.py` now routes the remaining active potion and armor list-loading call sites through these wrappers instead of using local `potionShop()` and `armorShop()` helper functions.
+
+After a case-sensitive search confirmed that no active `potionShop()` or `armorShop()` call sites remained, the old helper definitions were removed from `original/botCommand.py`.
+
+Behavior preserved:
+
+* `!stockpotion` still owns command routing and response behavior in `original/botCommand.py`.
+* `!usepotion` still owns command routing and response behavior in `original/botCommand.py`.
+* `!stockarmor` still owns command routing and response behavior in `original/botCommand.py`.
+* Potion usage behavior was not changed.
+* Potion effect behavior was not changed.
+* Combat checks were not changed.
+* Potion restock mutation logic was not changed.
+* Armor restock mutation logic was not changed.
+* Shop display wrappers `pri_potionshop()` and `pri_armorshop()` were not changed.
+* Legacy formatting remains unchanged.
+
+Tests added:
+
+* `tests/test_legacy_onpriutils_shop_lists.py`
+
+Verification:
+
+* `python -m py_compile original/botCommand.py`
+* `pytest tests/test_legacy_onpriutils_shop_lists.py`
+* `pytest`
+
+Status:
+
+* Complete.
 
 ---
 
@@ -811,7 +860,7 @@ Status:
 * Temporary potion behavior legacy wrapper coverage expanded.
 * Temporary potion edge-case repository coverage expanded.
 * Temporary potion regeneration no-benefit wrapper coverage expanded.
-* Full pytest passes with 398 tests.
+* Full pytest passes with 400 tests.
 
 ---
 
