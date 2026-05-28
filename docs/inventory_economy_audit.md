@@ -48,8 +48,8 @@ behavior, potion use lifecycle behavior, potion use cleanup review, armor purcha
 armor equipment lifecycle boundary behavior, and armor equipment lifecycle extraction.
 
 The character-summary display boundary review also completed the focused `pri_viewchar()` display update. Character
-view context construction and total calculation remain repository-backed, while the legacy wrapper still owns character
-file loading, total write-back orchestration, saving, and private command return behavior.
+view context construction, total calculation, and total write-back orchestration are repository-backed. The legacy
+wrapper still owns character existence checking and private command return behavior.
 
 Completed inventory/economy areas include:
 
@@ -163,9 +163,11 @@ Thin wrappers were added to `original/onPRIUtils.py`:
 
 `pri_armor_shop_lists()` delegates to `src.armor_repository.get_armor_shop_lists()`.
 
-`original/botCommand.py` now routes the remaining active potion and armor list-loading call sites through these wrappers instead of using local `potionShop()` and `armorShop()` helper functions.
+`original/botCommand.py` now routes the remaining active potion and armor list-loading call sites through these wrappers
+instead of using local `potionShop()` and `armorShop()` helper functions.
 
-After a case-sensitive search confirmed that no active `potionShop()` or `armorShop()` call sites remained, the old helper definitions were removed from `original/botCommand.py`.
+After a case-sensitive search confirmed that no active `potionShop()` or `armorShop()` call sites remained, the old
+helper definitions were removed from `original/botCommand.py`.
 
 Behavior preserved:
 
@@ -677,7 +679,8 @@ Behavior preserved:
 * Character view context construction remains in `src.character_repository.build_character_view_context()`.
 * Character view total calculation remains in the repository-backed view total helper.
 * Total write-back for `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration` remains preserved.
-* Combat behavior, rolling, XP payout, renown payout, level-up handling, potion behavior, armor behavior, inventory/economy behavior, leaderboard behavior, who behavior, player-score behavior, and wholevel behavior were not changed.
+* Combat behavior, rolling, XP payout, renown payout, level-up handling, potion behavior, armor behavior, 
+inventory/economy behavior, leaderboard behavior, who behavior, player-score behavior, and wholevel behavior were not changed.
 
 Cleanup completed:
 
@@ -687,6 +690,43 @@ Cleanup completed:
 Tests added or expanded:
 
 * `tests/test_legacy_onpriutils_viewchar.py`
+
+Verification:
+
+* `pytest tests/test_legacy_onpriutils_viewchar.py`
+* `pytest`
+
+Status:
+
+* Complete.
+
+### Character View Total Write-Back Orchestration Extraction
+
+Completed helper:
+
+* `build_and_save_character_view()` in `src.character_repository`
+
+Legacy wrapper:
+
+* `pri_viewchar()` now delegates the character load, view context construction, display message construction, total application, and character save sequence to `build_and_save_character_view()`.
+* `pri_viewchar()` still owns the missing-character check and private command return shape.
+
+Behavior preserved:
+
+* Using `!viewchar` still refreshes saved combat-facing totals on the character file.
+* Character view total calculation remains delegated to `calculate_character_view_totals()`.
+* Character view context construction remains delegated to `build_character_view_context()`.
+* Character view display construction remains delegated to `build_character_view_message()`.
+* Total write-back for `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration` remains preserved.
+* Combat still depends on these saved fields during challenge setup, initiative, attack rolls, armor class checks, damage, damage reduction, and regeneration.
+* Combat freshness behavior was not changed. Automatic recalculation at challenge or combat start remains a separate risk area.
+* Combat behavior, rolling, XP payout, renown payout, level-up handling, potion behavior, armor behavior, 
+  inventory/economy behavior, leaderboard behavior, who behavior, player-score behavior, wholevel behavior, and character view display formatting were not changed.
+
+Tests:
+
+* Existing `tests/test_legacy_onpriutils_viewchar.py` coverage continues to verify missing-character behavior,
+  displayed output, and saved total write-back for strength, dexterity, and constitution builds.
 
 Verification:
 
@@ -935,6 +975,7 @@ Conclusion:
 * No new leaderboard, who, player-score, wholevel, or character view display extraction is recommended at this time.
 * This area is sufficiently extracted and tested for the current refactor phase.
 * Any future `pri_viewchar()` work should focus only on the mutation-bearing total recalculation/write-back boundary, not display formatting.
+* Character view total write-back orchestration extraction complete.
 
 Recommendation:
 

@@ -26,6 +26,7 @@ from src.character_repository import (
     add_ability_point,
     apply_character_view_totals,
     assign_character_stats,
+    build_and_save_character_view,
     build_character_view_context,
     build_character_view_message,
     calculate_character_view_totals,
@@ -225,16 +226,7 @@ def pri_viewchar(character):
         msg.append("You don't even have a character created yet. Type !name <name> in the room. "
                    "Where <name> is your character's actual name. (Example: !name Joe")
     else:
-        # try:
-        charData = load_character(character, charFolder)
-
-        view_context = build_character_view_context(charData)
-        totals = view_context["totals"]
-
-        msg.append(build_character_view_message(view_context))
-
-        apply_character_view_totals(charData, totals)
-        save_character(character, charData, charFolder)
+        msg.append(build_and_save_character_view(character, charFolder))
     return msg
 
 # shows every single character in the game that is the level selected

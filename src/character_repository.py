@@ -1271,6 +1271,21 @@ def apply_character_view_totals(char_data, totals):
     char_data["regeneration"] = totals["regeneration"]
     return char_data
 
+
+def build_and_save_character_view(character, characters_dir=CHARACTERS_DIR):
+    char_data = load_character(character, characters_dir)
+
+    view_context = build_character_view_context(char_data)
+    totals = view_context["totals"]
+
+    message = build_character_view_message(view_context)
+
+    apply_character_view_totals(char_data, totals)
+    save_character(character, char_data, characters_dir)
+
+    return message
+
+
 def add_ability_point(char_data: dict, ability: str) -> tuple[dict, list[str]]:
     msg = []
 
