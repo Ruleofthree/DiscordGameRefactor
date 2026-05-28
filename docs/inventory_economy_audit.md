@@ -47,6 +47,10 @@ covers read-only display behavior, shop restocking behavior, single-character po
 behavior, potion use lifecycle behavior, potion use cleanup review, armor purchase behavior, armor sale behavior,
 armor equipment lifecycle boundary behavior, and armor equipment lifecycle extraction.
 
+The character-summary display boundary review also completed the focused `pri_viewchar()` display update. Character
+view context construction and total calculation remain repository-backed, while the legacy wrapper still owns character
+file loading, total write-back orchestration, saving, and private command return behavior.
+
 Completed inventory/economy areas include:
 
 * Read-only armor shop display
@@ -644,6 +648,55 @@ Status:
 
 * Complete.
 
+---
+
+### Character View Display Formatting Modernization
+
+Completed helpers:
+
+* `build_character_view_message()` in `src.character_repository`
+
+Legacy wrapper:
+
+* `pri_viewchar()` now delegates character sheet display construction to `build_character_view_message()`.
+* `pri_viewchar()` still loads the character file through the character repository helper.
+* `pri_viewchar()` still builds the view context through `build_character_view_context()`.
+* `pri_viewchar()` still applies recalculated totals through `apply_character_view_totals()`.
+* `pri_viewchar()` still saves the updated character data after applying view totals.
+
+Behavior deliberately changed:
+
+* The old GUI-oriented character sheet display was replaced with cleaner plain-text output intended to fit Discord better.
+* Fragile stylized Unicode labels, color tags, and tab-heavy display alignment were removed from the character view output.
+* The new display groups character information into readable sections: Core, Attributes, Combat Summary, Progress, Record, and Inventory.
+
+Behavior preserved:
+
+* Missing-character handling remains in `pri_viewchar()`.
+* Character file loading and saving remain in `original/onPRIUtils.py`.
+* Character view context construction remains in `src.character_repository.build_character_view_context()`.
+* Character view total calculation remains in the repository-backed view total helper.
+* Total write-back for `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration` remains preserved.
+* Combat behavior, rolling, XP payout, renown payout, level-up handling, potion behavior, armor behavior, inventory/economy behavior, leaderboard behavior, who behavior, player-score behavior, and wholevel behavior were not changed.
+
+Cleanup completed:
+
+* A duplicate earlier `build_character_view_context()` definition was removed from `src.character_repository`.
+* The remaining active `build_character_view_context()` definition is the full context builder used by `pri_viewchar()`.
+
+Tests added or expanded:
+
+* `tests/test_legacy_onpriutils_viewchar.py`
+
+Verification:
+
+* `pytest tests/test_legacy_onpriutils_viewchar.py`
+* `pytest`
+
+Status:
+
+* Complete.
+
 ## Remaining Function Risk Review
 
 ### Extracted Inventory and Economy Boundaries
@@ -821,12 +874,17 @@ Reason:
 * Armor purchase, armor sale, armor naming, armor equip, and armor unequip are now extracted and tested.
 * Potion purchase, potion sale, potion shop restocking, potion transfer, and potion use are now extracted and tested.
 * Permanent stat potion progression cleanup is complete and tested.
+* Read-only shop display routing has no remaining active extraction target.
+* Leaderboard, who, player-score, and wholevel behavior are sufficiently extracted and tested for the current phase.
+* Character view display formatting has been extracted and modernized for Discord-readable output.
 * Remaining work is more likely to touch combat-adjacent behavior, broader command/runtime behavior, or fragile legacy quirks.
 
 Possible next audit targets:
 
-* `!potionshop` display construction extraction, if potion shop display behavior should be moved out of `botCommand.py`.
 * Combat-adjacent potion effect cleanup, only after a dedicated test plan is written.
+* Character view total recalculation/write-back behavior, only if deliberately selected as a focused mutation-boundary audit.
+* Combat summary field freshness, only if the project is ready to examine whether combat should rely on
+  saved `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration` values.
 
 Read-only shop display routing audit result:
 
@@ -865,18 +923,18 @@ Leaderboard and character summary display boundary review result:
 * `!who` routing remains in `original/botCommand.py`, while character-summary score behavior is already covered by repository and legacy tests.
 * `!player` remains commented out in `original/botCommand.py`; related score-display helper behavior still has tests, but the public command route is dead legacy routing.
 * `!wholevel` routing remains in `original/botCommand.py`, with repository and legacy tests covering the extracted behavior.
-* `pri_viewchar()` still displays wins, losses, and forfeits from the view context, but it belongs to the broader
-  character view summary boundary rather than the leaderboard/who boundary.
+* `pri_viewchar()` still displays wins, losses, and forfeits from the view context, but the character sheet display body now delegates to `src.character_repository.build_character_view_message()`.
+* `build_character_view_message()` owns the Discord-readable character sheet display format.
+* `pri_viewchar()` still owns character file loading, view total application, character saving, and command return orchestration.
 * Combat result mutations that increment wins, losses, and forfeits remain in combat-result files and `botCommand.py`;
   those are expected mutation hits and are out of scope for this display-boundary review.
 * Feat percentage hits in `original/feat_methods.py` are unrelated combat percentage logic and are out of scope for leaderboard and character summary display extraction.
 
 Conclusion:
 
-* No new leaderboard, who, player-score, or wholevel extraction is recommended at this time.
+* No new leaderboard, who, player-score, wholevel, or character view display extraction is recommended at this time.
 * This area is sufficiently extracted and tested for the current refactor phase.
-* The remaining meaningful work is `pri_viewchar()` character summary calculation/display separation, but that should
-  be handled as a separate focused character-view boundary audit because it is larger and closer to mutation-bearing summary recalculation.
+* Any future `pri_viewchar()` work should focus only on the mutation-bearing total recalculation/write-back boundary, not display formatting.
 
 Recommendation:
 
@@ -896,6 +954,9 @@ Status:
 * Temporary potion edge-case repository coverage expanded.
 * Temporary potion regeneration no-benefit wrapper coverage expanded.
 * Remaining inventory/economy boundary review complete.
+* Duplicate character view context definition cleanup complete.
+* Character view display formatting modernization complete.
+* Character view display wrapper coverage updated.
 
 
 ---
