@@ -1,4 +1,4 @@
-﻿# Inventory and Economy Audit
+# Inventory and Economy Audit
 
 ## Purpose
 
@@ -1056,7 +1056,7 @@ Combat saved-total contract test coverage result:
 * Ability point mutation is covered as updating the source ability score while preserving saved combat-facing totals until character view refresh.
 * This coverage documents current legacy behavior only; it does not change combat freshness, rolling behavior, mutation behavior, or character view total write-back behavior.
 
-Combat saved-total recommenadation:
+Combat saved-total recommendation:
 
 * Do not change combat freshness behavior in this pass.
 * Do not introduce automatic total recalculation at `!challenge`, `!accept`, or `!roll` yet.
