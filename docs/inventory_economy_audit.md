@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `410 passed`
+* `413 passed`
 
 This test result includes:
 
@@ -1122,6 +1122,17 @@ Ability point refresh wiring implementation result:
 * Focused coverage confirms strength, dexterity, and constitution spends refresh saved combat-facing totals without
   touching combat, rolling, challenge, accept, potion cleanup, armor behavior, feat behavior, trait behavior, stat
   behavior, XP payout, renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
+
+Initial stat refresh wiring implementation result:
+
+* `pri_6_stats()` now refreshes saved combat-facing totals immediately after successful first-time stat assignment.
+* The refresh is limited to the successful `!stats` path after `assign_character_stats()` mutates the source strength,
+  dexterity, constitution, ability bonus, HP bonus, AC bonus, and initiative fields.
+* Failed stat assignment paths preserve stale saved combat-facing totals.
+* Focused coverage confirms successful stat assignment refreshes saved `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration`.
+* Focused coverage confirms rejected total-point assignment and already-assigned stat cases do not refresh stale saved combat-facing totals.
+* This implementation does not touch combat, rolling, challenge, accept, potion cleanup, armor behavior, feat behavior,
+  trait behavior, XP payout, renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
 
 Recommendation:
 

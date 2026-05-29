@@ -185,7 +185,15 @@ def pri_7_respec(character):
 def pri_6_stats(message, character, charData, charFile):
     path = os.getcwd()
     charFolder = os.path.join(path + "/characters/")
-    return assign_character_stats(charFolder, character, message)
+    msg = assign_character_stats(charFolder, character, message)
+
+    if (
+        len(msg) > 1
+        and "The above points have been placed on your character sheet." in msg[1]
+    ):
+        refresh_character_combat_totals(character.lower(), charFolder)
+
+    return msg
 
 # !build <strength> <dexterity> <constitution>
 def pri_6_build(charFolder, message, charFile, character):
