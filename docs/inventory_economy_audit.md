@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `405 passed`
+* `410 passed`
 
 This test result includes:
 
@@ -1113,42 +1113,23 @@ Status:
 
 ---
 
-Ability point refresh wiring contract audit result:
+Ability point refresh wiring implementation result:
 
-* `!add` routing remains in `original/botCommand.py`.
-* Plain `!add` returns the existing validation message asking the player to specify an ability.
-* `!add <ability>` delegates to `pri_4_add(message, character)`.
-* `pri_4_add()` remains in `original/onPRIUtils.py`.
-* `pri_4_add()` validates the requested ability, loads the character file, delegates mutation to
-`src.character_repository.add_ability_point()`, writes the returned character data back to the same character file, and returns the resulting message list.
-* `add_ability_point()` mutates only the source ability-point fields for successful ability-point spending:
-  * `apboost` is set to `False`.
-  * One of `strength`, `dexterity`, or `constitution` is incremented by 1.
-* `add_ability_point()` does not refresh saved combat-facing totals.
-* Saved combat-facing totals remain:
-  * `thp`
-  * `tac`
-  * `tdr`
-  * `thit`
-  * `tdamage`
-  * `initiative`
-  * `regeneration`
-* Successful `!add` messages still instruct the player to run `!viewchar` to ensure changes, preserving the legacy
-  contract that `!viewchar` is the refresh point for saved combat-facing totals.
-* `refresh_character_combat_totals()` remains repository-only and is not wired into `!add`.
-* `!add` should not be wired to refresh combat-facing totals yet because the visible command routing does not show
-  the same active-combat guard used by commands such as `!respec`.
-* The next safest change is documentation-only, followed by focused test coverage if needed.
-* A later helper-wiring change should only be considered after command timing and active-combat safety are explicitly covered.
+* `pri_4_add()` now refreshes saved combat-facing totals immediately after a successful ability-point spend.
+* The refresh is limited to the successful `!add` path after `add_ability_point()` mutates the source ability and clears `apboost`.
+* Invalid ability requests return before loading or refreshing the character file.
+* Valid requests without `apboost` preserve stale saved combat-facing totals and return the existing no-points message.
+* Focused coverage confirms strength, dexterity, and constitution spends refresh saved combat-facing totals without
+  touching combat, rolling, challenge, accept, potion cleanup, armor behavior, feat behavior, trait behavior, stat
+  behavior, XP payout, renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
 
 Recommendation:
 
-* Do not wire `refresh_character_combat_totals()` into `!add` yet.
 * Do not change combat freshness behavior in this pass.
-* Do not change `!challenge`, `!accept`, `!roll`, `!viewchar`, potion cleanup, armor behavior, feat behavior, trait
-  behavior, stat behavior, XP payout, renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
-* If this work continues, the safest next step is test-only coverage documenting whether `!add` can be used during
-  active combat and whether saved combat-facing totals remain stale until `!viewchar`.
+* Do not wire `refresh_character_combat_totals()` into `!challenge`, `!accept`, or `!roll`.
+* Do not change `!viewchar`, potion cleanup, armor behavior, feat behavior, trait behavior, stat behavior, XP payout,
+  renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
+* If this work continues, the safest next step is another single mutation command with stale-total contract coverage first.
 
 ## Update Procedure for Future Work
 

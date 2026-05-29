@@ -35,6 +35,7 @@ from src.character_repository import (
     format_character_view_potion_inventory,
     list_characters_by_level,
     load_character,
+    refresh_character_combat_totals,
     save_character,
     select_character_build,
     select_character_feat,
@@ -209,10 +210,14 @@ def pri_4_add(message, character):
 
     with open(charFile, "r+", encoding="utf-8") as file:
         charData = json.load(file)
+        had_apboost = charData["apboost"]
         charData, msg = add_ability_point(charData, ability)
         file.seek(0)
         file.write(json.dumps(charData, ensure_ascii=False, indent=2))
         file.truncate()
+
+    if had_apboost:
+        refresh_character_combat_totals(player, charFolder)
 
     return msg
 
