@@ -535,6 +535,10 @@ def pri_6_equip(character, armor, charFolder, game):
     file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
     json.dump(charSheet, file, ensure_ascii=False, indent=2)
     file.close()
+
+    if msg == charSheet["name"] + " has equipped " + armor:
+        refresh_character_combat_totals(character.lower(), charFolder)
+
     return msg
 
 # Use to unequip a piece of equipment
