@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `419 passed`
+* `424 passed`
 
 This test result includes:
 
@@ -45,7 +45,8 @@ The character repository cleanup pass is complete.
 The inventory and economy pass has completed several smaller, testable extraction targets. The completed work now
 covers read-only display behavior, shop restocking behavior, single-character potion economy behavior, potion transfer
 behavior, potion use lifecycle behavior, potion use cleanup review, armor purchase behavior, armor sale behavior,
-armor equipment lifecycle boundary behavior, and armor equipment lifecycle extraction.
+armor equipment lifecycle boundary behavior, armor equipment lifecycle extraction, and armor equip/unequip combat total
+refresh wiring.
 
 The character-summary display boundary review also completed the focused `pri_viewchar()` display update. Character
 view context construction, total calculation, and total write-back orchestration are repository-backed. The legacy
@@ -1155,6 +1156,17 @@ Feat refresh wiring implementation result:
 * Focused coverage confirms invalid feat selection and no-remaining-feat-slot cases do not refresh stale saved combat-facing totals.
 * This implementation does not touch combat, rolling, challenge, accept, potion cleanup, armor behavior, stat behavior,
   trait behavior, ability-point behavior, XP payout, renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
+
+Armor unequip refresh wiring implementation result:
+
+* `pri_8_unequip()` now refreshes saved combat-facing totals immediately after successful armor unequip.
+* The refresh is limited to the successful `!unequip` path after `unequip_character_armor()` clears equipped armor and armor/source bonus fields.
+* Combat-blocked unequip attempts preserve stale saved combat-facing totals and return the existing fight-in-progress message.
+* Focused coverage confirms successful armor unequip refreshes saved `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration`.
+* Focused coverage confirms combat-blocked unequip does not mutate armor fields and does not refresh stale saved combat-facing totals.
+* This implementation does not touch combat, rolling, challenge, accept, potion cleanup, potion behavior, equip behavior,
+  stat behavior, trait behavior, feat behavior, ability-point behavior, XP payout, renown payout, level-up handling,
+  leaderboard, who, player-score, wholevel, or character view display formatting.
 
 Recommendation:
 

@@ -543,6 +543,8 @@ def pri_6_equip(character, armor, charFolder, game):
 
 # Use to unequip a piece of equipment
 # !unequip <armor name>
+# Use to unequip a piece of equipment
+# !unequip <armor name>
 def pri_8_unequip(character, armor, charFolder, game):
     if game != 1:
         try:
@@ -558,8 +560,12 @@ def pri_8_unequip(character, armor, charFolder, game):
         file = open(charFolder + character.lower() + ".json", "w", encoding="utf-8")
         json.dump(charSheet, file, ensure_ascii=False, indent=2)
         file.close()
+
+        if msg == charSheet["name"] + " has unequipped " + armor:
+            refresh_character_combat_totals(character.lower(), charFolder)
     else:
         msg = "A fight is currently taking place...please wait until it is concluded."
+
     return msg
 
 

@@ -565,6 +565,128 @@ def test_pri_8_unequip_clears_equipped_armor_and_all_armor_bonuses(tmp_path):
     assert updated["armorblur"] == 0
 
 
+def test_pri_8_unequip_refreshes_saved_combat_totals_after_successful_armor_unequip(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    write_character(
+        characters_dir,
+        "playerone",
+        make_character(
+            equip="armor1",
+            armorstrength=5,
+            armorhit=4,
+            armordamage=3,
+            armorac=2,
+            armorhp=10,
+            armordr=1,
+            armorinitiative=6,
+            armordexterity=7,
+            armorconstitution=8,
+            armorblur=9,
+            thp=1,
+            tac=1,
+            tdr=1,
+            thit=1,
+            tdamage=1,
+            initiative=1,
+            regeneration=99,
+        ),
+    )
+
+    msg = pri_8_unequip(
+        "playerone",
+        "armor1",
+        str(characters_dir) + "/",
+        0,
+    )
+
+    assert msg == "Test Hero has unequipped armor1"
+
+    updated = json.loads((characters_dir / "playerone.json").read_text(encoding="utf-8"))
+
+    assert updated["equip"] == ""
+    assert updated["armorstrength"] == 0
+    assert updated["armorhit"] == 0
+    assert updated["armordamage"] == 0
+    assert updated["armorac"] == 0
+    assert updated["armorhp"] == 0
+    assert updated["armordr"] == 0
+    assert updated["armorinitiative"] == 0
+    assert updated["armordexterity"] == 0
+    assert updated["armorconstitution"] == 0
+    assert updated["armorblur"] == 0
+
+    assert updated["thp"] == 40
+    assert updated["tac"] == 14
+    assert updated["tdr"] == 0
+    assert updated["thit"] == 5
+    assert updated["tdamage"] == 6
+    assert updated["initiative"] == 2
+    assert updated["regeneration"] == 0
+
+
+def test_pri_8_unequip_during_combat_does_not_refresh_stale_combat_totals(tmp_path):
+    characters_dir = tmp_path / "characters"
+    characters_dir.mkdir()
+
+    write_character(
+        characters_dir,
+        "playerone",
+        make_character(
+            equip="armor1",
+            armorstrength=5,
+            armorhit=4,
+            armordamage=3,
+            armorac=2,
+            armorhp=10,
+            armordr=1,
+            armorinitiative=6,
+            armordexterity=7,
+            armorconstitution=8,
+            armorblur=9,
+            thp=1,
+            tac=1,
+            tdr=1,
+            thit=1,
+            tdamage=1,
+            initiative=1,
+            regeneration=99,
+        ),
+    )
+
+    msg = pri_8_unequip(
+        "playerone",
+        "armor1",
+        str(characters_dir) + "/",
+        1,
+    )
+
+    assert msg == "A fight is currently taking place...please wait until it is concluded."
+
+    updated = json.loads((characters_dir / "playerone.json").read_text(encoding="utf-8"))
+
+    assert updated["equip"] == "armor1"
+    assert updated["armorstrength"] == 5
+    assert updated["armorhit"] == 4
+    assert updated["armordamage"] == 3
+    assert updated["armorac"] == 2
+    assert updated["armorhp"] == 10
+    assert updated["armordr"] == 1
+    assert updated["armorinitiative"] == 6
+    assert updated["armordexterity"] == 7
+    assert updated["armorconstitution"] == 8
+    assert updated["armorblur"] == 9
+
+    assert updated["thp"] == 1
+    assert updated["tac"] == 1
+    assert updated["tdr"] == 1
+    assert updated["thit"] == 1
+    assert updated["tdamage"] == 1
+    assert updated["initiative"] == 1
+    assert updated["regeneration"] == 99
+
+
 def test_pri_8_unequip_does_not_require_named_armor_to_exist(tmp_path):
     characters_dir = tmp_path / "characters"
     characters_dir.mkdir()
