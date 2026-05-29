@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `416 passed`
+* `419 passed`
 
 This test result includes:
 
@@ -1145,6 +1145,16 @@ Trait refresh wiring implementation result:
   directly, matching how the wrapper actually calls the dependency.
 * This implementation does not touch combat, rolling, challenge, accept, potion cleanup, armor behavior, feat behavior,
   stat behavior, ability-point behavior, XP payout, renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
+
+Feat refresh wiring implementation result:
+
+* `pri_10_feat_pick()` now refreshes saved combat-facing totals immediately after successful feat selection.
+* The refresh is limited to the successful `!featpick` path after `select_character_feat()` mutates feat/source bonus fields.
+* Failed feat selection paths preserve stale saved combat-facing totals.
+* Focused coverage confirms successful feat selection refreshes saved `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration`.
+* Focused coverage confirms invalid feat selection and no-remaining-feat-slot cases do not refresh stale saved combat-facing totals.
+* This implementation does not touch combat, rolling, challenge, accept, potion cleanup, armor behavior, stat behavior,
+  trait behavior, ability-point behavior, XP payout, renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
 
 Recommendation:
 

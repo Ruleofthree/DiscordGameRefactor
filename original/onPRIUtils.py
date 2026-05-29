@@ -281,14 +281,22 @@ def pri_6_trait(character, message, traitList, traitDictionary, trait):
 # select a feat when a feat slot is available
 # !featpick <feat>
 def pri_10_feat_pick(character, message, featList, featDictionary):
+    path = os.getcwd()
+    charFolder = os.path.join(path + "/characters/")
     answer = message[10:].lower()
 
-    return select_character_feat(
+    msg = select_character_feat(
         character=character,
         feat_name=answer,
         feat_list=featList,
         feat_dictionary=featDictionary,
+        character_dir=charFolder,
     )
+
+    if any("has been added to your character sheet." in line for line in msg):
+        refresh_character_combat_totals(character.lower(), charFolder)
+
+    return msg
 
 # Use to buy a potion
 # !buypotion <potion name>
