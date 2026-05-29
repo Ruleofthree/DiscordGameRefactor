@@ -264,7 +264,7 @@ def pri_6_trait(character, message, traitList, traitDictionary, trait):
     path = os.getcwd()
     charFolder = os.path.join(path + "/characters/")
 
-    return select_character_trait(
+    msg = select_character_trait(
         char_folder=charFolder,
         character=character,
         message=message,
@@ -272,6 +272,11 @@ def pri_6_trait(character, message, traitList, traitDictionary, trait):
         trait_dictionary=traitDictionary,
         trait=trait,
     )
+
+    if "has been added to your character sheet." in msg:
+        refresh_character_combat_totals(character.lower(), charFolder)
+
+    return msg
 
 # select a feat when a feat slot is available
 # !featpick <feat>

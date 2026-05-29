@@ -23,12 +23,19 @@ def test_pri_6_trait_delegates_to_character_repository(monkeypatch, tmp_path):
         return "delegated trait result"
 
     monkeypatch.syspath_prepend(str(tmp_path))
+    module = importlib.import_module("original.onPRIUtils")
+
     monkeypatch.setattr(
-        "src.character_repository.select_character_trait",
+        module,
+        "select_character_trait",
         fake_select_character_trait,
     )
 
-    module = importlib.import_module("original.onPRIUtils")
+    monkeypatch.setattr(
+        module,
+        "refresh_character_combat_totals",
+        lambda character, char_folder: None,
+    )
 
     result = module.pri_6_trait(
         character="Tester",

@@ -24,7 +24,7 @@ potion lifecycle behavior, or equipment lifecycle behavior.
 
 Current full pytest result:
 
-* `413 passed`
+* `416 passed`
 
 This test result includes:
 
@@ -1133,6 +1133,18 @@ Initial stat refresh wiring implementation result:
 * Focused coverage confirms rejected total-point assignment and already-assigned stat cases do not refresh stale saved combat-facing totals.
 * This implementation does not touch combat, rolling, challenge, accept, potion cleanup, armor behavior, feat behavior,
   trait behavior, XP payout, renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
+
+Trait refresh wiring implementation result:
+
+* `pri_6_trait()` now refreshes saved combat-facing totals immediately after successful first-time trait selection.
+* The refresh is limited to the successful `!traitpick` path after `select_character_trait()` mutates the selected trait and related trait/source bonus fields.
+* Failed trait selection paths preserve stale saved combat-facing totals.
+* Focused coverage confirms successful trait selection refreshes saved `thp`, `tac`, `tdr`, `thit`, `tdamage`, `initiative`, and `regeneration`.
+* Focused coverage confirms invalid trait selection and already-selected trait cases do not refresh stale saved combat-facing totals.
+* Existing wrapper delegation coverage now patches the imported `original.onPRIUtils.select_character_trait` binding
+  directly, matching how the wrapper actually calls the dependency.
+* This implementation does not touch combat, rolling, challenge, accept, potion cleanup, armor behavior, feat behavior,
+  stat behavior, ability-point behavior, XP payout, renown payout, level-up handling, leaderboard, who, player-score, wholevel, or character view display formatting.
 
 Recommendation:
 
